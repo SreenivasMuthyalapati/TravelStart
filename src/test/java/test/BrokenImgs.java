@@ -1,19 +1,17 @@
 package test;
 
-import java.io.IOException;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.util.List;
-
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
-import org.openqa.selenium.chrome.ChromeOptions;
 import org.testng.annotations.Test;
+import pageObjects.HomePage;
 
-
-import io.github.bonigarcia.wdm.WebDriverManager;
+import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 public class BrokenImgs {
 	
@@ -28,7 +26,7 @@ public class BrokenImgs {
 		driver = new ChromeDriver();
 		driver.manage().window().maximize();
 		driver.get(m.ReadPropertyFile(Path, "LiveZAUrl"));
-		Thread.sleep(20000);
+		Thread.sleep(10000);
 		
 		List<WebElement> images = driver.findElements(By.tagName("img"));
 
@@ -60,13 +58,10 @@ public class BrokenImgs {
 			}
 		}
 
-		driver.close();
-		
-		
-		
-		
+
 		
 	}
+
 	
 
 }

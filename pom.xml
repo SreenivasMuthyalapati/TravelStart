@@ -8,7 +8,7 @@
 		<dependency>
 			<groupId>org.seleniumhq.selenium</groupId>
 			<artifactId>selenium-java</artifactId>
-			<version>3.141.59</version> <!-- Replace with the version you are using -->
+			<version>3.141.59</version> <!-- Use the latest version available -->
 		</dependency>
 		<!-- TestNG -->
 		<dependency>
@@ -68,4 +68,5 @@
 		</dependency>
 		
 	</dependencies>
+
 </project>
