@@ -1,17 +1,20 @@
 package testmethods;
 
 import io.github.bonigarcia.wdm.WebDriverManager;
-import org.openqa.selenium.By;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.ss.usermodel.*;
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
-import org.openqa.selenium.support.ui.ExpectedConditions;
-import org.openqa.selenium.support.ui.WebDriverWait;
 
-import java.io.FileReader;
+import java.io.*;
 import java.util.Properties;
 import java.util.concurrent.TimeUnit;
 
+import jxl.read.biff.BiffException;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
 public class Method {
 	public static WebDriver driver;
 	public static Properties prop = new Properties();
@@ -45,5 +48,16 @@ public class Method {
 
 	}
 
+	public String readDataFromExcel(String filePath, int sheetIndex, int row, int col) throws IOException {
+		try (FileInputStream file = new FileInputStream(new File(filePath));
+			 Workbook workbook = WorkbookFactory.create(file)) {
+
+			Sheet sheet = workbook.getSheetAt(sheetIndex);
+			Row excelRow = sheet.getRow(row);
+			Cell cell = excelRow.getCell(col);
+
+			return cell.toString();
+		}
+	}
 
 }

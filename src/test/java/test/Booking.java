@@ -28,6 +28,7 @@ import pageObjects.*;
 import javax.xml.xpath.XPath;
 import java.io.IOException;
 import java.util.List;
+import java.util.Stack;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 
@@ -35,13 +36,16 @@ public class Booking {
     static WebDriver driver;
     static String path = "C:\\Users\\Sreen\\eclipse-workspace\\travelStart\\src\\test\\resources\\configFiles\\config.properties";
     static testmethods.Method m = new testmethods.Method();
+    static String dataPath = "C:\\Users\\Sreen\\IdeaProjects\\travelStart\\TestData\\DataBook.xls";
 
     @BeforeTest
     public void setup() throws Exception {
         System.setProperty("webdriver.chrome.driver", "C:\\Users\\Sreen\\OneDrive\\Documents\\QA\\Selenium\\chromedriver-win64\\chromedriver.exe");
         driver = new ChromeDriver();
         driver.manage().window().maximize();
-        driver.get(m.ReadPropertyFile(path, "LiveZAUrl"));
+        driver.get(m.readDataFromExcel(dataPath,0,3,1));
+
+
     }
     @AfterTest
     public void close(){
@@ -52,7 +56,7 @@ public class Booking {
 
 
         driver.manage().timeouts().implicitlyWait(15, TimeUnit.SECONDS);
-        Thread.sleep(2000);
+        Thread.sleep(1000);
         driver.findElement(HomePage.departureCity).sendKeys("JNB");
         Thread.sleep(2000);
         driver.findElement(HomePage.option).click();
@@ -68,21 +72,20 @@ public class Booking {
         driver.findElement(HomePage.day2).click();
 
         driver.findElement(HomePage.search).click();
-        Thread.sleep(30000);
+        Thread.sleep(27000);
 
         WebElement result = driver.findElement(SRP.results);
         Assert.assertTrue(result.isDisplayed(), "No search result loaded");
 
 
-        By bookNowButtonLocator = By.cssSelector("button.btn.primary_btn.book_btn.onHover");
+        By bookNowButtonLocator = SRP.book;
 
         // Wait for the button to be clickable
         WebElement bookNowButton = waitForElementToBeClickable(driver, bookNowButtonLocator);
 
         // Click the "Book Now" button
         bookNowButton.click();
-        Thread.sleep(10000);
-
+        Thread.sleep(5000);
 
     }
 
@@ -119,71 +122,50 @@ public class Booking {
     public void travellerPage() throws Exception {
         WebDriverWait wait = new WebDriverWait(driver, 10);
         WebElement day = wait.until(ExpectedConditions.presenceOfElementLocated(FlightPage.dayDOB));
-        WebElement month = wait.until(ExpectedConditions.presenceOfElementLocated(FlightPage.dayDOB));
-        WebElement year = wait.until(ExpectedConditions.presenceOfElementLocated(FlightPage.dayDOB));
+        WebElement month = wait.until(ExpectedConditions.presenceOfElementLocated(FlightPage.monthDOB));
+        WebElement year = wait.until(ExpectedConditions.presenceOfElementLocated(FlightPage.yearDOB));
 
-        driver.findElement(FlightPage.mobileNo).sendKeys("9492330035");
-        driver.findElement(FlightPage.email).sendKeys("sreenivasulu@travelstart.com");
+        driver.findElement(FlightPage.mobileNo).sendKeys(m.readDataFromExcel(dataPath,0,12,1));
+        driver.findElement(FlightPage.email).sendKeys(m.readDataFromExcel(dataPath,0,13,1));
         driver.findElement(FlightPage.whatsApp).click();
         Thread.sleep(1000);
         driver.findElement(FlightPage.whatsApp).click();
         driver.findElement(FlightPage.mr).click();
-        driver.findElement(FlightPage.firstName).sendKeys("Sreenivasulu");
-        driver.findElement(FlightPage.lastName).sendKeys("Muthyalapati");
+        driver.findElement(FlightPage.firstName).sendKeys(m.readDataFromExcel(dataPath,0,14,1));
+        driver.findElement(FlightPage.lastName).sendKeys(m.readDataFromExcel(dataPath,0,15,1));
         Select daysc = new Select(day);
-        driver.findElement(By.xpath("//option[normalize-space()='6']")).click();
+        daysc.selectByIndex(4);
         Select monthsc = new Select(month);
-        driver.findElement(By.xpath("//*[text()='Jun']")).click();
+        monthsc.selectByIndex(6);
         Select yearsc = new Select(year);
-        driver.findElement(By.xpath("//*[@value='1999']")).click();
+        yearsc.selectByValue("1999");
         driver.findElement(FlightPage.meal).click();
         driver.findElement(FlightPage.vegetarianMeal).click();
         driver.findElement(FlightPage.contnue).click();
         System.out.println("Traveller details have been added");
+        /*driver.findElement(AddOnsPage.editSeats).click();
+        driver.findElement(By.xpath("(//*[text()='18B'])[1]")).click();
+        Thread.sleep(1000);
+        driver.findElement(By.xpath("(//*[text()='24B'])[1]")).click();
+        Thread.sleep(1000);
+        driver.findElement(By.xpath("(//*[text()='43B'])[1]")).click();
+        Thread.sleep(1000);
+        driver.findElement(By.xpath("(//*[text()='20B'])[1]")).click();
+        Thread.sleep(1000);
+        driver.findElement(By.xpath("//button[@class='btn primary_btn ml-auto st_btn addons_continueBtn float-right']")).click();
+        */
+        driver.findElement(AddOnsPage.contnue).click();
+        Thread.sleep(2000);
+        driver.findElement(By.xpath("//span[text()='Yes, Continue']")).click();
+        driver.findElement(By.xpath("//a[@id='eft-tab']")).click();
+        driver.findElement(By.xpath("//img[@alt='nedbank']")).click();
+        driver.findElement(By.xpath("//span[@class='ng-star-inserted'][normalize-space()='Pay Now']")).click();
+        String refNo = driver.findElement(By.xpath("//label[@class='ref_details']")).getText();
+        System.out.println(refNo);
+        String currentURL = driver.getCurrentUrl();
+        Assert.assertEquals(currentURL,"https://www.travelstart.co.za/payments/bookingConfirm","Booking failed");
 
     }
-
-
-    @Test(priority = 4)
-    public void mealsPrice() {
-        WebElement mealsPrice = null;
-        try {
-            mealsPrice = driver.findElement(By.id("MEALS"));
-        } catch (NoSuchElementException ne) {
-            ne.printStackTrace();
-            System.out.println("Meals price is not included in price breakdown");
-        }
-        Assert.assertTrue(mealsPrice.isDisplayed(), "Meals price is not included in price breakdown");
-
-    }
-
-    @Test(priority = 5)
-    public void whatsappPrice() throws InterruptedException {
-        WebElement mealsPrice = null;
-        try {
-            mealsPrice = driver.findElement(By.id("WHATSAPP"));
-        } catch (NoSuchElementException ne) {
-            ne.printStackTrace();
-            System.out.println("WhatsApp price is not included in price breakdown");
-        }
-        Assert.assertTrue(mealsPrice.isDisplayed(), "WhatsApp price is not included in price breakdown");
-        driver.findElement(AddOnsPage.editSeats).click();
-        Thread.sleep(15000);
-    }
-
-    @Test
-    public void Seats() throws InterruptedException {
-
-        WebElement seatMap = null;
-        try{
-            seatMap = driver.findElement(SeatsPage.seatMap);
-        } catch (NoSuchElementException ne){
-            ne.printStackTrace();
-            System.out.println("No seat map loaded");
-        }
-        Assert.assertTrue(seatMap.isDisplayed(),"Test failed, no seat map loaded");
-    }
-
 
 
 }
