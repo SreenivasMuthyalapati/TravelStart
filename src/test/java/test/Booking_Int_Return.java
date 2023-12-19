@@ -26,21 +26,31 @@ public class Booking_Int_Return {
     static WebDriver driver;
     static testmethods.Method m = new testmethods.Method();
     static String dataPath = "C:\\Users\\Dell\\IdeaProjects\\travelStart\\TestData\\DataBook.xls";
+    static String environment;
+
+    static {
+        try {
+            environment = m.readDataFromExcel(dataPath,0,0,1);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public Booking_Int_Return() throws IOException {
+    }
 
     @BeforeClass
     public void setup() throws Exception {
+
         System.setProperty("webdriver.chrome.driver", "C:\\Users\\Dell\\Documents\\chromedriver-win32\\chromedriver-win32\\chromedriver.exe");
         driver = new ChromeDriver();
         driver.manage().window().maximize();
-        driver.get(m.readDataFromExcel(dataPath,0,3,1));
-
-        // To accept all cookies
-        driver.manage().deleteAllCookies();
-        try {
-            Alert alert = driver.switchTo().alert();
-            alert.accept();
-        } catch (Exception e) {
-            e.printStackTrace();
+        if (environment == "Live") {
+            driver.get(m.readDataFromExcel(dataPath, 0, 3, 1));
+        } else if (environment == "Beta") {
+            driver.get(m.readDataFromExcel(dataPath, 0, 5, 1));
+        } else if (environment == "Preprod") {
+            driver.get(m.readDataFromExcel(dataPath, 0, 7, 1));
         }
     }
     @AfterClass
@@ -113,7 +123,7 @@ public class Booking_Int_Return {
 
     @Test(priority = 3)
     public void travellerPage() throws Exception {
-        driver.manage().timeouts().implicitlyWait(5, TimeUnit.SECONDS);
+        driver.manage().timeouts().implicitlyWait(2, TimeUnit.SECONDS);
 
 
             //Waits for DOB dropdowns to be located
@@ -153,26 +163,40 @@ public class Booking_Int_Return {
 
             }
 
-            //Passport details
-            try{
-                WebElement ppInfo = driver.findElement(FlightPage.ppInfo);
-                WebElement  ppNumber = driver.findElement(FlightPage.ppNumber);
-                ppNumber.sendKeys(m.readDataFromExcel(dataPath,2,11,8));
-            }catch (NoSuchElementException ne){
-                ne.printStackTrace();
-                System.out.println("PassPort details not required for this flight");
-            }
+        //Passport details
+        WebElement ppInfo = null;
+        try{
+            ppInfo = driver.findElement(FlightPage.ppInfo);
+        }catch (NoSuchElementException ne){
+            ne.printStackTrace();
+            System.out.println("PassPort details not required for this flight");
+        }
 
-            driver.findElement(FlightPage.contnue).click();
-            System.out.println("Traveller details have been added");
+        if(ppInfo.isDisplayed()) {
+            WebElement ppNumber = driver.findElement(FlightPage.ppNumber);
+            ppNumber.sendKeys(m.readDataFromExcel(dataPath, 2, 11, 8));
 
-            //From Add-Ons
-            driver.findElement(AddOnsPage.contnue).click();
+            WebElement ppday = driver.findElement(FlightPage.ppExpiryDate);
+            WebElement ppmonth = driver.findElement(FlightPage.ppExpiryMonth);
+            WebElement ppyear = driver.findElement(FlightPage.ppExpiryYear);
+
+            Select ppdaysc = new Select(ppday);
+            Select ppmonthsc = new Select(ppmonth);
+            Select ppyearsc = new Select(ppyear);
+
+            ppdaysc.selectByIndex(1);
+            ppmonthsc.selectByIndex(1);
+            ppyearsc.selectByValue("2029");
+
+            driver.findElement(FlightPage.ppNationality).click();
+            driver.findElement(By.xpath("//*[text()='India']")).click();
             Thread.sleep(1000);
+            driver.findElement(FlightPage.ppIssuingCountry).click();
+            driver.findElement(By.xpath("(//*[text()='India'])[2]")).click();
 
+        }
 
-
-    }
+        }
 
     @Test(priority = 4) @Ignore
     public void booking() throws InterruptedException {

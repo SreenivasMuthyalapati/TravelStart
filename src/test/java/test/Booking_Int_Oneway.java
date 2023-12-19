@@ -24,26 +24,30 @@ public class Booking_Int_Oneway {
     static WebDriver driver;
     static testmethods.Method m = new testmethods.Method();
     static String dataPath = "C:\\Users\\Dell\\IdeaProjects\\travelStart\\TestData\\DataBook.xls";
+    static String environment;
+
+    static {
+        try {
+            environment = m.readDataFromExcel(dataPath,0,0,1);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public Booking_Int_Oneway() throws IOException {
+    }
 
     @BeforeClass
     public void setup() throws Exception {
+
         System.setProperty("webdriver.chrome.driver", "C:\\Users\\Dell\\Documents\\chromedriver-win32\\chromedriver-win32\\chromedriver.exe");
         driver = new ChromeDriver();
         driver.manage().window().maximize();
-        driver.get(m.readDataFromExcel(dataPath,0,3,1));
-
-        // To accept all cookies
-        driver.manage().deleteAllCookies();
-        try {
-            Alert alert = driver.switchTo().alert();
-            alert.accept();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        driver.get(m.readDataFromExcel(dataPath, 0, 7, 1));
     }
     @AfterClass
     public void close(){
-        //driver.quit();
+        driver.quit();
     }
     @Test(priority = 1)
     public void search() throws Exception {
@@ -68,7 +72,7 @@ public class Booking_Int_Oneway {
         driver.findElement(HomePage.search).click();
         Thread.sleep(20);
 
-        Duration timeout = Duration.ofSeconds(45);
+        Duration timeout = Duration.ofSeconds(60);
 
         WebDriverWait wait = new WebDriverWait(driver, timeout);
         WebElement result = null;
@@ -110,9 +114,8 @@ public class Booking_Int_Oneway {
     }
     @Test(priority = 3)
     public void travellerPage() throws Exception {
-        driver.manage().timeouts().implicitlyWait(2, TimeUnit.SECONDS);
 
-
+        driver.manage().timeouts().implicitlyWait(2,TimeUnit.SECONDS);
         //Waits for DOB dropdowns to be located
 
         WebElement day = driver.findElement(FlightPage.dayDOB);
@@ -162,12 +165,24 @@ public class Booking_Int_Oneway {
         if(ppInfo.isDisplayed()){
             WebElement  ppNumber = driver.findElement(FlightPage.ppNumber);
             ppNumber.sendKeys(m.readDataFromExcel(dataPath,2,11,8));
+
+            WebElement ppday = driver.findElement(FlightPage.ppExpiryDate);
+            WebElement ppmonth = driver.findElement(FlightPage.ppExpiryMonth);
+            WebElement ppyear = driver.findElement(FlightPage.ppExpiryYear);
+
+            Select ppdaysc = new Select(ppday);
+            Select ppmonthsc = new Select(ppmonth);
+            Select ppyearsc = new Select(ppyear);
+
+            ppdaysc.selectByIndex(1);
+            ppmonthsc.selectByIndex(1);
+            ppyearsc.selectByValue("2029");
+
             driver.findElement(FlightPage.ppNationality).click();
             driver.findElement(By.xpath("//*[text()='India']")).click();
             Thread.sleep(1000);
             driver.findElement(FlightPage.ppIssuingCountry).click();
             driver.findElement(By.xpath("(//*[text()='India'])[2]")).click();
-            
 
 
         }
@@ -206,6 +221,5 @@ public class Booking_Int_Oneway {
         }
         Assert.assertTrue(refNmbr.isDisplayed(),"Booking not completed");
     }
-
 
 }
