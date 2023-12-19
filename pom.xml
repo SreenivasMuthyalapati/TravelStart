@@ -4,12 +4,13 @@
 	<artifactId>travelStart</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<dependencies>
-		<!-- Selenium WebDriver -->
+		<!-- Selenium -->
 		<dependency>
 			<groupId>org.seleniumhq.selenium</groupId>
 			<artifactId>selenium-java</artifactId>
-			<version>3.141.59</version> <!-- Use the latest version available -->
+			<version>3.141.59</version>
 		</dependency>
+
 		<!-- TestNG -->
 		<dependency>
 			<groupId>org.testng</groupId>
@@ -35,12 +36,7 @@
 			<artifactId>poi</artifactId>
 			<version>4.1.2</version>
 		</dependency>
-		<!-- apachePOI -->
-		<dependency>
-			<groupId>org.apache.poi</groupId>
-			<artifactId>poi-ooxml</artifactId>
-			<version>4.1.2</version>
-		</dependency>
+
 		<!-- https://mvnrepository.com/artifact/org.uncommons/reportng -->
 		<dependency>
 			<groupId>org.uncommons</groupId>
@@ -79,7 +75,12 @@
 			<scope>system</scope>
 			<systemPath>${basedir}/lib/jxl-2.6.12.jar</systemPath>
 		</dependency>
-
+		<!-- https://mvnrepository.com/artifact/io.qameta.allure/allure-testng -->
+		<dependency>
+			<groupId>io.qameta.allure</groupId>
+			<artifactId>allure-testng</artifactId>
+			<version>2.25.0</version>
+		</dependency>
 	</dependencies>
     <build>
         <plugins>
