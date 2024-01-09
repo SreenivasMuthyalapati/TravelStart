@@ -18,22 +18,40 @@ import pageObjects.*;
 
 import java.io.IOException;
 import java.time.Duration;
+import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
 public class Booking_Dom_Oneway {
 
     static WebDriver driver;
     static testmethods.Method m = new testmethods.Method();
-    static String dataPath = "C:\\Users\\Dell\\IdeaProjects\\travelStart\\TestData\\DataBook.xls";
+    static String dataPath = "C:\\Users\\Sreen\\IdeaProjects\\travelStart\\TestData\\DataBook.xls";
+    static String environment;
+
+    static {
+        try {
+            environment = m.readDataFromExcel(dataPath,0,0,1);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
     @BeforeClass
     public void setup() throws Exception {
-        System.setProperty("webdriver.chrome.driver", "C:\\Users\\Dell\\Documents\\chromedriver-win32\\chromedriver-win32\\chromedriver.exe");
+        System.setProperty("webdriver.chrome.driver", "C:\\Users\\Sreen\\OneDrive\\Documents\\QA\\Selenium\\chromedriver-win64\\chromedriver.exe");
         driver = new ChromeDriver();
         driver.manage().window().maximize();
-        driver.get(m.readDataFromExcel(dataPath,0,3,1));
+        if (environment.equals("live")){
+            driver.get(m.readDataFromExcel(dataPath,0,3,1));
+        } else if (environment.equals("beta")) {
+            driver.get(m.readDataFromExcel(dataPath,0,5,1));
+        } else if (environment.equals("preprod")) {
+            driver.get(m.readDataFromExcel(dataPath,0,7,1));
+        } else {
+            System.out.println("Invalid envinorment name");
+        }
 
-        // To accept all cookies
+        //accept all cookies
         driver.manage().deleteAllCookies();
         try {
             Alert alert = driver.switchTo().alert();
@@ -69,9 +87,7 @@ public class Booking_Dom_Oneway {
         driver.findElement(HomePage.search).click();
         Thread.sleep(20);
 
-        Duration timeout = Duration.ofSeconds(45);
-
-        WebDriverWait wait = new WebDriverWait(driver, timeout);
+        WebDriverWait wait = new WebDriverWait(driver, 45);
         WebElement result = null;
         try{
             wait.until(ExpectedConditions.visibilityOfElementLocated(SRP.results));
@@ -96,9 +112,7 @@ public class Booking_Dom_Oneway {
     @Test(priority = 2)
     public void flightReviewPage() {
 
-        Duration timeout = Duration.ofSeconds(30);
-
-        WebDriverWait wait = new WebDriverWait(driver, timeout);
+        WebDriverWait wait = new WebDriverWait(driver, 30);
         WebElement travellerPage = null;
         try{
             wait.until(ExpectedConditions.visibilityOfElementLocated(FlightPage.flightReviewPage));
@@ -164,9 +178,7 @@ public class Booking_Dom_Oneway {
     @Test(priority = 4) @Ignore
     public void booking() throws InterruptedException {
 
-        Duration timeout = Duration.ofSeconds(45);
-
-        WebDriverWait wait = new WebDriverWait(driver, timeout);
+        WebDriverWait wait = new WebDriverWait(driver, 45);
 
         //Payment using EFT
         wait.until(ExpectedConditions.visibilityOfElementLocated(PaymentPage.EFT));

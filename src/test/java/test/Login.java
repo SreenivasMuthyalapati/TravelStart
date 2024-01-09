@@ -19,11 +19,11 @@ import java.util.concurrent.TimeUnit;
 public class Login {
     static WebDriver driver;
     static testmethods.Method m = new testmethods.Method();
-    static String dataPath = "C:\\Users\\Dell\\IdeaProjects\\travelStart\\TestData\\DataBook.xls";
+    static String dataPath = "C:\\Users\\Sreen\\IdeaProjects\\travelStart\\TestData\\DataBook.xls";
 
     @BeforeTest
     public void setup() throws Exception {
-        System.setProperty("webdriver.chrome.driver", "C:\\Users\\Dell\\Documents\\chromedriver-win32\\chromedriver-win32\\chromedriver.exe");
+        System.setProperty("webdriver.chrome.driver", "C:\\Users\\Sreen\\OneDrive\\Documents\\QA\\Selenium\\chromedriver-win64\\chromedriver.exe");
         driver = new ChromeDriver();
         driver.manage().window().maximize();
         driver.get(m.readDataFromExcel(dataPath,0,7,1));
