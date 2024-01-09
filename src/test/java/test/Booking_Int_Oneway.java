@@ -175,11 +175,6 @@ public class Booking_Int_Oneway {
         if(ppInfo.isDisplayed()){
             WebElement  ppNumber = driver.findElement(FlightPage.ppNumber);
             ppNumber.sendKeys(m.readDataFromExcel(dataPath,2,11,8));
-            driver.findElement(FlightPage.ppNationality).click();
-            driver.findElement(By.xpath("//*[text()='India']")).click();
-            Thread.sleep(1000);
-            driver.findElement(FlightPage.ppIssuingCountry).click();
-            driver.findElement(By.xpath("(//*[text()='India'])[2]")).click();
             WebElement ppday = driver.findElement(FlightPage.ppExpiryDate);
             WebElement ppmonth = driver.findElement(FlightPage.ppExpiryMonth);
             WebElement ppyear = driver.findElement(FlightPage.ppExpiryYear);
@@ -187,9 +182,16 @@ public class Booking_Int_Oneway {
             Select ppdaysc = new Select(ppday);
             ppdaysc.selectByIndex(1);
             Select ppmonthsc = new Select(ppmonth);
-            ppdaysc.selectByIndex(1);
+            ppmonthsc.selectByIndex(1);
             Select ppyearsc = new Select(ppyear);
-            ppdaysc.selectByValue("2029");
+            ppyearsc.selectByValue("2029");
+
+            driver.findElement(FlightPage.ppNationality).click();
+            driver.findElement(By.xpath("//*[text()='India']")).click();
+            Thread.sleep(1000);
+            driver.findElement(FlightPage.ppIssuingCountry).click();
+            driver.findElement(By.xpath("(//*[text()='India'])[2]")).click();
+
 
         }
 
