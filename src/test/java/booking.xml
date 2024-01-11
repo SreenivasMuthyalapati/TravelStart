@@ -2,10 +2,10 @@
 <suite name="Test">
     <test name="BookingTest">
         <classes>
+            <class name="test.Login" />
             <class name="test.Booking_Int_Return" />
             <class name="test.Booking_Int_Oneway" />
             <class name="test.Booking_Dom_Oneway" />
-
         </classes>
     </test>
     <listeners>

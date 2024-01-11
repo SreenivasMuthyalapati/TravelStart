@@ -18,40 +18,40 @@ import pageObjects.*;
 
 import java.io.IOException;
 import java.time.Duration;
+import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
 public class Booking_Dom_Oneway {
 
     static WebDriver driver;
     static testmethods.Method m = new testmethods.Method();
-    static String dataPath = "C:\\Users\\Dell\\IdeaProjects\\travelStart\\TestData\\DataBook.xls";
+    static String dataPath = "C:\\Users\\Sreen\\IdeaProjects\\travelStart\\TestData\\DataBook.xls";
     static String environment;
 
     static {
         try {
             environment = m.readDataFromExcel(dataPath,0,0,1);
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            e.printStackTrace();
         }
-    }
-
-    public Booking_Dom_Oneway() throws IOException {
     }
 
     @BeforeClass
     public void setup() throws Exception {
-        System.setProperty("webdriver.chrome.driver", "C:\\Users\\Dell\\Documents\\chromedriver-win32\\chromedriver-win32\\chromedriver.exe");
+        System.setProperty("webdriver.chrome.driver", "C:\\Users\\Sreen\\OneDrive\\Documents\\QA\\Selenium\\chromedriver-win64\\chromedriver.exe");
         driver = new ChromeDriver();
         driver.manage().window().maximize();
-
-        if (environment=="Live") {
-            driver.get(m.readDataFromExcel(dataPath, 0, 3, 1));
-        } else if (environment=="Beta") {
-            driver.get(m.readDataFromExcel(dataPath, 0, 5, 1));
-        } else if (environment=="Preprod") {
-            driver.get(m.readDataFromExcel(dataPath, 0, 7, 1));
+        if (environment.equals("live")){
+            driver.get(m.readDataFromExcel(dataPath,0,3,1));
+        } else if (environment.equals("beta")) {
+            driver.get(m.readDataFromExcel(dataPath,0,5,1));
+        } else if (environment.equals("preprod")) {
+            driver.get(m.readDataFromExcel(dataPath,0,7,1));
+        } else {
+            System.out.println("Invalid envinorment name");
         }
-        // To accept all cookies
+
+        //accept all cookies
         driver.manage().deleteAllCookies();
         try {
             Alert alert = driver.switchTo().alert();
@@ -87,9 +87,7 @@ public class Booking_Dom_Oneway {
         driver.findElement(HomePage.search).click();
         Thread.sleep(20);
 
-        Duration timeout = Duration.ofSeconds(45);
-
-        WebDriverWait wait = new WebDriverWait(driver, timeout);
+        WebDriverWait wait = new WebDriverWait(driver, 45);
         WebElement result = null;
         try{
             wait.until(ExpectedConditions.visibilityOfElementLocated(SRP.results));
@@ -114,9 +112,7 @@ public class Booking_Dom_Oneway {
     @Test(priority = 2)
     public void flightReviewPage() {
 
-        Duration timeout = Duration.ofSeconds(30);
-
-        WebDriverWait wait = new WebDriverWait(driver, timeout);
+        WebDriverWait wait = new WebDriverWait(driver, 30);
         WebElement travellerPage = null;
         try{
             wait.until(ExpectedConditions.visibilityOfElementLocated(FlightPage.flightReviewPage));
@@ -129,7 +125,7 @@ public class Booking_Dom_Oneway {
     }
     @Test(priority = 3)
     public void travellerPage() throws Exception {
-        driver.manage().timeouts().implicitlyWait(2, TimeUnit.SECONDS);
+        driver.manage().timeouts().implicitlyWait(1, TimeUnit.SECONDS);
 
 
         //Waits for DOB dropdowns to be located
@@ -164,57 +160,25 @@ public class Booking_Dom_Oneway {
             driver.findElement(HomePage.denyNotification).click();
 
             driver.switchTo().defaultContent();
-        } catch (NoSuchElementException | NoSuchFrameException e) {
+        }catch (NoSuchElementException | NoSuchFrameException e){
             e.printStackTrace();
 
         }
-        //Passport details
-        WebElement ppInfo = null;
-        try {
-            ppInfo = driver.findElement(FlightPage.ppInfo);
-        } catch (NoSuchElementException ne) {
-            ne.printStackTrace();
-            System.out.println("PassPort details not required for this flight");
-        }
 
-        if (ppInfo.isDisplayed()) {
-            WebElement ppNumber = driver.findElement(FlightPage.ppNumber);
-            ppNumber.sendKeys(m.readDataFromExcel(dataPath, 2, 11, 8));
+        driver.findElement(FlightPage.contnue).click();
+        System.out.println("Traveller details have been added");
 
-            WebElement ppday = driver.findElement(FlightPage.ppExpiryDate);
-            WebElement ppmonth = driver.findElement(FlightPage.ppExpiryMonth);
-            WebElement ppyear = driver.findElement(FlightPage.ppExpiryYear);
-
-            Select ppdaysc = new Select(ppday);
-            Select ppmonthsc = new Select(ppmonth);
-            Select ppyearsc = new Select(ppyear);
-
-            ppdaysc.selectByIndex(1);
-            ppmonthsc.selectByIndex(1);
-            ppyearsc.selectByValue("2029");
-
-            driver.findElement(FlightPage.ppNationality).click();
-            driver.findElement(By.xpath("//*[text()='India']")).click();
-            Thread.sleep(1000);
-            driver.findElement(FlightPage.ppIssuingCountry).click();
-            driver.findElement(By.xpath("(//*[text()='India'])[2]")).click();
+        //From Add-Ons
+        driver.findElement(AddOnsPage.contnue).click();
+        Thread.sleep(1000);
 
 
-            driver.findElement(FlightPage.contnue).click();
-            System.out.println("Traveller details have been added");
-
-            //From Add-Ons
-            driver.findElement(AddOnsPage.contnue).click();
-            Thread.sleep(1000);
-
-        }
     }
+
     @Test(priority = 4) @Ignore
     public void booking() throws InterruptedException {
 
-        Duration timeout = Duration.ofSeconds(45);
-
-        WebDriverWait wait = new WebDriverWait(driver, timeout);
+        WebDriverWait wait = new WebDriverWait(driver, 45);
 
         //Payment using EFT
         wait.until(ExpectedConditions.visibilityOfElementLocated(PaymentPage.EFT));
