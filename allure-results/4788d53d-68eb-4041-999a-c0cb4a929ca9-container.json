@@ -1,0 +1,1 @@
+{"uuid":"4788d53d-68eb-4041-999a-c0cb4a929ca9","name":"test.Search.Oneway.close","children":["cc2a0177-15c2-449a-be22-95bc94ead6ea"],"description":"","befores":[],"afters":[{"name":"close","status":"broken","stage":"finished","description":"","steps":[],"attachments":[],"parameters":[],"start":1709064356751,"stop":1709064356751}],"start":1709064356751,"stop":1709064356751}

@@ -1,0 +1,1 @@
+{"uuid":"4f5725c9-e54f-4732-8f3b-21d2815bea1c","name":"test.FlightDetails.Oneway.close","children":["0b8b772c-0179-41ea-9720-de248dc6ac93"],"description":"","befores":[],"afters":[{"name":"close","status":"passed","stage":"finished","description":"","steps":[],"attachments":[],"parameters":[],"start":1708847375015,"stop":1708847375301}],"start":1708847375015,"stop":1708847375301}

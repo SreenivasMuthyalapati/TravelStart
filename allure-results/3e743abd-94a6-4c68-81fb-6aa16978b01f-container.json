@@ -1,0 +1,1 @@
+{"uuid":"3e743abd-94a6-4c68-81fb-6aa16978b01f","name":"test.TsPlusSubscription.close","children":["0c9e816e-46c4-43cb-96b1-dfbbb06179d2"],"description":"","befores":[],"afters":[{"name":"close","status":"broken","stage":"finished","description":"","steps":[],"attachments":[],"parameters":[],"start":1707506977188,"stop":1707506977188}],"start":1707506977188,"stop":1707506977189}
