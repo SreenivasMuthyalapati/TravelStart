@@ -1,4 +1,4 @@
-package test.BookingFlow;
+package test.BookingFlow_ZA;
 
 import org.openqa.selenium.*;
 import org.openqa.selenium.chrome.ChromeDriver;
@@ -6,12 +6,12 @@ import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.Select;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.Assert;
+import org.testng.ITestResult;
 import org.testng.annotations.*;
 import pageObjects.*;
 
 import java.io.IOException;
 import java.time.Duration;
-import java.util.concurrent.TimeUnit;
 
 public class Booking_Dom_Return {
 
@@ -55,8 +55,13 @@ public class Booking_Dom_Return {
             e.printStackTrace();
         }
     }
+
     @AfterMethod
-    public void close(){
+    public void close(ITestResult result){
+        if (result.getStatus() == ITestResult.FAILURE) {
+            // If test fails, print the correlation ID
+            System.out.println("Test Failed! Correlation ID: " + m.getCID(driver));
+        }
         driver.quit();
     }
 
@@ -99,6 +104,15 @@ public class Booking_Dom_Return {
             result = driver.findElement(SRP.results);
         } catch (NoSuchElementException e){
             System.out.println("Booking Failed");
+            if (result.isDisplayed()==false){
+                m.takeScreenshot(driver,Paths.screenshotFolder);
+                m.getConsole(driver);
+            }
+        }catch (TimeoutException e){
+            if (result.isDisplayed()==false){
+                m.takeScreenshot(driver,Paths.screenshotFolder);
+                m.getConsole(driver);
+            }
         }
         Assert.assertTrue(result.isDisplayed(),"b_Search result loaded");
 
@@ -117,6 +131,15 @@ public class Booking_Dom_Return {
             travellerPage = driver.findElement(FlightPage.flightReviewPage);
         } catch (NoSuchElementException e){
             System.out.println("Traveller page not loaded");
+            if (travellerPage.isDisplayed()==false){
+                m.takeScreenshot(driver,Paths.screenshotFolder);
+                m.getConsole(driver);
+            }
+        }catch (TimeoutException e){
+            if (travellerPage.isDisplayed()==false){
+                m.takeScreenshot(driver,Paths.screenshotFolder);
+                m.getConsole(driver);
+            }
         }
         Assert.assertTrue(travellerPage.isDisplayed(),"Traveller page not loaded");
 
@@ -153,13 +176,17 @@ public class Booking_Dom_Return {
         }
 
         driver.findElement(FlightPage.lastName).sendKeys(lastname);
+
+
+        //Date of birth
         Select daysc = new Select(day);
         String yearr = m.readDataFromExcel(dataPath, 2, 11, 7);
-        daysc.selectByIndex(4);
+        String yearOfBirth = m.doubleToString(yearr);
+        daysc.selectByIndex(m.stringToInt(m.readDataFromExcel(dataPath, 2, 11, 5)));
         Select monthsc = new Select(month);
-        monthsc.selectByIndex(6);
+        monthsc.selectByIndex(m.stringToInt(m.readDataFromExcel(dataPath, 2, 11, 6)));
         Select yearsc = new Select(year);
-        yearsc.selectByValue("1999");
+        yearsc.selectByValue(yearOfBirth);
 
         //Handling notification
         try {
@@ -183,23 +210,32 @@ public class Booking_Dom_Return {
         wait.until(ExpectedConditions.visibilityOfElementLocated(PaymentPage.EFT));
         driver.findElement(PaymentPage.EFT).click();
         driver.findElement(PaymentPage.nedBank).click();
-        driver.findElement(PaymentPage.payNow).click();
+       // driver.findElement(PaymentPage.payNow).click();
         Thread.sleep(10000);
 
 
         WebElement refNmbr = null;
-        try{
+        try {
             wait.until(ExpectedConditions.visibilityOfElementLocated(BookingConfirmationPage.refNumber));
             refNmbr = driver.findElement(BookingConfirmationPage.refNumber);
             String refNumber = refNmbr.getText();
             System.out.println(refNumber);
-        } catch (NoSuchElementException e){
-            System.out.println("Booking Failed");
+        } catch (NoSuchElementException e) {
+            e.printStackTrace();
+        } catch (TimeoutException te) {
+            te.printStackTrace();
+
         }
-        Assert.assertTrue(refNmbr.isDisplayed(),"Booking not completed");
+
+        if (refNmbr != null) {
+            System.out.println("Booking success");
+        } else {
+            m.takeScreenshot(driver, Paths.screenshotFolder);
+            m.getConsole(driver);
+        }
+
+        Assert.assertTrue(refNmbr.isDisplayed(), "Booking not completed");
+
     }
 
-
-
 }
-

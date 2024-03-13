@@ -64,10 +64,7 @@ public class ReturnInt {
     @DataProvider(name = "cityData")
     public Object[][] getCityData() throws IOException {
         return new Object[][] {
-                //Domestic Routes
-                {m.readDataFromExcel(dataPath,1,7,0), m.readDataFromExcel(dataPath,1,7,1)},
-                {m.readDataFromExcel(dataPath,1,8,0), m.readDataFromExcel(dataPath,1,8,1)},
-                {m.readDataFromExcel(dataPath,1,9,0), m.readDataFromExcel(dataPath,1,9,1)},
+
 
                 // International Routes :
                 {m.readDataFromExcel(dataPath,1,2,0), m.readDataFromExcel(dataPath,1,2,1)},

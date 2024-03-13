@@ -1,4 +1,4 @@
-package test.BookingFlow;
+package test.BookingFlow_ZA;
 
 import org.openqa.selenium.*;
 import org.openqa.selenium.chrome.ChromeDriver;
@@ -6,13 +6,14 @@ import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.Select;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.Assert;
+import org.testng.ITestResult;
 import org.testng.annotations.*;
+import org.testng.asserts.SoftAssert;
 import pageObjects.*;
 
 import java.io.IOException;
-import java.util.concurrent.TimeUnit;
 
-public class Booking_Dom_Oneway {
+public class Booking_Oneway {
 
     static WebDriver driver;
     static testmethods.Method m = new testmethods.Method();
@@ -52,13 +53,19 @@ public class Booking_Dom_Oneway {
         }
     }
     @AfterMethod
-    public void close(){
+    public void close(ITestResult result){
+        if (result.getStatus() == result.FAILURE) {
+            // If test fails, print the correlation ID
+            System.out.println("Test Failed! Correlation ID: " + m.getCID(driver));
+        }
         driver.quit();
     }
-
     @DataProvider(name = "cityData")
     public Object[][] getCityData() throws IOException {
         return new Object[][] {
+                {m.readDataFromExcel(dataPath,1,7,0), m.readDataFromExcel(dataPath,1,7,1)},
+                {m.readDataFromExcel(dataPath,1,8,0), m.readDataFromExcel(dataPath,1,8,1)},
+                {m.readDataFromExcel(dataPath,1,9,0), m.readDataFromExcel(dataPath,1,9,1)},
                 {m.readDataFromExcel(dataPath,1,7,0), m.readDataFromExcel(dataPath,1,7,1)},
                 {m.readDataFromExcel(dataPath,1,8,0), m.readDataFromExcel(dataPath,1,8,1)},
                 {m.readDataFromExcel(dataPath,1,9,0), m.readDataFromExcel(dataPath,1,9,1)}
@@ -67,6 +74,8 @@ public class Booking_Dom_Oneway {
 
     @Test(dataProvider = "cityData", priority = 1)
     public void search(String departureCity, String arrivalCity) throws Exception {
+        SoftAssert assrt = new SoftAssert();
+        Thread.sleep(2000);
         driver.findElement(HomePage.oneWay).click();
         Thread.sleep(1000);
         driver.findElement(HomePage.departureCity).sendKeys(departureCity);
@@ -92,6 +101,15 @@ public class Booking_Dom_Oneway {
             result = driver.findElement(SRP.results);
         } catch (NoSuchElementException e){
             System.out.println("Booking Failed");
+            if (result.isDisplayed()==false){
+                m.takeScreenshot(driver,Paths.screenshotFolder);
+                m.getConsole(driver);
+            }
+        }catch (TimeoutException e){
+            if (result.isDisplayed()==false){
+                m.takeScreenshot(driver,Paths.screenshotFolder);
+                m.getConsole(driver);
+            }
         }
         Assert.assertTrue(result.isDisplayed(),"Search result not loaded");
 
@@ -104,7 +122,21 @@ public class Booking_Dom_Oneway {
             travellerPage = driver.findElement(FlightPage.flightReviewPage);
         } catch (NoSuchElementException e){
             System.out.println("Traveller page not loaded");
+            if (travellerPage.isDisplayed()==false){
+                m.takeScreenshot(driver,Paths.screenshotFolder);
+                m.getConsole(driver);
+            }
+        }catch (TimeoutException e){
+            if (travellerPage.isDisplayed()==false){
+                m.takeScreenshot(driver,Paths.screenshotFolder);
+                m.getConsole(driver);
+            }
         }
+        if (travellerPage.isDisplayed()==false){
+            m.takeScreenshot(driver,Paths.screenshotFolder);
+            m.getConsole(driver);
+        }
+
         Assert.assertTrue(travellerPage.isDisplayed(),"Traveller page not loaded");
 
         boolean isFAFlight;
@@ -140,13 +172,50 @@ public class Booking_Dom_Oneway {
         }
 
         driver.findElement(FlightPage.lastName).sendKeys(lastname);
+
+        //Date of birth
         Select daysc = new Select(day);
         String yearr = m.readDataFromExcel(dataPath, 2, 11, 7);
-        daysc.selectByIndex(4);
+        String yearOfBirth = m.doubleToString(yearr);
+        daysc.selectByIndex(m.stringToInt(m.readDataFromExcel(dataPath, 2, 11, 5)));
         Select monthsc = new Select(month);
-        monthsc.selectByIndex(6);
+        monthsc.selectByIndex(m.stringToInt(m.readDataFromExcel(dataPath, 2, 11, 6)));
         Select yearsc = new Select(year);
-        yearsc.selectByValue("1999");
+        yearsc.selectByValue(yearOfBirth);
+
+        //Passport details
+        WebElement ppInfo = null;
+        try{
+            ppInfo = driver.findElement(FlightPage.ppInfo);
+            ppInfo = driver.findElement(FlightPage.ppInfo);
+        }catch (NoSuchElementException ne){
+            ne.printStackTrace();
+            System.out.println("PassPort details not required for this flight");
+        }
+        try{
+            if(ppInfo.isDisplayed()){
+                WebElement  ppNumber = driver.findElement(FlightPage.ppNumber);
+                ppNumber.sendKeys(m.readDataFromExcel(dataPath,2,11,8));
+                WebElement ppday = driver.findElement(FlightPage.ppExpiryDate);
+                WebElement ppmonth = driver.findElement(FlightPage.ppExpiryMonth);
+                WebElement ppyear = driver.findElement(FlightPage.ppExpiryYear);
+
+                Select ppdaysc = new Select(ppday);
+                ppdaysc.selectByIndex(1);
+                Select ppmonthsc = new Select(ppmonth);
+                ppmonthsc.selectByIndex(1);
+                Select ppyearsc = new Select(ppyear);
+                ppyearsc.selectByValue("2029");
+
+                driver.findElement(FlightPage.ppNationality).click();
+                driver.findElement(FlightPage.ppnationalityIndia).click();
+                Thread.sleep(1000);
+                driver.findElement(FlightPage.ppIssuingCountry).click();
+                driver.findElement(FlightPage.ppInsuingCountryIndia).click();
+
+            }} catch (Exception e) {
+            e.printStackTrace();
+        }
 
         //Handling notification
         try {
@@ -172,22 +241,28 @@ public class Booking_Dom_Oneway {
         driver.findElement(PaymentPage.EFT).click();
         driver.findElement(PaymentPage.nedBank).click();
        // driver.findElement(PaymentPage.payNow).click();
-        Thread.sleep(10000);
+        Thread.sleep(1000);
 
 
         WebElement refNmbr = null;
-        try{
+        try {
             wait.until(ExpectedConditions.visibilityOfElementLocated(BookingConfirmationPage.refNumber));
             refNmbr = driver.findElement(BookingConfirmationPage.refNumber);
             String refNumber = refNmbr.getText();
             System.out.println(refNumber);
-        } catch (NoSuchElementException e){
-            System.out.println("Booking Failed");
+        } catch (NoSuchElementException | TimeoutException e) {
+            e.printStackTrace();
         }
-        Assert.assertTrue(refNmbr.isDisplayed(),"Booking not completed");
 
+        if (refNmbr != null) {
+            System.out.println("Booking success");
+        } else {
+            m.takeScreenshot(driver, Paths.screenshotFolder);
+            m.getConsole(driver);
+        }
+
+        Assert.assertTrue(refNmbr.isDisplayed(), "Booking not completed");
 
     }
 
 }
-

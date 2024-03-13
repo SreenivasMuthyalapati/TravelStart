@@ -27,6 +27,7 @@ public class SRP {
     public static By depTimeReturn = By.xpath("(//div[@class='time'])[3]");
     public static By arrTimeReturn = By.xpath("(//div[@class='time'])[4]");
     public static By allAirlines = By.xpath("//span[@class='airl_name']");
+    public static By totalFareBundled = By.xpath("//div[@class='fare']");
 
 
 

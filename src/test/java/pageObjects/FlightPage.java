@@ -40,6 +40,8 @@ public class FlightPage {
     public static By arrTimeOnward = By.xpath("(//label[@class='time_labl'])[2]");
     public static By depTimeReturn = By.xpath("(//label[@class='time_labl'])[3]");
     public static By arrTimeReturn = By.xpath("(//label[@class='time_labl'])[4]");
+    public static By ppnationalityIndia = By.xpath("//*[text()='India']");
+    public static By ppInsuingCountryIndia = By.xpath("(//*[text()='India'])[2]");
 
 
 

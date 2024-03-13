@@ -9,6 +9,10 @@ import org.openqa.selenium.OutputType;
 import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.logging.LogEntries;
+import org.openqa.selenium.logging.LogEntry;
+import org.openqa.selenium.logging.LogType;
+import org.openqa.selenium.remote.RemoteWebDriver;
 
 import java.io.*;
 import java.util.Properties;
@@ -20,6 +24,9 @@ import java.util.concurrent.TimeUnit;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+
+import static io.restassured.RestAssured.given;
+
 public class Method {
 	public static WebDriver driver;
 	public static Properties prop = new Properties();
@@ -127,6 +134,44 @@ public class Method {
 		return UUID.randomUUID().toString();
 	}
 
+	public String doubleToString(String number) {
+
+		// Convert String to double
+		double doubleValue = Double.parseDouble(number);
+
+		// Convert double to int
+		int intValue = (int) doubleValue;
+
+		// Convert int to String
+		String stringValue = String.valueOf(intValue);
+
+		return stringValue;
+	}
+
+	public String getCID(WebDriver driver){
+		String correlationId = ((RemoteWebDriver) driver).getSessionId().toString();
+        return correlationId;
+    }
+
+	public String getConsole(WebDriver driver){
+		LogEntries logEntries = driver.manage().logs().get(LogType.BROWSER);
+		String logs = null;
+
+		// Check for errors in console logs
+		for (LogEntry entry : logEntries) {
+			if (entry.getLevel().toString().equalsIgnoreCase("SEVERE")) {
+				logs = ("Error found in console: " + entry.getMessage());
+			}
+		}
+        return logs;
+    }
+
+	public int stringToInt(String str){
+
+		double doubleNumber = Double.parseDouble(str); // Convert string to double
+		int intNumber = (int) doubleNumber; // Convert double to int
+        return intNumber;
+    }
 
 
 

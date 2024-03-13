@@ -24,6 +24,7 @@ public class Oneway {
     static String dataPath = Paths.dataPath;
     static String environment;
 
+
     static {
         try {
             environment = m.readDataFromExcel(dataPath,0,0,1);
@@ -61,7 +62,7 @@ public class Oneway {
     @DataProvider(name = "cityData")
     public Object[][] getCityData() throws IOException {
         return new Object[][] {
-                //Domestic Routes
+               // Domestic Routes
                 {m.readDataFromExcel(dataPath,1,7,0), m.readDataFromExcel(dataPath,1,7,1)},
                 {m.readDataFromExcel(dataPath,1,8,0), m.readDataFromExcel(dataPath,1,8,1)},
                 {m.readDataFromExcel(dataPath,1,9,0), m.readDataFromExcel(dataPath,1,9,1)},
@@ -169,7 +170,7 @@ public class Oneway {
 
        assrt.assertTrue(isPriceMatching, "Price mismatch between SRP and flight details page. SRP price is: "+ SRPPrice+" but baseFare in flight details page is: "+ baseFare );
 
-        if(isPriceMatching== false) {
+        if(!isPriceMatching) {
             m.takeScreenshot(driver, Paths.screenshotFolder);
         }
 
@@ -263,7 +264,11 @@ public class Oneway {
         try{
             if(ppInfo.isDisplayed()){
                 WebElement  ppNumber = driver.findElement(FlightPage.ppNumber);
-                ppNumber.sendKeys(m.readDataFromExcel(dataPath,2,11,8));
+                double ppnumberdouble = Double.parseDouble(m.readDataFromExcel(dataPath,2,11,8));
+                // Convert double to int
+                int ppnumberInt = (int) ppnumberdouble;
+                String ppnumber = Integer.toString(ppnumberInt);
+                ppNumber.sendKeys(ppnumber);
                 WebElement ppday = driver.findElement(FlightPage.ppExpiryDate);
                 WebElement ppmonth = driver.findElement(FlightPage.ppExpiryMonth);
                 WebElement ppyear = driver.findElement(FlightPage.ppExpiryYear);
@@ -292,7 +297,7 @@ public class Oneway {
             WebElement addonsPage = driver.findElement(AddOnsPage.AddOns);
             try{
                 assrt.assertTrue(addonsPage.isDisplayed(), "Traveller details is not added");
-                if (addonsPage.isDisplayed()==false){
+                if (!addonsPage.isDisplayed()){
                     m.takeScreenshot(driver, Paths.screenshotFolder);
                 }
             } catch (NullPointerException ne){
@@ -301,6 +306,7 @@ public class Oneway {
         } catch (NoSuchElementException e){
             e.printStackTrace();
         }
+
 
         //To complete Test
         assrt.assertAll("Test Completed");

@@ -2,13 +2,11 @@
 <suite name="Test">
     <test name="BookingTest">
         <classes>
-            <class name="test.BookingFlow.Booking_Dom_Oneway" />
-            <class name="test.BookingFlow.Booking_Dom_Return" />
-            <class name="test.BookingFlow.Booking_Int_Oneway" />
-            <class name="test.BookingFlow.Booking_Int_Return" />
+            <class name="test.BookingFlow_ZA.Booking_Oneway" />
+            <class name="test.BookingFlow_ZA.Booking_Dom_Return" />
+            <class name="test.BookingFlow_ZA.Booking_Int_Return" />
+            <class name="test.BookingFlow_NG.Booking_Oneway" />
+            <class name="test.BookingFlow_NG.Booking_Return" />
         </classes>
     </test>
-    <listeners>
-        <listener class-name="listeners.CustomTestNGReporter"/>
-    </listeners>
 </suite>
