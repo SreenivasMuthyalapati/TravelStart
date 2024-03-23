@@ -1,4 +1,4 @@
-package test.BookingFlow_ZA;
+package test.BookingFlow_RouteWise.BookingFlow_NG;
 
 import org.openqa.selenium.*;
 import org.openqa.selenium.chrome.ChromeDriver;
@@ -7,16 +7,19 @@ import org.openqa.selenium.support.ui.Select;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.Assert;
 import org.testng.ITestResult;
-import org.testng.annotations.*;
-import org.testng.asserts.SoftAssert;
+import org.testng.annotations.AfterMethod;
+import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.DataProvider;
+import org.testng.annotations.Test;
 import pageObjects.*;
+import testmethods.Method;
 
 import java.io.IOException;
+import java.time.Duration;
 
-public class Booking_Oneway {
-
+public class Booking_Return {
     static WebDriver driver;
-    static testmethods.Method m = new testmethods.Method();
+    static Method m = new Method();
     static String dataPath = Paths.dataPath;
     static String environment;
 
@@ -34,11 +37,11 @@ public class Booking_Oneway {
         driver = new ChromeDriver();
         driver.manage().window().maximize();
         if (environment.equals("live")){
-            driver.get(m.readDataFromExcel(dataPath,0,3,1));
+            driver.get(m.readDataFromExcel(dataPath,0,4,1));
         } else if (environment.equals("beta")) {
-            driver.get(m.readDataFromExcel(dataPath,0,5,1));
+            driver.get(m.readDataFromExcel(dataPath,0,6,1));
         } else if (environment.equals("preprod")) {
-            driver.get(m.readDataFromExcel(dataPath,0,7,1));
+            driver.get(m.readDataFromExcel(dataPath,0,8,1));
         } else {
             System.out.println("Invalid envinorment name");
         }
@@ -52,31 +55,29 @@ public class Booking_Oneway {
             e.printStackTrace();
         }
     }
+
     @AfterMethod
     public void close(ITestResult result){
-        if (result.getStatus() == result.FAILURE) {
-            // If test fails, print the correlation ID
-            System.out.println("Test Failed! Correlation ID: " + m.getCID(driver));
-        }
         driver.quit();
+        System.out.println(result);
     }
+
     @DataProvider(name = "cityData")
     public Object[][] getCityData() throws IOException {
         return new Object[][] {
-                {m.readDataFromExcel(dataPath,1,7,0), m.readDataFromExcel(dataPath,1,7,1)},
-                {m.readDataFromExcel(dataPath,1,8,0), m.readDataFromExcel(dataPath,1,8,1)},
-                {m.readDataFromExcel(dataPath,1,9,0), m.readDataFromExcel(dataPath,1,9,1)},
-                {m.readDataFromExcel(dataPath,1,7,0), m.readDataFromExcel(dataPath,1,7,1)},
-                {m.readDataFromExcel(dataPath,1,8,0), m.readDataFromExcel(dataPath,1,8,1)},
-                {m.readDataFromExcel(dataPath,1,9,0), m.readDataFromExcel(dataPath,1,9,1)}
+
+                {m.readDataFromExcel(dataPath,1,1,0), m.readDataFromExcel(dataPath,1,1,1)},
+                {m.readDataFromExcel(dataPath,1,2,0), m.readDataFromExcel(dataPath,1,2,1)},
+                {m.readDataFromExcel(dataPath,1,3,0), m.readDataFromExcel(dataPath,1,3,1)},
+                {m.readDataFromExcel(dataPath,1,4,0), m.readDataFromExcel(dataPath,1,4,1)},
+                {m.readDataFromExcel(dataPath,1,5,0), m.readDataFromExcel(dataPath,1,5,1)},
+                {m.readDataFromExcel(dataPath,1,6,0), m.readDataFromExcel(dataPath,1,6,1)}
         };
     }
 
     @Test(dataProvider = "cityData", priority = 1)
     public void search(String departureCity, String arrivalCity) throws Exception {
-        SoftAssert assrt = new SoftAssert();
-        Thread.sleep(2000);
-        driver.findElement(HomePage.oneWay).click();
+
         Thread.sleep(1000);
         driver.findElement(HomePage.departureCity).sendKeys(departureCity);
         Thread.sleep(2000);
@@ -91,16 +92,19 @@ public class Booking_Oneway {
             driver.findElement(HomePage.nextMonth).click();
         }
         driver.findElement(HomePage.day).click();
+        driver.findElement(HomePage.day2).click();
 
         driver.findElement(HomePage.search).click();
         Thread.sleep(20);
+
+        Duration time= Duration.ofSeconds(45);
         WebDriverWait wait = new WebDriverWait(driver, 45);
         WebElement result = null;
         try{
             wait.until(ExpectedConditions.visibilityOfElementLocated(SRP.results));
             result = driver.findElement(SRP.results);
         } catch (NoSuchElementException e){
-            System.out.println("Booking Failed");
+            System.out.println("Search result not loaded");
             if (result.isDisplayed()==false){
                 m.takeScreenshot(driver,Paths.screenshotFolder);
                 m.getConsole(driver);
@@ -115,6 +119,12 @@ public class Booking_Oneway {
 
         driver.findElement(SRP.book).click();
         Thread.sleep(1000);
+        try {
+            driver.findElement(SRP.airPortChange).click();
+        }catch (NoSuchElementException ne){
+            ne.printStackTrace();
+        }
+        Thread.sleep(2000);
 
         WebElement travellerPage = null;
         try{
@@ -132,70 +142,56 @@ public class Booking_Oneway {
                 m.getConsole(driver);
             }
         }
-        if (travellerPage.isDisplayed()==false){
-            m.takeScreenshot(driver,Paths.screenshotFolder);
-            m.getConsole(driver);
-        }
-
         Assert.assertTrue(travellerPage.isDisplayed(),"Traveller page not loaded");
 
-        boolean isFAFlight;
 
-        String airline = driver.findElement(FlightPage.airline1).getText();
-        if(airline.contains("FlySafair")){
-            isFAFlight = true;
-        }else{
-            isFAFlight = false;
-        }
+            //Waits for DOB dropdowns to be located
 
-        WebElement day = driver.findElement(FlightPage.dayDOB);
-        WebElement month = driver.findElement(FlightPage.monthDOB);
-        WebElement year = driver.findElement(FlightPage.yearDOB);
+            WebElement day = driver.findElement(FlightPage.dayDOB);
+            WebElement month = driver.findElement(FlightPage.monthDOB);
+            WebElement year = driver.findElement(FlightPage.yearDOB);
 
         //Sending contact details in booking
         driver.findElement(FlightPage.mobileNo).clear();
-        driver.findElement(FlightPage.mobileNo).sendKeys(m.readDataFromExcel(dataPath, 2, 3, 1));
-        driver.findElement(FlightPage.email).sendKeys(m.readDataFromExcel(dataPath, 2, 4, 1));
+        driver.findElement(FlightPage.mobileNo).sendKeys(m.readDataFromExcel(dataPath,2,3,14));
+        driver.findElement(FlightPage.email).sendKeys(m.readDataFromExcel(dataPath,2,3,15));
         driver.findElement(FlightPage.whatsApp).click();
-        Thread.sleep(1000);
-        driver.findElement(FlightPage.whatsApp).click();
+        Thread.sleep(500);
 
         //Adding PAX details
         driver.findElement(FlightPage.mr).click();
-        driver.findElement(FlightPage.firstName).sendKeys(m.readDataFromExcel(dataPath, 2, 11, 2));
+        driver.findElement(FlightPage.firstName).sendKeys(m.readDataFromExcel(dataPath,2,3,2));
 
         String lastname;
-        if (isFAFlight){
-            lastname = "Test";
-        } else{
-            lastname = m.readDataFromExcel(dataPath, 2, 11, 4);
-        }
+            lastname = m.readDataFromExcel(dataPath,2,3,4);
+
 
         driver.findElement(FlightPage.lastName).sendKeys(lastname);
 
         //Date of birth
         Select daysc = new Select(day);
-        String yearr = m.readDataFromExcel(dataPath, 2, 11, 7);
+        String yearr = m.readDataFromExcel(dataPath, 2, 3, 7);
         String yearOfBirth = m.doubleToString(yearr);
-        daysc.selectByIndex(m.stringToInt(m.readDataFromExcel(dataPath, 2, 11, 5)));
+        daysc.selectByIndex(m.stringToInt(m.readDataFromExcel(dataPath, 2, 3, 5)));
         Select monthsc = new Select(month);
-        monthsc.selectByIndex(m.stringToInt(m.readDataFromExcel(dataPath, 2, 11, 6)));
+        monthsc.selectByIndex(m.stringToInt(m.readDataFromExcel(dataPath, 2, 3, 6)));
         Select yearsc = new Select(year);
         yearsc.selectByValue(yearOfBirth);
 
         //Passport details
         WebElement ppInfo = null;
-        try{
+        try {
             ppInfo = driver.findElement(FlightPage.ppInfo);
             ppInfo = driver.findElement(FlightPage.ppInfo);
-        }catch (NoSuchElementException ne){
+        } catch (NoSuchElementException ne) {
             ne.printStackTrace();
             System.out.println("PassPort details not required for this flight");
         }
-        try{
-            if(ppInfo.isDisplayed()){
-                WebElement  ppNumber = driver.findElement(FlightPage.ppNumber);
-                ppNumber.sendKeys(m.readDataFromExcel(dataPath,2,11,8));
+        try {
+            if (ppInfo.isDisplayed()) {
+                WebElement ppNumber = driver.findElement(FlightPage.ppNumber);
+                String ppnumb = m.readDataFromExcel(dataPath, 2, 3, 8);
+                ppNumber.sendKeys(m.doubleToString(ppnumb));
                 WebElement ppday = driver.findElement(FlightPage.ppExpiryDate);
                 WebElement ppmonth = driver.findElement(FlightPage.ppExpiryMonth);
                 WebElement ppyear = driver.findElement(FlightPage.ppExpiryYear);
@@ -213,7 +209,8 @@ public class Booking_Oneway {
                 driver.findElement(FlightPage.ppIssuingCountry).click();
                 driver.findElement(FlightPage.ppInsuingCountryIndia).click();
 
-            }} catch (Exception e) {
+            }
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
@@ -223,26 +220,27 @@ public class Booking_Oneway {
             driver.findElement(HomePage.denyNotification).click();
 
             driver.switchTo().defaultContent();
-        }catch (NoSuchElementException | NoSuchFrameException e){
+        } catch (NoSuchElementException e) {
             e.printStackTrace();
 
+        } catch (NoSuchFrameException f){
+            f.printStackTrace();
         }
 
         driver.findElement(FlightPage.contnue).click();
         System.out.println("Traveller details have been added");
 
-        //From Add-Ons
-        driver.findElement(AddOnsPage.contnue).click();
-        Thread.sleep(1000);
+            //From Add-Ons
+        driver.findElement(AddOnsPage.checkBoxNG).click();
+            driver.findElement(AddOnsPage.contnue).click();
+            Thread.sleep(1000);
 
 
         //Payment using EFT
         wait.until(ExpectedConditions.visibilityOfElementLocated(PaymentPage.EFT));
         driver.findElement(PaymentPage.EFT).click();
-        driver.findElement(PaymentPage.nedBank).click();
-       // driver.findElement(PaymentPage.payNow).click();
-        Thread.sleep(1000);
-
+        //driver.findElement(PaymentPage.reserve).click();
+        Thread.sleep(10000);
 
         WebElement refNmbr = null;
         try {
@@ -250,8 +248,11 @@ public class Booking_Oneway {
             refNmbr = driver.findElement(BookingConfirmationPage.refNumber);
             String refNumber = refNmbr.getText();
             System.out.println(refNumber);
-        } catch (NoSuchElementException | TimeoutException e) {
+        } catch (NoSuchElementException e) {
             e.printStackTrace();
+        } catch (TimeoutException te) {
+            te.printStackTrace();
+
         }
 
         if (refNmbr != null) {

@@ -4,7 +4,9 @@ import io.github.bonigarcia.wdm.WebDriverManager;
 import org.apache.commons.compress.archivers.dump.InvalidFormatException;
 import org.apache.commons.io.FileUtils;
 import org.apache.poi.EncryptedDocumentException;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.openqa.selenium.OutputType;
 import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.WebDriver;
@@ -74,12 +76,12 @@ public class Method {
 		}
 	}
 
-	public String[] readExcelColumn(String filePath, int sheetIndex, int col) {
+	public String[] readExcelColumn(String filePath, String sheett, int col) {
 		String[] columnValues = null;
 		try (FileInputStream file = new FileInputStream(new File(filePath));
 			 Workbook workbook = WorkbookFactory.create(file)) {
 
-			Sheet sheet = workbook.getSheetAt(sheetIndex);
+			Sheet sheet = workbook.getSheet(sheett);
 
 			int rows = sheet.getPhysicalNumberOfRows();
 			columnValues = new String[rows];
@@ -172,6 +174,28 @@ public class Method {
 		int intNumber = (int) doubleNumber; // Convert double to int
         return intNumber;
     }
+
+	public int getRowCount(String filePath, String sheetName) {
+		int rowCount = 0;
+		try {
+			FileInputStream fis = new FileInputStream(filePath);
+			Workbook workbook;
+			if (filePath.toLowerCase().endsWith(".xlsx")) {
+				workbook = new XSSFWorkbook(fis); // For XLSX (Excel 2007+) format
+			} else if (filePath.toLowerCase().endsWith(".xls")) {
+				workbook = new HSSFWorkbook(fis); // For XLS (Excel 97-2003) format
+			} else {
+				throw new IllegalArgumentException("Unsupported file format");
+			}
+			Sheet sheet = workbook.getSheet(sheetName);
+			rowCount = sheet.getPhysicalNumberOfRows();
+			workbook.close();
+			fis.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return rowCount;
+	}
 
 
 

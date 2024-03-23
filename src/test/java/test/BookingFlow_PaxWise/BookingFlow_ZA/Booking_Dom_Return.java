@@ -1,4 +1,4 @@
-package test.BookingFlow_ZA;
+package test.BookingFlow_PaxWise.BookingFlow_ZA;
 
 import org.openqa.selenium.*;
 import org.openqa.selenium.chrome.ChromeDriver;
@@ -7,11 +7,16 @@ import org.openqa.selenium.support.ui.Select;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.Assert;
 import org.testng.ITestResult;
-import org.testng.annotations.*;
+import org.testng.annotations.AfterMethod;
+import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.DataProvider;
+import org.testng.annotations.Test;
 import pageObjects.*;
 
 import java.io.IOException;
 import java.time.Duration;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Booking_Dom_Return {
 
@@ -65,22 +70,27 @@ public class Booking_Dom_Return {
         driver.quit();
     }
 
-    @DataProvider(name = "cityData")
-    public Object[][] getCityData() throws IOException {
-        return new Object[][] {
-                {m.readDataFromExcel(dataPath,1,7,0), m.readDataFromExcel(dataPath,1,7,1)},
-                {m.readDataFromExcel(dataPath,1,8,0), m.readDataFromExcel(dataPath,1,8,1)},
-                {m.readDataFromExcel(dataPath,1,9,0), m.readDataFromExcel(dataPath,1,9,1)}
-        };
+    @DataProvider(name = "pax")
+    public Object[][] getPaxData() throws IOException {
+        List<Object[]> paxdata = new ArrayList<>();
+        int totalPaxCount = m.getRowCount(dataPath, "PAX Details")-1;
+        for (int i = 3; i < totalPaxCount; i++) { // Start from 1 if data starts from row 2
+            String mailID = m.readDataFromExcel(dataPath, 2, i, 15);
+            String mobileNo = m.readDataFromExcel(dataPath, 2, i, 14);
+            String firstName = m.readDataFromExcel(dataPath, 2, i, 2);
+            String lastName = m.readDataFromExcel(dataPath, 2, i, 4);
+            paxdata.add(new Object[]{mailID, mobileNo, firstName, lastName});
+        }
+        return paxdata.toArray(new Object[0][]);
     }
 
-    @Test(dataProvider = "cityData", priority = 1)
-    public void search(String departureCity, String arrivalCity) throws Exception {
+    @Test(dataProvider = "pax", priority = 1)
+    public void search(String mailID, String mobileNo, String firstName, String lastName) throws Exception {
         Thread.sleep(1000);
-        driver.findElement(HomePage.departureCity).sendKeys(departureCity);
+        driver.findElement(HomePage.departureCity).sendKeys(m.readDataFromExcel(dataPath,1,4,0));
         Thread.sleep(2000);
         driver.findElement(HomePage.option).click();
-        driver.findElement(HomePage.arrivalCity).sendKeys(arrivalCity);
+        driver.findElement(HomePage.arrivalCity).sendKeys(m.readDataFromExcel(dataPath,1,4,1));
 
         Thread.sleep(2000);
         driver.findElement(HomePage.option).click();

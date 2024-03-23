@@ -1,0 +1,11 @@
+<!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd">
+<suite name="MySuite" verbose="1" >
+    <test name="TCC Smoke Test">
+        <classes>
+            <class name="test.TCC.LiveTCC" />
+            <class name="test.TCC.PreprodTCC" />
+            <class name="test.TCC.BetaTCC" />
+            <class name="test.TCC.AlphaTCC" />
+        </classes>
+    </test>
+</suite>

@@ -1,4 +1,4 @@
-package test.BookingFlow_ZA;
+package test.BookingFlow_PaxWise.BookingFlow_NG;
 
 import org.openqa.selenium.*;
 import org.openqa.selenium.chrome.ChromeDriver;
@@ -7,15 +7,19 @@ import org.openqa.selenium.support.ui.Select;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.Assert;
 import org.testng.ITestResult;
-import org.testng.annotations.*;
+import org.testng.annotations.AfterMethod;
+import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.DataProvider;
+import org.testng.annotations.Test;
 import pageObjects.*;
 import testmethods.Method;
 
 import java.io.IOException;
 import java.time.Duration;
-import java.util.concurrent.TimeUnit;
+import java.util.ArrayList;
+import java.util.List;
 
-public class Booking_Int_Return {
+public class Booking_Return {
     static WebDriver driver;
     static Method m = new Method();
     static String dataPath = Paths.dataPath;
@@ -35,11 +39,11 @@ public class Booking_Int_Return {
         driver = new ChromeDriver();
         driver.manage().window().maximize();
         if (environment.equals("live")){
-            driver.get(m.readDataFromExcel(dataPath,0,3,1));
+            driver.get(m.readDataFromExcel(dataPath,0,4,1));
         } else if (environment.equals("beta")) {
-            driver.get(m.readDataFromExcel(dataPath,0,5,1));
+            driver.get(m.readDataFromExcel(dataPath,0,6,1));
         } else if (environment.equals("preprod")) {
-            driver.get(m.readDataFromExcel(dataPath,0,7,1));
+            driver.get(m.readDataFromExcel(dataPath,0,8,1));
         } else {
             System.out.println("Invalid envinorment name");
         }
@@ -60,25 +64,28 @@ public class Booking_Int_Return {
         System.out.println(result);
     }
 
-    @DataProvider(name = "cityData")
-    public Object[][] getCityData() throws IOException {
-        return new Object[][] {
-
-                // International Routes :
-                {m.readDataFromExcel(dataPath,1,2,0), m.readDataFromExcel(dataPath,1,2,1)},
-                {m.readDataFromExcel(dataPath,1,3,0), m.readDataFromExcel(dataPath,1,3,1)},
-                {m.readDataFromExcel(dataPath,1,4,0), m.readDataFromExcel(dataPath,1,4,1)}
-        };
+    @DataProvider(name = "pax")
+    public Object[][] getPaxData() throws IOException {
+        List<Object[]> paxdata = new ArrayList<>();
+        int totalPaxCount = m.getRowCount(dataPath, "PAX Details")-1;
+        for (int i = 3; i < totalPaxCount; i++) { // Start from 1 if data starts from row 2
+            String mailID = m.readDataFromExcel(dataPath, 2, i, 15);
+            String mobileNo = m.readDataFromExcel(dataPath, 2, i, 14);
+            String firstName = m.readDataFromExcel(dataPath, 2, i, 2);
+            String lastName = m.readDataFromExcel(dataPath, 2, i, 4);
+            paxdata.add(new Object[]{mailID, mobileNo, firstName, lastName});
+        }
+        return paxdata.toArray(new Object[0][]);
     }
 
-    @Test(dataProvider = "cityData", priority = 1)
-    public void search(String departureCity, String arrivalCity) throws Exception {
+    @Test(dataProvider = "pax", priority = 1)
+    public void search(String mailID, String mobileNo, String firstName, String lastName) throws Exception {
 
         Thread.sleep(1000);
-        driver.findElement(HomePage.departureCity).sendKeys(departureCity);
+        driver.findElement(HomePage.departureCity).sendKeys(m.readDataFromExcel(dataPath,1,2,0));
         Thread.sleep(2000);
         driver.findElement(HomePage.option).click();
-        driver.findElement(HomePage.arrivalCity).sendKeys(arrivalCity);
+        driver.findElement(HomePage.arrivalCity).sendKeys(m.readDataFromExcel(dataPath,1,2,1));
 
         Thread.sleep(2000);
         driver.findElement(HomePage.option).click();
@@ -161,7 +168,7 @@ public class Booking_Int_Return {
             driver.findElement(FlightPage.lastName).sendKeys(m.readDataFromExcel(dataPath, 2, 11, 4));
 
 
-        //Date of birth
+            //Date of birth
         Select daysc = new Select(day);
         String yearr = m.readDataFromExcel(dataPath, 2, 11, 7);
         String yearOfBirth = m.doubleToString(yearr);
@@ -220,6 +227,7 @@ public class Booking_Int_Return {
 
             driver.findElement(FlightPage.contnue).click();
             System.out.println("Traveller details have been added");
+            driver.findElement(AddOnsPage.checkBoxNG).click();
 
             //From Add-Ons
             driver.findElement(AddOnsPage.contnue).click();
@@ -229,9 +237,8 @@ public class Booking_Int_Return {
         //Payment using EFT
         wait.until(ExpectedConditions.visibilityOfElementLocated(PaymentPage.EFT));
         driver.findElement(PaymentPage.EFT).click();
-        driver.findElement(PaymentPage.nedBank).click();
-        //driver.findElement(PaymentPage.payNow).click();
-        Thread.sleep(2000);
+        //driver.findElement(PaymentPage.reserve).click();
+        Thread.sleep(10000);
 
         WebElement refNmbr = null;
         try {
