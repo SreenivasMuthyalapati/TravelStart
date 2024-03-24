@@ -1,4 +1,4 @@
-package test.FlightDetails;
+package test.FunctionalTesting.FlightDetails;
 
 import org.openqa.selenium.Alert;
 import org.openqa.selenium.NoSuchElementException;
@@ -29,7 +29,7 @@ public class ReturnInt {
 
     static {
         try {
-            environment = m.readDataFromExcel(dataPath,0,0,1);
+            environment = m.readDataFromExcel(dataPath,"URL's",0,1);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -41,9 +41,9 @@ public class ReturnInt {
         driver = new ChromeDriver();
         driver.manage().window().maximize();
         switch (environment) {
-            case "live" -> driver.get(m.readDataFromExcel(dataPath, 0, 3, 1));
-            case "beta" -> driver.get(m.readDataFromExcel(dataPath, 0, 5, 1));
-            case "preprod" -> driver.get(m.readDataFromExcel(dataPath, 0, 7, 1));
+            case "live" -> driver.get(m.readDataFromExcel(dataPath, "URL's", 3, 1));
+            case "beta" -> driver.get(m.readDataFromExcel(dataPath, "URL's", 5, 1));
+            case "preprod" -> driver.get(m.readDataFromExcel(dataPath, "URL's", 7, 1));
             default -> System.out.println("Invalid envinorment name");
         }
 
@@ -67,9 +67,9 @@ public class ReturnInt {
 
 
                 // International Routes :
-                {m.readDataFromExcel(dataPath,1,2,0), m.readDataFromExcel(dataPath,1,2,1)},
-                {m.readDataFromExcel(dataPath,1,3,0), m.readDataFromExcel(dataPath,1,3,1)},
-                {m.readDataFromExcel(dataPath,1,4,0), m.readDataFromExcel(dataPath,1,4,1)}
+                {m.readDataFromExcel(dataPath,"Oneway Routes",2,0), m.readDataFromExcel(dataPath,"Oneway Routes",2,1)},
+                {m.readDataFromExcel(dataPath,"Oneway Routes",3,0), m.readDataFromExcel(dataPath,"Oneway Routes",3,1)},
+                {m.readDataFromExcel(dataPath,"Oneway Routes",4,0), m.readDataFromExcel(dataPath,"Oneway Routes",4,1)}
         };
     }
 

@@ -15,8 +15,11 @@ import org.openqa.selenium.logging.LogEntries;
 import org.openqa.selenium.logging.LogEntry;
 import org.openqa.selenium.logging.LogType;
 import org.openqa.selenium.remote.RemoteWebDriver;
+import org.testng.SkipException;
 
 import java.io.*;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Properties;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
@@ -64,11 +67,11 @@ public class Method {
 
 	}
 
-	public String readDataFromExcel(String filePath, int sheetIndex, int row, int col) throws IOException {
+	public String readDataFromExcel(String filePath, String sheetName, int row, int col) throws IOException {
 		try (FileInputStream file = new FileInputStream(new File(filePath));
 			 Workbook workbook = WorkbookFactory.create(file)) {
 
-			Sheet sheet = workbook.getSheetAt(sheetIndex);
+			Sheet sheet = workbook.getSheet(sheetName);
 			Row excelRow = sheet.getRow(row);
 			Cell cell = excelRow.getCell(col);
 
@@ -197,6 +200,7 @@ public class Method {
 		return rowCount;
 	}
 
+	// Mapping test case IDs to test method names
 
 
 }

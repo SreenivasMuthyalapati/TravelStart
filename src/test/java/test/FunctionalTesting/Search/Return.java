@@ -1,4 +1,4 @@
-package test.Search;
+package test.FunctionalTesting.Search;
 
 import org.openqa.selenium.Alert;
 import org.openqa.selenium.NoSuchElementException;
@@ -7,7 +7,6 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
-import org.testng.Assert;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.DataProvider;
@@ -27,7 +26,7 @@ public class Return {
 
     static {
         try {
-            environment = m.readDataFromExcel(dataPath,0,0,1);
+            environment = m.readDataFromExcel(dataPath,"URL's",0,1);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -39,11 +38,11 @@ public class Return {
         driver = new ChromeDriver();
         driver.manage().window().maximize();
         if (environment.equals("live")){
-            driver.get(m.readDataFromExcel(dataPath,0,3,1));
+            driver.get(m.readDataFromExcel(dataPath,"URL's",3,1));
         } else if (environment.equals("beta")) {
-            driver.get(m.readDataFromExcel(dataPath,0,5,1));
+            driver.get(m.readDataFromExcel(dataPath,"URL's",5,1));
         } else if (environment.equals("preprod")) {
-            driver.get(m.readDataFromExcel(dataPath,0,7,1));
+            driver.get(m.readDataFromExcel(dataPath,"URL's",7,1));
         } else {
             System.out.println("Invalid envinorment name");
         }
@@ -67,14 +66,14 @@ public class Return {
         return new Object[][] {
 
                 //Domestic Routes
-                {m.readDataFromExcel(dataPath,1,7,0), m.readDataFromExcel(dataPath,1,7,1)},
-                {m.readDataFromExcel(dataPath,1,8,0), m.readDataFromExcel(dataPath,1,8,1)},
-                {m.readDataFromExcel(dataPath,1,9,0), m.readDataFromExcel(dataPath,1,9,1)},
+                {m.readDataFromExcel(dataPath,"Oneway Routes",7,0), m.readDataFromExcel(dataPath,"Oneway Routes",7,1)},
+                {m.readDataFromExcel(dataPath,"Oneway Routes",8,0), m.readDataFromExcel(dataPath,"Oneway Routes",8,1)},
+                {m.readDataFromExcel(dataPath,"Oneway Routes",9,0), m.readDataFromExcel(dataPath,"Oneway Routes",9,1)},
 
                 // International Routes :
-                {m.readDataFromExcel(dataPath,1,2,0), m.readDataFromExcel(dataPath,1,2,1)},
-                {m.readDataFromExcel(dataPath,1,3,0), m.readDataFromExcel(dataPath,1,3,1)},
-                {m.readDataFromExcel(dataPath,1,4,0), m.readDataFromExcel(dataPath,1,4,1)}
+                {m.readDataFromExcel(dataPath,"Oneway Routes",2,0), m.readDataFromExcel(dataPath,"Oneway Routes",2,1)},
+                {m.readDataFromExcel(dataPath,"Oneway Routes",3,0), m.readDataFromExcel(dataPath,"Oneway Routes",3,1)},
+                {m.readDataFromExcel(dataPath,"Oneway Routes",4,0), m.readDataFromExcel(dataPath,"Oneway Routes",4,1)}
         };
     }
 

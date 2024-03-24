@@ -1,6 +1,5 @@
-package test.FlightDetails;
+package test.FunctionalTesting.FlightDetails;
 
-import com.google.common.base.Verify;
 import org.openqa.selenium.*;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
@@ -17,7 +16,7 @@ import pageObjects.*;
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
-public class Oneway {
+public class ReturnDom {
 
     static WebDriver driver;
     static testmethods.Method m = new testmethods.Method();
@@ -27,7 +26,7 @@ public class Oneway {
 
     static {
         try {
-            environment = m.readDataFromExcel(dataPath,0,0,1);
+            environment = m.readDataFromExcel(dataPath,"URL's",0,1);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -39,10 +38,10 @@ public class Oneway {
         driver = new ChromeDriver();
         driver.manage().window().maximize();
         switch (environment) {
-            case "live" -> driver.get(m.readDataFromExcel(dataPath, 0, 3, 1));
-            case "beta" -> driver.get(m.readDataFromExcel(dataPath, 0, 5, 1));
-            case "preprod" -> driver.get(m.readDataFromExcel(dataPath, 0, 7, 1));
-            default -> System.out.println("Invalid envinorment name");
+            case "live" -> driver.get(m.readDataFromExcel(dataPath, "URL's", 3, 1));
+            case "beta" -> driver.get(m.readDataFromExcel(dataPath, "URL's", 5, 1));
+            case "preprod" -> driver.get(m.readDataFromExcel(dataPath, "URL's", 7, 1));
+            default -> System.out.println("Invalid environment name");
         }
 
         //accept all cookies
@@ -62,15 +61,11 @@ public class Oneway {
     @DataProvider(name = "cityData")
     public Object[][] getCityData() throws IOException {
         return new Object[][] {
-               // Domestic Routes
-                {m.readDataFromExcel(dataPath,1,7,0), m.readDataFromExcel(dataPath,1,7,1)},
-                {m.readDataFromExcel(dataPath,1,8,0), m.readDataFromExcel(dataPath,1,8,1)},
-                {m.readDataFromExcel(dataPath,1,9,0), m.readDataFromExcel(dataPath,1,9,1)},
+                //Domestic Routes
+                {m.readDataFromExcel(dataPath,"Oneway Routes",7,0), m.readDataFromExcel(dataPath,"Oneway Routes",7,1)},
+                {m.readDataFromExcel(dataPath,"Oneway Routes",8,0), m.readDataFromExcel(dataPath,"Oneway Routes",8,1)},
+                {m.readDataFromExcel(dataPath,"Oneway Routes",9,0), m.readDataFromExcel(dataPath,"Oneway Routes",9,1)}
 
-                // International Routes :
-                {m.readDataFromExcel(dataPath,1,2,0), m.readDataFromExcel(dataPath,1,2,1)},
-                {m.readDataFromExcel(dataPath,1,3,0), m.readDataFromExcel(dataPath,1,3,1)},
-                {m.readDataFromExcel(dataPath,1,4,0), m.readDataFromExcel(dataPath,1,4,1)}
         };
     }
 
@@ -80,7 +75,6 @@ public class Oneway {
         SoftAssert assrt = new SoftAssert();
 
         driver.manage().timeouts().implicitlyWait(3, TimeUnit.SECONDS);
-        driver.findElement(HomePage.oneWay).click();
         Thread.sleep(1000);
         driver.findElement(HomePage.departureCity).sendKeys(departureCity);
         Thread.sleep(2000);
@@ -95,6 +89,7 @@ public class Oneway {
             driver.findElement(HomePage.nextMonth).click();
         }
         driver.findElement(HomePage.day).click();
+        driver.findElement(HomePage.day2).click();
 
         driver.findElement(HomePage.search).click();
         Thread.sleep(20);
@@ -117,12 +112,14 @@ public class Oneway {
         // Taking trip details from SRP for validation
 
         String flightNumber = driver.findElement(SRP.flightNumberOneway).getText();
-        String SRPPrice = driver.findElement(SRP.flightPrice).getText();
-        String depTimeSRP = driver.findElement(SRP.depTimeOnward).getText();
-        String arrTimeSRP = driver.findElement(SRP.arrTimeOnward).getText();
+        String SRPPrice = driver.findElement(SRP.totalFareBundled).getText();
+        String depTimeOnwardSRP = driver.findElement(SRP.depTimeOnward).getText();
+        String arrTimeOnwardSRP = driver.findElement(SRP.arrTimeOnward).getText();
+        String depTimeReturnSRP = driver.findElement(SRP.depTimeReturn).getText();
+        String arrTimeReturnSRP = driver.findElement(SRP.arrTimeReturn).getText();
 
 
-        driver.findElement(SRP.book).click();
+        driver.findElement(SRP.domBook).click();
         Thread.sleep(1000);
 
         WebElement travellerPage = null;
@@ -160,15 +157,15 @@ public class Oneway {
 
         String baseFare = driver.findElement(FlightPage.fare).getText();
 
-       boolean isPriceMatching;
+        boolean isPriceMatching;
 
-       if(SRPPrice.equals(baseFare)){
-           isPriceMatching = true;
-       }else{
-           isPriceMatching = false;
-       }
+        if(SRPPrice.equals(baseFare)){
+            isPriceMatching = true;
+        }else{
+            isPriceMatching = false;
+        }
 
-       assrt.assertTrue(isPriceMatching, "Price mismatch between SRP and flight details page. SRP price is: "+ SRPPrice+" but baseFare in flight details page is: "+ baseFare );
+        assrt.assertTrue(isPriceMatching, "Price mismatch between SRP and flight details page. SRP price is: "+ SRPPrice+" but baseFare in flight details page is: "+ baseFare );
 
         if(!isPriceMatching) {
             m.takeScreenshot(driver, Paths.screenshotFolder);
@@ -183,20 +180,20 @@ public class Oneway {
         boolean isArrTimeMatching;
 
 
-        if(depTimeSRP.contains(depTime)){
+        if(depTimeOnwardSRP.contains(depTime)){
             isDepTimeMatching = true;
         }else{
             isDepTimeMatching = false;
         }
 
-        if(arrTimeSRP.contains(arrTime)){
+        if(arrTimeOnwardSRP.contains(arrTime)){
             isArrTimeMatching = true;
         }else{
             isArrTimeMatching = false;
         }
-        
-        assrt.assertTrue(isDepTimeMatching, "Departure time mismatch between SRP and flight details page. SRP departure time is: "+ depTimeSRP+" but departure time in flight details page is: "+ depTime );
-        assrt.assertTrue(isArrTimeMatching, "Arrival time mismatch between SRP and flight details page. SRP arrival time is: "+ arrTimeSRP+" but arrival time in flight details page is: "+ arrTime );
+
+        assrt.assertTrue(isDepTimeMatching, "Departure time mismatch between SRP and flight details page. SRP departure time is: "+ depTimeOnwardSRP+" but departure time in flight details page is: "+ depTime );
+        assrt.assertTrue(isArrTimeMatching, "Arrival time mismatch between SRP and flight details page. SRP arrival time is: "+ arrTimeOnwardSRP+" but arrival time in flight details page is: "+ arrTime );
 
         if(isDepTimeMatching== false|| isArrTimeMatching==false) {
             m.takeScreenshot(driver, Paths.screenshotFolder);
@@ -215,7 +212,7 @@ public class Oneway {
         if (isFAFlight){
             lastname = "Test";
         } else{
-            lastname = m.readDataFromExcel(dataPath, 2, 11, 4);
+            lastname = m.readDataFromExcel(dataPath, "PAX Details", 11, 4);
         }
 
         WebElement day = driver.findElement(FlightPage.dayDOB);
@@ -224,18 +221,18 @@ public class Oneway {
 
         //Sending contact details in booking
         driver.findElement(FlightPage.mobileNo).clear();
-        driver.findElement(FlightPage.mobileNo).sendKeys(m.readDataFromExcel(dataPath, 2, 3, 1));
-        driver.findElement(FlightPage.email).sendKeys(m.readDataFromExcel(dataPath, 2, 4, 1));
+        driver.findElement(FlightPage.mobileNo).sendKeys(m.readDataFromExcel(dataPath, "PAX Details", 3, 1));
+        driver.findElement(FlightPage.email).sendKeys(m.readDataFromExcel(dataPath, "PAX Details", 4, 1));
         driver.findElement(FlightPage.whatsApp).click();
         Thread.sleep(1000);
         driver.findElement(FlightPage.whatsApp).click();
 
         //Adding PAX details
         driver.findElement(FlightPage.mr).click();
-        driver.findElement(FlightPage.firstName).sendKeys(m.readDataFromExcel(dataPath, 2, 11, 2));
+        driver.findElement(FlightPage.firstName).sendKeys(m.readDataFromExcel(dataPath, "PAX Details", 11, 2));
         driver.findElement(FlightPage.lastName).sendKeys(lastname);
         Select daysc = new Select(day);
-        String yearr = m.readDataFromExcel(dataPath, 2, 11, 7);
+        String yearr = m.readDataFromExcel(dataPath, "PAX Details", 11, 7);
         daysc.selectByIndex(4);
         Select monthsc = new Select(month);
         monthsc.selectByIndex(6);
@@ -263,12 +260,11 @@ public class Oneway {
         }
         try{
             if(ppInfo.isDisplayed()){
+
+                String ppnumb = m.readDataFromExcel(dataPath,"PAX Details",11,8);
+                ppnumb = m.toString();
                 WebElement  ppNumber = driver.findElement(FlightPage.ppNumber);
-                double ppnumberdouble = Double.parseDouble(m.readDataFromExcel(dataPath,2,11,8));
-                // Convert double to int
-                int ppnumberInt = (int) ppnumberdouble;
-                String ppnumber = Integer.toString(ppnumberInt);
-                ppNumber.sendKeys(ppnumber);
+                ppNumber.sendKeys(ppnumb);
                 WebElement ppday = driver.findElement(FlightPage.ppExpiryDate);
                 WebElement ppmonth = driver.findElement(FlightPage.ppExpiryMonth);
                 WebElement ppyear = driver.findElement(FlightPage.ppExpiryYear);

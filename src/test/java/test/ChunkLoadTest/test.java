@@ -1,4 +1,4 @@
-package test.ScheduleTest;
+package test.ChunkLoadTest;
 
 import org.openqa.selenium.*;
 import org.openqa.selenium.chrome.ChromeDriver;
@@ -19,7 +19,6 @@ import testmethods.Method;
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 import org.openqa.selenium.WebDriver;
-import org.testng.annotations.Listeners;
 
 
 public class test {
@@ -40,7 +39,7 @@ public class test {
 
     static {
         try {
-            environment = m.readDataFromExcel(dataPath,0,0,1);
+            environment = m.readDataFromExcel(dataPath,"URL's",0,1);
             environment = "live";
         } catch (IOException e) {
             e.printStackTrace();
@@ -54,11 +53,11 @@ public class test {
         driver = new ChromeDriver();
         driver.manage().window().maximize();
         if (environment.equals("live")){
-            driver.get(m.readDataFromExcel(dataPath,0,3,1));
+            driver.get(m.readDataFromExcel(dataPath,"URL's",3,1));
         } else if (environment.equals("beta")) {
-            driver.get(m.readDataFromExcel(dataPath,0,5,1));
+            driver.get(m.readDataFromExcel(dataPath,"URL's",5,1));
         } else if (environment.equals("preprod")) {
-            driver.get(m.readDataFromExcel(dataPath,0,7,1));
+            driver.get(m.readDataFromExcel(dataPath,"URL's",7,1));
         } else {
             System.out.println("Invalid envinorment name");
         }
@@ -81,16 +80,16 @@ public class test {
     public Object[][] getCityData() throws IOException {
         return new Object[][] {
 
-                {m.readDataFromExcel(dataPath,1,4,0), m.readDataFromExcel(dataPath,1,4,1)},
-                {m.readDataFromExcel(dataPath,1,4,0), m.readDataFromExcel(dataPath,1,4,1)},
-                {m.readDataFromExcel(dataPath,1,4,0), m.readDataFromExcel(dataPath,1,4,1)},
-                {m.readDataFromExcel(dataPath,1,4,0), m.readDataFromExcel(dataPath,1,4,1)},
-                {m.readDataFromExcel(dataPath,1,4,0), m.readDataFromExcel(dataPath,1,4,1)},
-                {m.readDataFromExcel(dataPath,1,4,0), m.readDataFromExcel(dataPath,1,4,1)},
-                {m.readDataFromExcel(dataPath,1,4,0), m.readDataFromExcel(dataPath,1,4,1)},
-                {m.readDataFromExcel(dataPath,1,4,0), m.readDataFromExcel(dataPath,1,4,1)},
-                {m.readDataFromExcel(dataPath,1,4,0), m.readDataFromExcel(dataPath,1,4,1)},
-                {m.readDataFromExcel(dataPath,1,4,0), m.readDataFromExcel(dataPath,1,4,1)}
+                {m.readDataFromExcel(dataPath,"Oneway Routes",4,0), m.readDataFromExcel(dataPath,"Oneway Routes",4,1)},
+                {m.readDataFromExcel(dataPath,"Oneway Routes",4,0), m.readDataFromExcel(dataPath,"Oneway Routes",4,1)},
+                {m.readDataFromExcel(dataPath,"Oneway Routes",4,0), m.readDataFromExcel(dataPath,"Oneway Routes",4,1)},
+                {m.readDataFromExcel(dataPath,"Oneway Routes",4,0), m.readDataFromExcel(dataPath,"Oneway Routes",4,1)},
+                {m.readDataFromExcel(dataPath,"Oneway Routes",4,0), m.readDataFromExcel(dataPath,"Oneway Routes",4,1)},
+                {m.readDataFromExcel(dataPath,"Oneway Routes",4,0), m.readDataFromExcel(dataPath,"Oneway Routes",4,1)},
+                {m.readDataFromExcel(dataPath,"Oneway Routes",4,0), m.readDataFromExcel(dataPath,"Oneway Routes",4,1)},
+                {m.readDataFromExcel(dataPath,"Oneway Routes",4,0), m.readDataFromExcel(dataPath,"Oneway Routes",4,1)},
+                {m.readDataFromExcel(dataPath,"Oneway Routes",4,0), m.readDataFromExcel(dataPath,"Oneway Routes",4,1)},
+                {m.readDataFromExcel(dataPath,"Oneway Routes",4,0), m.readDataFromExcel(dataPath,"Oneway Routes",4,1)}
 
         };
     }

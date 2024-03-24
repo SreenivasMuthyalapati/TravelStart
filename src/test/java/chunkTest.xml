@@ -2,7 +2,7 @@
 <suite name="Test">
     <test name="ChunkLoadTest">
         <classes>
-            <class name="test.ScheduleTest.test" />
+            <class name="test.ChunkLoadTest.test" />
         </classes>
     </test>
 </suite>
