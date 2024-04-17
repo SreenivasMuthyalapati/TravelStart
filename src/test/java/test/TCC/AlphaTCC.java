@@ -30,7 +30,7 @@ public class AlphaTCC {
         System.setProperty("webdriver.chrome.driver", Paths.chromeDriver);
         driver = new ChromeDriver();
         driver.manage().window().maximize();
-        driver.get(m.readDataFromExcel(dataPath, "URL's", 15, 1));
+        driver.get(m.readDataFromExcel(dataPath, "URL's", 17, 1));
     }
 
     @AfterMethod
@@ -64,7 +64,7 @@ public class AlphaTCC {
         if (isLoginAvailable){
             System.out.println("Alpha TCC Launched");
         } else {
-            m.takeScreenshot(driver,Paths.screenshotFolder);
+            m.takeScreenshot(driver,Paths.screenshotFolder, "");
             m.getConsole(driver);
         }
         Assert.assertTrue(isLoginAvailable, "Alpha TCC not launched");

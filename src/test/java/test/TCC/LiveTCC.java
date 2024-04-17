@@ -30,7 +30,7 @@ public class LiveTCC {
         System.setProperty("webdriver.chrome.driver", Paths.chromeDriver);
         driver = new ChromeDriver();
         driver.manage().window().maximize();
-        driver.get(m.readDataFromExcel(dataPath, "URL's", 12, 1));
+        driver.get(m.readDataFromExcel(dataPath, "URL's", 14, 1));
     }
 
     @AfterMethod
@@ -64,7 +64,7 @@ public class LiveTCC {
         if (isLoginAvailable){
             System.out.println("TCC Launched");
         } else {
-            m.takeScreenshot(driver,Paths.screenshotFolder);
+            m.takeScreenshot(driver,Paths.screenshotFolder,"");
             m.getConsole(driver);
         }
         Assert.assertTrue(isLoginAvailable, "TCC not launched");

@@ -1,1 +1,0 @@
-{"uuid":"feba5202-45cd-4f64-bd52-e15df30d1b7f","name":"test.Search.Oneway.close","children":["c3f5c823-b4c8-4e21-b1d1-0db051e296ff"],"description":"","befores":[],"afters":[{"name":"close","status":"passed","stage":"finished","description":"","steps":[],"attachments":[],"parameters":[],"start":1709056371226,"stop":1709056371619}],"start":1709056371226,"stop":1709056371619}

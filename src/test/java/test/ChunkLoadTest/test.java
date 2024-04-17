@@ -124,7 +124,7 @@ public class test {
                 result = driver.findElement(SRP.results);
             } catch (TimeoutException t) {
                 System.out.println("Result not loaded!");
-                m.takeScreenshot(driver, Paths.screenshotFolder);
+                m.takeScreenshot(driver, Paths.screenshotFolder,"");
             }
 
         } catch (NoSuchElementException e) {

@@ -1,1 +1,0 @@
-{"uuid":"5bb4fdf6-78e5-45d3-b88c-43481983c1d2","name":"test.Search.Return_Dom.close","children":["90ec173b-4cd1-461c-9bc4-101c5f2313f4"],"description":"","befores":[],"afters":[{"name":"close","status":"passed","stage":"finished","description":"","steps":[],"attachments":[],"parameters":[],"start":1708616738199,"stop":1708616738521}],"start":1708616738199,"stop":1708616738521}

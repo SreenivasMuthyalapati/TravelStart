@@ -1,1 +1,0 @@
-{"uuid":"3d5ab35b-f480-47e2-88f2-b4c7b54deb7e","name":"test.TsPlusSubscription.setup","children":["e38a3fcc-ab74-4622-8387-b5ff32e10701"],"description":"","befores":[{"name":"setup","status":"passed","stage":"finished","description":"","steps":[],"attachments":[],"parameters":[],"start":1707501230776,"stop":1707501232943}],"afters":[],"start":1707501230776,"stop":1707501232943}

@@ -25,7 +25,7 @@ public class PreprodTCC {
         System.setProperty("webdriver.chrome.driver", Paths.chromeDriver);
         driver = new ChromeDriver();
         driver.manage().window().maximize();
-        driver.get(m.readDataFromExcel(dataPath, "URL's", 13, 1));
+        driver.get(m.readDataFromExcel(dataPath, "URL's", 15, 1));
     }
 
     @AfterMethod
@@ -59,7 +59,7 @@ public class PreprodTCC {
         if (isLoginAvailable){
             System.out.println("Preprod TCC Launched");
         } else {
-            m.takeScreenshot(driver,Paths.screenshotFolder);
+            m.takeScreenshot(driver,Paths.screenshotFolder,"");
             m.getConsole(driver);
         }
         Assert.assertTrue(isLoginAvailable, "Preprod TCC not launched");

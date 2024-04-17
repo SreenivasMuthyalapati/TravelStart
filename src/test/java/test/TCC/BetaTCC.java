@@ -30,7 +30,7 @@ public class BetaTCC {
         System.setProperty("webdriver.chrome.driver", Paths.chromeDriver);
         driver = new ChromeDriver();
         driver.manage().window().maximize();
-        driver.get(m.readDataFromExcel(dataPath, "URL's", 14, 1));
+        driver.get(m.readDataFromExcel(dataPath, "URL's", 16, 1));
     }
 
     @AfterMethod
@@ -64,7 +64,7 @@ public class BetaTCC {
         if (isLoginAvailable){
             System.out.println("Beta TCC Launched");
         } else {
-            m.takeScreenshot(driver,Paths.screenshotFolder);
+            m.takeScreenshot(driver,Paths.screenshotFolder,"");
             m.getConsole(driver);
         }
         Assert.assertTrue(isLoginAvailable, "Beta TCC not launched");

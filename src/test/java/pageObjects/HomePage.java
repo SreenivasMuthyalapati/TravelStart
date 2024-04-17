@@ -1,8 +1,19 @@
 package pageObjects;
 
 import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
 
 public class HomePage {
+
+    private WebDriver driver;
+
+    public HomePage(WebDriver driver) {
+        this.driver = driver;
+
+
+    }
+
     public static By departureCity = By.xpath("//input[@id='dept_city0']");
     public static By arrivalCity = By.xpath("//input[@id='arr_city0']");
     public static By departureDate = By.xpath("//input[@id='dept_date0']");
@@ -28,5 +39,28 @@ public class HomePage {
     public static By mltCtyArrCity2 = By.xpath("//input[@id='arr_city1']");
     public static By mltCtyArrCity3 = By.xpath("//input[@id='arr_city2']");
     public static By addFlight = By.xpath("//button[@aria-label='Add another flight']");
+    public static By passengerSelector = By.xpath("//a[@data-target='#pax']");
+    public static By applyPax = By.xpath("//button[@aria-label='Apply']");
+
+    public WebElement dateSelector(String value) {
+          String date = String.format("(//*[@class='ngb-dp-day ng-star-inserted'])[%s]", value);
+        return driver.findElement(By.xpath(date));
+    }
+
+    public void paxSelector(String adultCount, String youngAdultCount, String childCount, String infantCount) {
+
+        String adultSelector = String.format("//li[@data-adult-id='%s']", adultCount);
+        driver.findElement(By.xpath(adultSelector)).click();
+
+        String youngAdultSelector = String.format("//li[@data-youngadults-id='%s']", youngAdultCount);
+        driver.findElement(By.xpath(youngAdultSelector)).click();
+
+        String childSelector = String.format("//li[@data-child-id='%s']", childCount);
+        driver.findElement(By.xpath(childSelector)).click();
+
+        String infantSelector = String.format("//li[@data-infants-id='%s']", infantCount);
+        driver.findElement(By.xpath(infantSelector)).click();
+    }
+
 
 }

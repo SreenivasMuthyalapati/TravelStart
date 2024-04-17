@@ -11,6 +11,8 @@ public class Filters {
 
     public Filters(WebDriver driver) {
         this.driver = driver;
+
+
     }
 
     Method m = new Method();
@@ -19,7 +21,7 @@ public class Filters {
     public static By apply = By.xpath("(//span[text()='Show Results'])[2]");
     public static By clear = By.xpath("(//span[text()='Reset All'])[2]");
     public static By close = By.xpath("(//span[@class='close_icn'])[2]");
-
+    public static By returnAirline = By.xpath("(//button[@class='btn route_btns'])[2]");
 
     //Airline
 

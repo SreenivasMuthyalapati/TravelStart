@@ -8,8 +8,9 @@ public class SRP {
     Method m = new Method();
 
     public static By filters = By.xpath("//*[text()='Show Filters']");
+    public static By unBundledFilter = By.xpath("(//button[@class='btn showFilter_btn'])[1]");
     public static By results = By.xpath("//*[@class='row flightsViewSection ng-star-inserted']");
-    public static By book = By.xpath("//div[@class='label_Itin ng-star-inserted']//div[1]//app-flight-card[1]//div[1]//div[1]//div[1]//div[2]//div[1]//div[2]//button[1]");
+    public static By book = By.xpath("(//button[@aria-label='Book Now'])[1]");
     public static By domBook = By.xpath("(//button[@aria-label='Book this flight'])[1]");
     public static By airPortChange = By.xpath("//button[@class='btn ok-btn onHover refreshBtn primary_btn ng-star-inserted']");
     public static By unbundledOnwardRouteDetails = By.xpath("(//span[@class='route_info'])[1]");
@@ -28,6 +29,9 @@ public class SRP {
     public static By arrTimeReturn = By.xpath("(//div[@class='time'])[4]");
     public static By allAirlines = By.xpath("//span[@class='airl_name']");
     public static By totalFareBundled = By.xpath("//div[@class='fare']");
+
+    public static By inboundFlightUnbundled = By.xpath("(//div[@class='row m-0 inBound return'])[1]");
+    public static By outboundFlightUnbundled = By.xpath("(//div[@class='row m-0 outBound return'])[1]");
 
 
 

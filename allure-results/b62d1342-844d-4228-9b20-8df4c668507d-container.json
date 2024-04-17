@@ -1,1 +1,0 @@
-{"uuid":"b62d1342-844d-4228-9b20-8df4c668507d","name":"test.Search.MultiCity.close","children":["35963df9-0ea6-4ee9-a0d3-b63e298702de"],"description":"","befores":[],"afters":[{"name":"close","status":"passed","stage":"finished","description":"","steps":[],"attachments":[],"parameters":[],"start":1708621920481,"stop":1708621920756}],"start":1708621920481,"stop":1708621920756}
