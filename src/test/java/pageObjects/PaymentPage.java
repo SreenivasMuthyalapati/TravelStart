@@ -15,8 +15,8 @@ public class PaymentPage {
     public static By credicCardOrDebitCard = By.xpath("//a[@id='credit-Card']");
     public static By cardNumber = By.xpath("//input[@title='Credit card number']");
     public static By cardHolderName = By.xpath("//input[@formcontrolname='cardName']");
-    public static By cardExpiryMonth = By.xpath("//select[@formcontrolname='cardExpiryMonth']");
-    public static By cardExpiryYear = By.xpath("//select[@formcontrolname='cardExpiry']");
+    public static By cardExpiryMonth = By.xpath("//*[@formcontrolname='cardExpiryMonth']");
+    public static By cardExpiryYear = By.xpath("//*[@formcontrolname='cardExpiry']");
     public static By CVV = By.xpath("//input[@placeholder='cvv']");
     public static By addressLine1 = By.xpath("//input[@placeholder='Address line 1']");
     public static By addressLine2 = By.xpath("//input[@placeholder='Address line 2']");

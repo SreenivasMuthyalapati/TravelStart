@@ -25,7 +25,7 @@ public class PreprodTCC {
         System.setProperty("webdriver.chrome.driver", Paths.chromeDriver);
         driver = new ChromeDriver();
         driver.manage().window().maximize();
-        driver.get(m.readDataFromExcel(dataPath, "URL's", 15, 1));
+        driver.get(m.readDataFromExcel(dataPath, "URL's", 16, 1));
     }
 
     @AfterMethod

@@ -4,10 +4,12 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.Select;
+import testmethods.Method;
 
 public class FlightPage {
 
     private WebDriver driver;
+    public Method m = new Method();
 
     public FlightPage(WebDriver driver) {
         this.driver = driver;
@@ -77,37 +79,41 @@ public class FlightPage {
     public static By dayDOB = By.xpath("(//*[@name='selectedDay'][@formcontrolname='dobDay'])[1]");
 
     // Select date of birth
-    public void selectDateOfBirth(int value, String date){
+    public void selectDateOfBirth(int value, String date) throws InterruptedException {
         value = value+1;
         String DOBValue = String.valueOf(value);
         String DOBXpath = String.format("(//*[@name='selectedDay'][@formcontrolname='dobDay'])[%s]", DOBValue);
         WebElement DOBElement = driver.findElement(By.xpath(DOBXpath));
-        Select DOBSelect = new Select(DOBElement);
-        DOBSelect.selectByIndex(Integer.parseInt(date));
+//        Select DOBSelect = new Select(DOBElement);
+//        DOBSelect.selectByIndex(Integer.parseInt(date));
+        m.selectFromDropDown(driver, DOBElement, date);
 
     }
-    public static By monthDOB = By.xpath("(//select[@formcontrolname='dobMonth'])[1]");
+    public static By monthDOB = By.xpath("(//*[@formcontrolname='dobMonth'])[1]");
 
     // Select date of birth
-    public void selectMonthOfBirth(int value, String month){
+    public void selectMonthOfBirth(int value, String month) throws InterruptedException {
         value = value+1;
         String MOBValue = String.valueOf(value);
-        String MOBXpath = String.format("(//select[@formcontrolname='dobMonth'])[%s]", MOBValue);
+        String MOBXpath = String.format("(//*[@formcontrolname='dobMonth'])[%s]", MOBValue);
         WebElement MOBElement = driver.findElement(By.xpath(MOBXpath));
-        Select MOBSelect = new Select(MOBElement);
-        MOBSelect.selectByIndex(Integer.parseInt(month));
+//        Select MOBSelect = new Select(MOBElement);
+//        MOBSelect.selectByIndex(Integer.parseInt(month));
+        m.selectFromDropDown(driver, MOBElement, month);
 
     }
-    public static By yearDOB = By.xpath("(//select[@placeholder='year'][@formcontrolname='dobYear'])[1]");
+    public static By yearDOB = By.xpath("(//*[@placeholder='year'][@formcontrolname='dobYear'])[1]");
 
     // Select year of birth
-    public void selectYearOfBirth(int value, String year){
+    public void selectYearOfBirth(int value, String year) throws InterruptedException {
         value = value+1;
         String YOBValue = String.valueOf(value);
-        String YOBXpath = String.format("(//select[@placeholder='year'][@formcontrolname='dobYear'])[%s]", YOBValue);
+        String YOBXpath = String.format("(//*[@placeholder='year'][@formcontrolname='dobYear'])[%s]", YOBValue);
         WebElement YOBElement = driver.findElement(By.xpath(YOBXpath));
-        Select YOBSelect = new Select(YOBElement);
-        YOBSelect.selectByValue(year);
+//        Select YOBSelect = new Select(YOBElement);
+//        YOBSelect.selectByValue(year);
+
+        m.selectFromDropDown(driver, YOBElement, year);
 
     }
 
@@ -193,40 +199,46 @@ public class FlightPage {
     }
 
 
-    public static By ppExpiryDate = By.xpath("(//select[@placeholder='day'][@formcontrolname='psExpDay'])[1]");
+    public static By ppExpiryDate = By.xpath("(//*[@placeholder='day'][@formcontrolname='psExpDay'])[1]");
 
     // Select passport expiry date
-    public void selectDateOfppExpiry(int value, String date){
+    public void selectDateOfppExpiry(int value, String date) throws InterruptedException {
         value = value+1;
         String ppDateValue = String.valueOf(value);
-        String ppDateXpath = String.format("(//select[@placeholder='day'][@formcontrolname='psExpDay'])[%s]", ppDateValue);
+        String ppDateXpath = String.format("(//*[@placeholder='day'][@formcontrolname='psExpDay'])[%s]", ppDateValue);
         WebElement ppDateElement = driver.findElement(By.xpath(ppDateXpath));
-        Select ppDateSelect = new Select(ppDateElement);
-        ppDateSelect.selectByIndex(Integer.parseInt(date));
+//        Select ppDateSelect = new Select(ppDateElement);
+//        ppDateSelect.selectByIndex(Integer.parseInt(date));
+
+        m.selectFromDropDown(driver, ppDateElement, date);
 
     }
-    public static By ppExpiryMonth = By.xpath("(//select[@formcontrolname='psExpMonth'])[1]");
+    public static By ppExpiryMonth = By.xpath("(//*[@formcontrolname='psExpMonth'])[1]");
 
     // Select date of birth
-    public void selectMonthOfppExpiry(int value, String month){
+    public void selectMonthOfppExpiry(int value, String month) throws InterruptedException {
         value = value+1;
         String ppMonthValue = String.valueOf(value);
-        String ppMonthXpath = String.format("(//select[@formcontrolname='psExpMonth'])[%s]", ppMonthValue);
+        String ppMonthXpath = String.format("(//*[@formcontrolname='psExpMonth'])[%s]", ppMonthValue);
         WebElement ppMothElement = driver.findElement(By.xpath(ppMonthXpath));
-        Select ppMonthSelect = new Select(ppMothElement);
-        ppMonthSelect.selectByIndex(Integer.parseInt(month));
+//        Select ppMonthSelect = new Select(ppMothElement);
+//        ppMonthSelect.selectByIndex(Integer.parseInt(month));
+
+        m.selectFromDropDown(driver, ppMothElement, month);
 
     }
-    public static By ppExpiryYear = By.xpath("(//select[@formcontrolname='psExpYear'])[1]");
+    public static By ppExpiryYear = By.xpath("(//*[@formcontrolname='psExpYear'])[1]");
 
     // Select year of birth
-    public void selectYearppExpiry(int value, String year){
+    public void selectYearppExpiry(int value, String year) throws InterruptedException {
         value = value+1;
         String ppYearValue = String.valueOf(value);
-        String ppYearXpath = String.format("(//select[@formcontrolname='psExpYear'])[%s]", ppYearValue);
+        String ppYearXpath = String.format("(//*[@formcontrolname='psExpYear'])[%s]", ppYearValue);
         WebElement ppYearElement = driver.findElement(By.xpath(ppYearXpath));
-        Select ppYearSelect = new Select(ppYearElement);
-        ppYearSelect.selectByValue(year);
+//        Select ppYearSelect = new Select(ppYearElement);
+//        ppYearSelect.selectByValue(year);
+
+        m.selectFromDropDown(driver, ppYearElement, year);
 
     }
     public static By ppnationalityIndia = By.xpath("(//*[text()='India'])[1]");
@@ -245,8 +257,8 @@ public class FlightPage {
     public static By contnue = By.xpath("//button[@class='btn addons_continueBtn primary_btn onHover mt-3']");
 
 
-
-
+    public static By fareIncreaseContinue = By.xpath("//button[@aria-label='Continue']");
+    public static By fareIncreasePopUp = By.xpath("//div[@class='fare ng-star-inserted']");
 
 
 

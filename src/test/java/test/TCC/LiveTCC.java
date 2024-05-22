@@ -30,7 +30,7 @@ public class LiveTCC {
         System.setProperty("webdriver.chrome.driver", Paths.chromeDriver);
         driver = new ChromeDriver();
         driver.manage().window().maximize();
-        driver.get(m.readDataFromExcel(dataPath, "URL's", 14, 1));
+        driver.get(m.readDataFromExcel(dataPath, "URL's", 15, 1));
     }
 
     @AfterMethod

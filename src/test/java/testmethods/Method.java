@@ -3,31 +3,36 @@ package testmethods;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import io.github.bonigarcia.wdm.WebDriverManager;
+import io.restassured.RestAssured;
+import io.restassured.http.ContentType;
+import io.restassured.response.Response;
 import org.apache.commons.compress.archivers.dump.InvalidFormatException;
 import org.apache.commons.io.FileUtils;
 
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.*;
 import org.apache.poi.EncryptedDocumentException;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.openqa.selenium.*;
 import org.openqa.selenium.NoSuchElementException;
-import org.openqa.selenium.OutputType;
-import org.openqa.selenium.TakesScreenshot;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.logging.LogEntries;
 import org.openqa.selenium.logging.LogEntry;
 import org.openqa.selenium.logging.LogType;
 import org.openqa.selenium.remote.RemoteWebDriver;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
+import org.testng.Assert;
 import org.testng.SkipException;
 import org.apache.http.HttpHeaders;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import org.apache.http.HttpHeaders;
-import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import pageObjects.CloudFlare;
@@ -54,6 +59,14 @@ import java.util.concurrent.TimeUnit;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.util.EntityUtils;
+import org.json.JSONObject;
 
 
 import static io.restassured.RestAssured.given;
@@ -582,10 +595,14 @@ public class Method {
 				// Enter Last name
 				for (int j = 4; j <= 4; j++){
 					String lastName = "";
-					if (airline1.equalsIgnoreCase("FA") && airline2.equalsIgnoreCase("FA")) {
+					if (airline1.equalsIgnoreCase("FA") && (airline2.isEmpty()||airline2.isBlank())){
 						lastName = "Test";
 					}
-					lastName = (String) pax.get(i)[j];
+					else if (airline1.equalsIgnoreCase("FA") && airline2.equalsIgnoreCase("FA")) {
+						lastName = "Test";
+					}else {
+						lastName = (String) pax.get(i)[j];
+					}
 					enterPaxDetails.inputLastName(i,lastName);
 				}
 
@@ -593,6 +610,7 @@ public class Method {
 				for (int j = 5; j <= 5; j++){
 					String dateOfBirth = (String) pax.get(i)[j];
 					enterPaxDetails.selectDateOfBirth(i+1, dateOfBirth);
+
 				}
 
 				// Select month of birth
@@ -713,5 +731,226 @@ public class Method {
         return secondsDifference;
     }
 
-}
+	public void selectFromDropDown(WebDriver driver, WebElement dropdownElement, String value) throws InterruptedException {
 
+		try {
+			WebDriverWait wait = new WebDriverWait(driver, 5);
+
+			dropdownElement.click();
+
+			wait.until(ExpectedConditions.visibilityOfElementLocated((By.xpath("//span[@class='mat-option-text'][text()='" + value + "']"))));
+
+			driver.findElement(By.xpath("//span[@class='mat-option-text'][text()='" + value + "']")).click();
+		}
+		catch (TimeoutException | NoSuchElementException e){
+
+			System.out.println("Desired value not available in dropdown");
+
+		}
+
+		}
+
+		public String[] getPNR(String environment, String bookingReference) throws IOException {
+			// Construct the API endpoint with the booking reference
+
+			
+			List<String> pnrs = null;
+			pnrs = new ArrayList<>();
+
+			String apiUrl = "";
+			if (environment.equalsIgnoreCase("Preprod")) {
+				apiUrl = "https://preprod-wapi.travelstart.com/website-services/api/itinerary/summary/" + bookingReference;
+			} else if (environment.equalsIgnoreCase("live")) {
+				apiUrl = "https://wapi.travelstart.com/website-services/api/itinerary/summary/" + bookingReference;
+			} else if (environment.equalsIgnoreCase("beta")) {
+				apiUrl = "https://beta-wapi.travelstart.com/website-services/api/itinerary/summary/" + bookingReference;
+			}
+			String pnrReference = "";
+			// Bearer token for authorization
+			String bearerToken = "f7904a2f-cb89-46a6-bbc9-158ad96160b2";
+
+			// Create an HttpClient instance
+			CloseableHttpClient httpClient = HttpClients.createDefault();
+
+			// Create a DELETE request to cancel the booking
+			HttpGet request = new HttpGet(apiUrl);
+
+			// Add the Authorization header with the bearer token
+			request.addHeader("Authorization", "Bearer " + bearerToken);
+
+			// Send the GET request and get the response
+			HttpResponse response = httpClient.execute(request);
+
+
+			// Check the response status code to determine if the cancellation was successful
+			int statusCode = response.getStatusLine().getStatusCode();
+			if (statusCode == 200) {
+				System.out.println("Booking information retrieved for the booking reference : "+ bookingReference);
+
+				// Parse the response body
+				HttpEntity entity = response.getEntity();
+				String responseBody = EntityUtils.toString(entity);
+				JSONObject jsonResponse = new JSONObject(responseBody);
+
+				// Extract the booking status
+				JSONObject statusObject = jsonResponse.getJSONObject("status");
+				String bookingStatus = statusObject.getString("booking");
+
+				// If status is "CANCELLED", ignore cancellation
+				if (bookingStatus.equalsIgnoreCase("CANCELLED")) {
+
+					System.out.println("Booking is already cancelled.");
+
+				} else {
+					// If status is not "CANCELLED"m get booking ID
+					try {
+						JSONObject jsonObject = new JSONObject(jsonResponse.toString());
+						JSONArray reservationArray = jsonObject.getJSONArray("reservations");
+
+
+						for (int i = 0; i < reservationArray.length(); i++) {
+							JSONObject reservation = reservationArray.getJSONObject(i);
+							pnrReference = reservation.getString("pnrReference");
+
+							System.out.println("Reservation " + (i + 1) + ":");
+							System.out.println("PNR Reference: " + pnrReference);
+							System.out.println();
+							pnrs.add(pnrReference);
+
+						}
+					} catch (JSONException e) {
+						e.printStackTrace();
+					}
+				}
+			} else {
+				System.out.println("Booking information retrival failed. Status code: " + statusCode);
+				// Print response body for debugging
+				HttpEntity entity = response.getEntity();
+				String responseBody = EntityUtils.toString(entity);
+				System.out.println("Response body: " + responseBody);
+				// Handle errors or exceptions
+			}
+			return pnrs.toArray(new String[0]);
+        }
+
+	public void cancelBooking(String environment, String bookingReference) throws IOException {
+		String[] pnrs = getPNR(environment, bookingReference);
+
+		// If PNRs are retrieved, attempt to cancel each booking
+		for (String pnr : pnrs) {
+			cancelBookingRequest(environment, bookingReference, pnr);
+		}
+	}
+
+	private void cancelBookingRequest(String environment, String bookingReference, String pnr) throws IOException {
+
+		String BASE_URL_PREPROD = "https://preprod-wapi.travelstart.com/website-services/api/itinerary/cancel";
+		String BASE_URL_BETA = "https://beta-wapi.travelstart.com/website-services/api/itinerary/cancel";
+		String BASE_URL_LIVE = "https://wapi.travelstart.com/website-services/api/itinerary/cancel";
+		String BEARER_TOKEN = "f7904a2f-cb89-46a6-bbc9-158ad96160b2";
+
+
+		// Construct the URL for cancellation based on environment
+		String apiUrl = "";
+		String cancelUrl = "";
+		if (environment.equalsIgnoreCase("Beta")) {
+			cancelUrl = BASE_URL_BETA + "/" + bookingReference + "/" + pnr;
+		} else if (environment.equalsIgnoreCase("Preprod")) {
+			cancelUrl = BASE_URL_PREPROD + "/" + bookingReference + "/" + pnr;
+		} else if (environment.equalsIgnoreCase("Live")) {
+			cancelUrl = BASE_URL_LIVE + "/" + bookingReference + "/" + pnr;
+		}
+
+		// Create an HttpClient instance
+		CloseableHttpClient httpClient = HttpClients.createDefault();
+
+		// Create a PUT request to cancel the booking
+		HttpPut request = new HttpPut(cancelUrl);
+
+		// Add the Authorization header with the bearer token
+		request.addHeader("Authorization", "Bearer " + BEARER_TOKEN);
+
+		// Send the PUT request and get the response
+		HttpResponse response = httpClient.execute(request);
+
+		// Check the response status code to determine if the cancellation was successful
+		int statusCode = response.getStatusLine().getStatusCode();
+
+		// Parse the response body
+		HttpEntity entity = response.getEntity();
+		String responseBody = EntityUtils.toString(entity);
+		JSONObject jsonResponse = new JSONObject(responseBody.toString());
+
+
+		// Extract the booking status
+		JSONObject statusObject = jsonResponse.getJSONObject("result");
+		boolean bookingCancelStatus = statusObject.getBoolean("successful");
+
+		if (statusCode == 200 && bookingCancelStatus) {
+			System.out.println("Booking with Booking Reference: " + bookingReference + " and PNR: " + pnr + " cancelled successfully.");
+		} else if (statusCode == 200 && !bookingCancelStatus) {
+			response = httpClient.execute(request);
+			// Parse the response body
+			entity = response.getEntity();
+			responseBody = EntityUtils.toString(entity);
+			jsonResponse = new JSONObject(responseBody.toString());
+
+			// Extract the booking status
+			statusObject = jsonResponse.getJSONObject("result");
+			bookingCancelStatus = statusObject.getBoolean("successful");
+		}
+
+		if (!bookingCancelStatus){
+			System.out.println("Cancellation failed for "+ bookingReference +" with PNR "+ pnr);
+		} else if (bookingCancelStatus) {
+			System.out.println("Booking with Booking Reference: " + bookingReference + " and PNR: " + pnr + " cancelled successfully.");
+
+		}
+
+		// Close the HttpClient
+		httpClient.close();
+	}
+
+	public boolean checkSubscriptionStatus(String username, String password){
+		boolean subscriptionStatus = false;
+		String requestBody = "{\n" +
+				"    \"password\": \"" + password + "\",\n" +
+				"    \"provider\": \"travelstart\",\n" +
+				"    \"token\": null,\n" +
+				"    \"userAgent\": {\n" +
+				"        \"language\": \"en\",\n" +
+				"        \"market\": \"za\"\n" +
+				"    },\n" +
+				"    \"username\": \"" + username + "\"\n" +
+				"}";
+
+		Response response = RestAssured.given()
+				.contentType(ContentType.JSON)
+				.body(requestBody)
+				.post("https://preprod-tsacc.travelstart.com/api/v3/login");
+
+		Assert.assertEquals(response.getStatusCode(), 200, "Expected status code 200");
+
+		String responseBody = "";
+
+		if (response.getStatusCode() == 200){
+
+			responseBody = response.getBody().asString();
+
+		}
+
+
+		if (responseBody.contains("\"isTSPlusSubscriber\":true")){
+
+			subscriptionStatus = true;
+
+		}
+
+        return subscriptionStatus;
+    }
+
+
+
+
+
+}

@@ -33,6 +33,10 @@ public class SRP {
     public static By inboundFlightUnbundled = By.xpath("(//div[@class='row m-0 inBound return'])[1]");
     public static By outboundFlightUnbundled = By.xpath("(//div[@class='row m-0 outBound return'])[1]");
 
+    public static By visaRequiredPopUp = By.xpath("//div[text()='ATTENTION GOOD LOOKING!']");
+    public static By visaProceed = By.xpath("//button[@class='btn ok-btn onHover refreshBtn primary_btn ng-star-inserted']");
+
+
 
 
 }
