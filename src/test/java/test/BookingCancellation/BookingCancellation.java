@@ -1,5 +1,6 @@
 package test.BookingCancellation;
 
+import org.json.JSONException;
 import pageObjects.Paths;
 import testmethods.Method;
 
@@ -24,9 +25,14 @@ public class BookingCancellation {
 
             String bookingRefNumber = m.readDataFromExcel(Paths.bookingReferencesForCancellation, "Bookings References", i+1, 0);
 
-            m.cancelBooking(environment, bookingRefNumber);
+            String firstName = m.readDataFromExcel(Paths.bookingReferencesForCancellation,"Bookings References", i+1, 2);
+            try {
+                m.cancelBooking(environment, bookingRefNumber);
+            } catch (JSONException e){
+                System.out.println("JSON exception occured, booking reference:"+bookingRefNumber+" may not have been cancelled");
+            }
+            System.out.println("-----------------------------------------------------------------------------------------------------------");
 
-            System.out.println("---------------------------------------------------------------------------------------------------------------------------------");
             System.out.println();
 
         }

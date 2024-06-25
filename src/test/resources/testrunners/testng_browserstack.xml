@@ -1,0 +1,29 @@
+<!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd">
+<suite name="BrowserStack Test" verbose="3" parallel="tests" thread-count="3">
+    <listeners>
+        <listener class-name="listeners.ExtentReportListener"/>
+    </listeners>
+    <test name="BrowserStack Test - Firefox">
+        <parameter name="os" value="Windows" />
+        <parameter name="os_version" value="10" />
+        <parameter name="browser" value="Firefox" />
+        <parameter name="browser_version" value="80.0" />
+        <classes>
+
+            <class name="test.B2CCheckList.Login1"/>
+
+        </classes>
+    </test>
+
+    <test name="BrowserStack Test - Chrome">
+        <parameter name="os" value="OS X" />
+        <parameter name="os_version" value="Catalina" />
+        <parameter name="browser" value="Chrome" />
+        <parameter name="browser_version" value="85.0" />
+        <classes>
+
+            <class name="test.B2CCheckList.Login1"/>
+
+        </classes>
+    </test>
+</suite>

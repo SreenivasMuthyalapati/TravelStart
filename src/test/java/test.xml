@@ -5,7 +5,9 @@
     </listeners>
     <test name="Test">
         <classes>
-            <class name="test.TsPlusSubscription"/>
+
+            <class name="test.B2CCheckList.Signup"/>
+
         </classes>
     </test>
 </suite>

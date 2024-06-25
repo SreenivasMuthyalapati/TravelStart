@@ -1,5 +1,6 @@
 package test.B2CCheckList;
 
+import io.github.bonigarcia.wdm.WebDriverManager;
 import lombok.extern.java.Log;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.openqa.selenium.By;
@@ -9,6 +10,9 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.edge.EdgeDriver;
 import org.openqa.selenium.firefox.FirefoxDriver;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
+import org.testng.Assert;
 import org.testng.ITestResult;
 import org.testng.SkipException;
 import org.testng.annotations.AfterMethod;
@@ -36,6 +40,7 @@ public class Signup {
     static String runTime;
     static String screenShotPath = "";
     static String shouldRun;
+
 
     static {
         try {
@@ -93,7 +98,7 @@ public class Signup {
     }
 
     @Test(dataProvider = "TestCase")
-    public void login(String testCaseNumber, String testSummary, String username, String password, String firstname, String lastname) throws IOException, InterruptedException {
+    public void signup(String testCaseNumber, String testSummary, String username, String password, String firstname, String lastname) throws IOException, InterruptedException {
         // Storing runtime into a variable
         runTime = m.getCurrentTime();
         String testStatus;
@@ -116,10 +121,12 @@ public class Signup {
 
         // Launch browser
         if (browser.equalsIgnoreCase("Chrome")) {
-            System.setProperty("webdriver.chrome.driver", Paths.chromeDriver);
+            WebDriverManager.chromedriver().setup();
+           // System.setProperty("webdriver.chrome.driver", Paths.chromeDriver);
             driver = new ChromeDriver();
         } else if (browser.equalsIgnoreCase("Edge")) {
-            System.setProperty("webdriver.edge.driver", Paths.edgeDriver);
+            WebDriverManager.edgedriver().setup();
+            //System.setProperty("webdriver.edge.driver", Paths.edgeDriver);
             driver = new EdgeDriver();
         } else if (browser.equalsIgnoreCase("Firefox")) {
             System.setProperty("webdriver.gecko.driver", Paths.geckoDriver);
@@ -157,44 +164,73 @@ public class Signup {
         driver.get(baseURL);
         Thread.sleep(5000);
         driver.findElement(HomePage.myAccount).click();
+        Thread.sleep(500);
         driver.findElement(LoginPage.signUpOption).click();
+        Thread.sleep(500);
         driver.findElement(LoginPage.email).sendKeys(username);
+        Thread.sleep(500);
         driver.findElement(LoginPage.signUPPassword).sendKeys(password);
+        Thread.sleep(500);
         driver.findElement(LoginPage.firstName).sendKeys(firstname);
+        Thread.sleep(500);
         driver.findElement(LoginPage.lastName).sendKeys(lastname);
+        Thread.sleep(500);
         driver.findElement(LoginPage.TandCCheckBox).click();
+        Thread.sleep(500);
         driver.findElement(LoginPage.signUpButton).click();
-        Thread.sleep(10000);
+        Thread.sleep(5000);
 
         driver.get("https://yopmail.com/");
 
-        Thread.sleep(5000);
+        WebDriverWait wait = new WebDriverWait(driver, 20);
 
         driver.findElement(By.xpath("//input[@id='login']")).sendKeys(username);
         driver.findElement(By.xpath("//button[@title='Check Inbox @yopmail.com']")).click();
 
-        Thread.sleep(10000);
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//iframe[@id='ifinbox']")));
 
-        driver.findElement(By.xpath("(//button[@id='refresh'])[1]")).click();
+        WebElement inboxFrameElement = driver.findElement(By.xpath("//iframe[@id='ifinbox']"));
 
-        Thread.sleep(1000);
+        driver.switchTo().frame(inboxFrameElement);
 
-        try {
-            WebElement inboxFrameElement = driver.findElement(By.xpath("//iframe[@id='ifinbox']"));
-            driver.switchTo().frame(inboxFrameElement);
-            WebElement activationMail = driver.findElement(By.xpath("(//div[@class='mctn']//div[text()='Your  account'])[1]"));
-            activationMail.click();
+        for (int i = 0; i < 24; i++) {
+
+            Thread.sleep(3000);
             driver.switchTo().defaultContent();
+            driver.findElement(By.xpath("(//button[@id='refresh'])[1]")).click();
+            driver.switchTo().frame(inboxFrameElement);
+            Thread.sleep(2000);
 
-            WebElement mailBodyFrameElement = driver.findElement(By.xpath("//iframe[@id='ifmail']"));
-            driver.switchTo().frame(mailBodyFrameElement);
-            driver.findElement(By.xpath("(//*[text()='Activate Account'])[1]")).click();
-        } catch (NoSuchElementException e){
-            e.printStackTrace();
-            System.out.println("No mail received");
+            try {
+                WebElement activationMail = driver.findElement(By.xpath("(//div[@class='mctn']//div[@class='lms'])[1]"));
+                String mailSubject = activationMail.getText();
+                if (mailSubject.equalsIgnoreCase("Your  account") || mailSubject.equalsIgnoreCase("Your account") || mailSubject.equalsIgnoreCase("Your Travelstart account")) {
+                    activationMail.click();
+                    break;
+                }
+            } catch (NoSuchElementException e) {
+                // Email not found yet
+            }
+        }
+        driver.switchTo().defaultContent();
+
+        WebElement mailBodyFrameElement = wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//iframe[@id='ifmail']")));
+        driver.switchTo().frame(mailBodyFrameElement);
+        driver.findElement(By.xpath("(//*[text()='Activate Account'])[1]")).click();
+
+        Thread.sleep(2000);
+
+        boolean accountStatusActive = m.checkAccountStatus(username,password);
+
+        if (accountStatusActive) {
+            System.out.println("Account created");
+        }
+        else {
+            System.out.println("Account activation failed");
         }
 
-        System.out.println("Account created");
+        Assert.assertTrue(accountStatusActive, "Signup failed");
 
     }
+
 }

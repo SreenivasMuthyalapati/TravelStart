@@ -3,6 +3,13 @@
 	<groupId>travelStart</groupId>
 	<artifactId>travelStart</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
+	<configuration>
+		<source>22</source>
+		<target>22</target>
+		<compilerArgs>
+			<arg>--enable-preview</arg>
+		</compilerArgs>
+	</configuration>
 	<properties>
 		<maven.compiler.source>21</maven.compiler.source>
 		<maven.compiler.target>21</maven.compiler.target>
@@ -81,12 +88,14 @@
 			<scope>test</scope>
 		</dependency>
 		<!-- WebDriverManager -->
+		<!-- https://mvnrepository.com/artifact/io.github.bonigarcia/webdrivermanager -->
 		<dependency>
 			<groupId>io.github.bonigarcia</groupId>
 			<artifactId>webdrivermanager</artifactId>
-			<version>5.0.3</version>
+			<version>5.8.0</version>
 			<scope>test</scope>
 		</dependency>
+
 		<!-- Gson -->
 		<dependency>
 			<groupId>com.google.code.gson</groupId>

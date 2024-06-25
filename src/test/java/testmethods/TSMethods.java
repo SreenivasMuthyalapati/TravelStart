@@ -11,7 +11,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
-public class BookingFlowMethods {
+public class TSMethods {
 
     static WebDriver driver;
     static Method m = new Method();
@@ -27,7 +27,7 @@ public class BookingFlowMethods {
     WebDriverWait wait;
 
     // Constructor to initialize WebDriverWait
-    public BookingFlowMethods(WebDriver driver) {
+    public TSMethods(WebDriver driver) {
         this.driver = driver;
         wait = new WebDriverWait(driver, 60);
     }
@@ -762,6 +762,25 @@ public class BookingFlowMethods {
 
     }
 
+    public void add_seats() throws InterruptedException {
+        try {
+        if (driver.findElement(By.xpath("(//h4[@class='seat-map-drawer__header-text d-inline seat_header'])[1]")).isDisplayed()){
+
+            Thread.sleep(1000);
+
+            driver.findElement(By.xpath("//button[@class='btn btn-link st_btn st_btn_clear']")).click();
+
+            Thread.sleep(1000);
+
+        }}catch (NoSuchElementException e){
+
+            e.printStackTrace();
+
+        }
+
+
+    }
+
     public void add_Addons(String domain, String addFlexi) throws InterruptedException {
         // To deselect addOns
         try {
@@ -835,7 +854,7 @@ public class BookingFlowMethods {
         }
     }
 
-    public void paymentAndBooking(String testCaseNumber, String domain, String paymentMethod, String bankNameEFT) throws IOException, InterruptedException {
+    public void paymentAndBooking(String environment, String testCaseNumber, String domain, String paymentMethod, String bankNameEFT, String isToBeCancelled) throws IOException, InterruptedException {
 
         String bookingReference = "";
 
@@ -1025,6 +1044,13 @@ public class BookingFlowMethods {
             m.writeToExcel(("Booking completed"), 3, outputExcel);
             m.writeToExcel(m.getCID(driver), 4, outputExcel);
             m.writeToExcel(runTime, 5, outputExcel);
+
+            if (isToBeCancelled.equalsIgnoreCase("Yes")){
+                m.cancelBooking(environment, bookingReference);
+            }
+
+
+
         }else {
             m.takeScreenshot(driver, Paths.screenshotFolder, screenShotPath);
             m.getConsole(driver);
@@ -1061,14 +1087,49 @@ public class BookingFlowMethods {
             m.writeToExcel(runTime, 5, outputExcel);
         }
 
-//        String bookingStatus = m.getBookingStatus(environment, bookingReference);
-//        boolean isBookingDone = false;
-//        isBookingDone = bookingStatus.equalsIgnoreCase("Pending");
 
         Assert.assertTrue((isBookingDoneWithinTime), "Booking not completed within 45 seconds");
 
 
     }
+
+
+
+    public void login(String username, String password) throws InterruptedException {
+
+        Thread.sleep(500);
+        driver.findElement(HomePage.myAccount).click();
+        driver.findElement(LoginPage.username).sendKeys(username);
+        driver.findElement(LoginPage.password).sendKeys(password);
+        driver.findElement(LoginPage.login).click();
+        Thread.sleep(5000);
+
+        Thread.sleep(2000);
+
+        try {
+            driver.findElement(HomePage.profile).click();
+            Thread.sleep(500);
+            driver.findElement(HomePage.myProfile).click();
+            Thread.sleep(1000);
+            String loggedInMail = driver.findElement(By.xpath("//input[@placeholder='name@gmail.com']")).getAttribute("value");
+
+            Assert.assertTrue(loggedInMail.equalsIgnoreCase(username), "Login Failed");
+
+        } catch (NoSuchElementException e){
+
+        }
+
+        try {
+            WebElement logout = driver.findElement(HomePage.logout);
+
+            Assert.assertTrue(logout.isDisplayed(), "Login uncessessful");
+
+        } catch (NoSuchElementException e){
+
+        }
+
+    }
+
 
 
 }

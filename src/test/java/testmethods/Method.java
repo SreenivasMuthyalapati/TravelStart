@@ -769,6 +769,14 @@ public class Method {
 			// Bearer token for authorization
 			String bearerToken = "f7904a2f-cb89-46a6-bbc9-158ad96160b2";
 
+			if(environment.equalsIgnoreCase("Preprod")){
+				bearerToken = "f7904a2f-cb89-46a6-bbc9-158ad96160b2";
+			} else if (environment.equalsIgnoreCase("Live")) {
+				bearerToken = "7119e7c4-e507-449c-8cac-d31ca3435f34a8c85694-f8e3-4941-b3ba-f1da94d38ce5";
+			} else if (environment.equalsIgnoreCase("Beta") || environment.equalsIgnoreCase("Alpha")){
+				bearerToken = "f416567b-8837-4704-b597-7937f58ab20c";
+			}
+
 			// Create an HttpClient instance
 			CloseableHttpClient httpClient = HttpClients.createDefault();
 
@@ -807,7 +815,6 @@ public class Method {
 						JSONObject jsonObject = new JSONObject(jsonResponse.toString());
 						JSONArray reservationArray = jsonObject.getJSONArray("reservations");
 
-
 						for (int i = 0; i < reservationArray.length(); i++) {
 							JSONObject reservation = reservationArray.getJSONObject(i);
 							pnrReference = reservation.getString("pnrReference");
@@ -842,12 +849,22 @@ public class Method {
 		}
 	}
 
+
 	private void cancelBookingRequest(String environment, String bookingReference, String pnr) throws IOException {
 
 		String BASE_URL_PREPROD = "https://preprod-wapi.travelstart.com/website-services/api/itinerary/cancel";
 		String BASE_URL_BETA = "https://beta-wapi.travelstart.com/website-services/api/itinerary/cancel";
 		String BASE_URL_LIVE = "https://wapi.travelstart.com/website-services/api/itinerary/cancel";
+
 		String BEARER_TOKEN = "f7904a2f-cb89-46a6-bbc9-158ad96160b2";
+
+		if(environment.equalsIgnoreCase("Preprod")){
+			BEARER_TOKEN = "f7904a2f-cb89-46a6-bbc9-158ad96160b2";
+		} else if (environment.equalsIgnoreCase("Live")) {
+			BEARER_TOKEN = "7119e7c4-e507-449c-8cac-d31ca3435f34a8c85694-f8e3-4941-b3ba-f1da94d38ce5";
+		} else if (environment.equalsIgnoreCase("Beta") || environment.equalsIgnoreCase("Alpha")){
+			BEARER_TOKEN = "f416567b-8837-4704-b597-7937f58ab20c";
+		}
 
 
 		// Construct the URL for cancellation based on environment
@@ -902,9 +919,6 @@ public class Method {
 
 		if (!bookingCancelStatus){
 			System.out.println("Cancellation failed for "+ bookingReference +" with PNR "+ pnr);
-		} else if (bookingCancelStatus) {
-			System.out.println("Booking with Booking Reference: " + bookingReference + " and PNR: " + pnr + " cancelled successfully.");
-
 		}
 
 		// Close the HttpClient
@@ -924,7 +938,7 @@ public class Method {
 				"    \"username\": \"" + username + "\"\n" +
 				"}";
 
-		Response response = RestAssured.given()
+		Response response = given()
 				.contentType(ContentType.JSON)
 				.body(requestBody)
 				.post("https://preprod-tsacc.travelstart.com/api/v3/login");
@@ -949,7 +963,43 @@ public class Method {
         return subscriptionStatus;
     }
 
+	public boolean checkAccountStatus(String username, String password){
+		boolean accountActive = false;
+		String requestBody = "{\n" +
+				"    \"password\": \"" + password + "\",\n" +
+				"    \"provider\": \"travelstart\",\n" +
+				"    \"token\": null,\n" +
+				"    \"userAgent\": {\n" +
+				"        \"language\": \"en\",\n" +
+				"        \"market\": \"za\"\n" +
+				"    },\n" +
+				"    \"username\": \"" + username + "\"\n" +
+				"}";
 
+		Response response = given()
+				.contentType(ContentType.JSON)
+				.body(requestBody)
+				.post("https://preprod-tsacc.travelstart.com/api/v3/login");
+
+		Assert.assertEquals(response.getStatusCode(), 200, "Expected status code 200");
+
+		String responseBody = "";
+
+		if (response.getStatusCode() == 200){
+
+			responseBody = response.getBody().asString();
+
+
+		}
+
+		if (responseBody.contains("ACTIVE")){
+
+			accountActive = true;
+
+		}
+
+		return accountActive;
+	}
 
 
 

@@ -1,22 +1,17 @@
 package test.B2CCheckList;
 
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.openqa.selenium.By;
-import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.edge.EdgeDriver;
 import org.openqa.selenium.firefox.FirefoxDriver;
-import org.testng.Assert;
 import org.testng.ITestResult;
 import org.testng.SkipException;
+import org.testng.annotations.AfterClass;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
-import pageObjects.HomePage;
 import pageObjects.Paths;
-import test.BrowserStack.BrowserStackBaseTest;
 import testmethods.Method;
 import testmethods.TSMethods;
 
@@ -24,7 +19,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Login{
+public class SavedPaxTest {
 
     static XSSFWorkbook workbook;
     static WebDriver driver;
@@ -59,10 +54,10 @@ public class Login{
         }
     }
 
-    public Login() throws IOException {
+    public SavedPaxTest() throws IOException {
     }
 
-    @AfterMethod
+    @AfterClass
     public void close(ITestResult result) {
         // If test fails and driver is not null, print the correlation ID
         if (driver != null && result.getStatus() == ITestResult.FAILURE) {
@@ -85,6 +80,7 @@ public class Login{
             String testSummary = m.readDataFromExcel(dataPath, "Login", i, 1);
             String username = m.readDataFromExcel(dataPath, "Login", i, 2);
             String password = m.readDataFromExcel(dataPath, "Login", i, 3);
+
             testCase.add(new Object[]{testCaseNumber, testSummary, username, password});
         }
 
@@ -92,7 +88,7 @@ public class Login{
     }
 
     @Test(dataProvider = "TestCase")
-    public void login(String testCaseNumber, String testSummary, String username, String password) throws IOException, InterruptedException {
+    public void addPax(String testCaseNumber, String testSummary, String username, String password) throws IOException, InterruptedException {
         // Storing runtime into a variable
         runTime = m.getCurrentTime();
         String testStatus;
@@ -159,5 +155,15 @@ public class Login{
 
         m.login(username, password);
 
+
+
+
     }
-}
+
+    @Test
+    public void editPax(){
+
+    }
+
+
+    }
