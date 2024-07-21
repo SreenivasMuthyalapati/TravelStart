@@ -1,7 +1,9 @@
 package testmethods;
 
+import org.apache.commons.math3.analysis.function.Add;
 import org.openqa.selenium.*;
 import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.Wait;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.Assert;
 import org.testng.SkipException;
@@ -9,7 +11,10 @@ import pageObjects.*;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.classfile.attribute.SyntheticAttribute;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class TSMethods {
 
@@ -24,18 +29,31 @@ public class TSMethods {
     static String screenShotPath ="";
     static String testStatus = "";
     //Initializing wait explicitly
-    WebDriverWait wait;
+    static WebDriverWait wait;
+
 
     // Constructor to initialize WebDriverWait
     public TSMethods(WebDriver driver) {
-        this.driver = driver;
-        wait = new WebDriverWait(driver, 60);
+        try {
+
+            TSMethods.driver = driver;
+            wait = new WebDriverWait(driver, 60);
+        }catch (NullPointerException e){
+
+        }
     }
 
 
 
-
     public void searchFlight(String testCaseNumber, String tripType, String origin, String destination, String departureDate, String departureMonth, String returnDate, String returnMonth, String adultCount, String youngAdultCount, String childCount, String infantCount) throws InterruptedException, IOException {
+
+
+        try {
+            wait.until(ExpectedConditions.visibilityOfElementLocated(HomePage.oneWay));
+
+        }catch (TimeoutException e){
+
+        }
 
         //Selecting trip type in search if the trip type is oneway
         if (tripType.equalsIgnoreCase("Oneway")){
@@ -46,6 +64,8 @@ public class TSMethods {
 
         // Entering departure city
         Thread.sleep(1000);
+
+        driver.findElement(HomePage.departureCity).click();
         driver.findElement(HomePage.departureCity).sendKeys(origin);
 
         // Waits for 2 seconds for city suggestions to come up
@@ -55,6 +75,7 @@ public class TSMethods {
         driver.findElement(HomePage.option).click();
 
         // Entering return city
+        driver.findElement(HomePage.arrivalCity).click();
         driver.findElement(HomePage.arrivalCity).sendKeys(destination);
 
         // Waits for 2 seconds for city suggestions to come up
@@ -137,10 +158,10 @@ public class TSMethods {
 
             driver.switchTo().defaultContent();
         } catch (NoSuchElementException | NoSuchFrameException e) {
-            e.printStackTrace();
 
         }
 
+        System.out.println("Correlation ID: "+ m.getCID(driver));
 
         // Asserting result
         // Initializes webelement result to store displayed result
@@ -152,7 +173,7 @@ public class TSMethods {
             result = driver.findElement(SRP.results);
 
         } catch (NoSuchElementException | TimeoutException e) {
-            e.printStackTrace();
+
         }
 
         // Initializing a boolean variable for result assertion
@@ -163,7 +184,7 @@ public class TSMethods {
             isResultAvailable = result.isDisplayed();
 
         }catch (NullPointerException e){
-            e.printStackTrace();
+
         }
 
         if (isResultAvailable){
@@ -178,7 +199,7 @@ public class TSMethods {
             isResultAvailable = result.isDisplayed();
 
         }catch (NullPointerException e){
-            e.printStackTrace();
+
         }
 
         if (isResultAvailable){
@@ -197,7 +218,7 @@ public class TSMethods {
             File screenShotFile = new File(screenShotPath);
 
             // Sends a slack notification
-            m.sendNotification(testCaseNumber, "Result not loaded or result not loaded within time limit");
+           // m.sendNotification(testCaseNumber, "Result not loaded or result not loaded within time limit");
 
             // Returns test case ID into test result document
             m.writeToExcel(testCaseNumber, 0, outputExcel);
@@ -217,8 +238,10 @@ public class TSMethods {
 
             // Returns runtime into test result document
             m.writeToExcel(runTime, 5, outputExcel);
-
         }
+
+            Assert.assertTrue(isResultAvailable, "Result not loaded");
+
 
     }
 
@@ -272,8 +295,11 @@ public class TSMethods {
             }
 
             // Clicks on apply filter button
-            driver.findElement(Filters.apply).click();
-
+            try {
+                driver.findElement(Filters.apply).click();
+            }catch (ElementNotInteractableException e){
+                driver.findElement(By.xpath("(//span[@class='close_icn'])[2]")).click();
+            }
             // Waits for 1 second to refresh DOM
             Thread.sleep(1000);
 
@@ -292,6 +318,7 @@ public class TSMethods {
             // Call the airlineFilter method with a dynamic parameter
             try {
 
+                Thread.sleep(1000);
                 // Selects desired airline in filters
                 WebElement airlineFilterElement = airlineInstance.airlineFilter(departureAirline);
                 airlineFilterElement.click();
@@ -327,7 +354,11 @@ public class TSMethods {
             }
 
             // Clicks on apply filters button
-            driver.findElement(Filters.apply).click();
+            try {
+                driver.findElement(Filters.apply).click();
+            }catch (ElementNotInteractableException e){
+                driver.findElement(By.xpath("(//span[@class='close_icn'])[2]")).click();
+            }
 
 
             // Wait for 1 second for the DOM to get referesh
@@ -421,7 +452,11 @@ public class TSMethods {
             }
 
             // Clicks on apply filters button
-            driver.findElement(Filters.apply).click();
+            try {
+                driver.findElement(Filters.apply).click();
+            }catch (ElementNotInteractableException e){
+                driver.findElement(By.xpath("(//span[@class='close_icn'])[2]")).click();
+            }
 
             // Selects outbound flight in result
             driver.findElement(SRP.outboundFlightUnbundled).click();
@@ -450,7 +485,7 @@ public class TSMethods {
                     driver.findElement(SRP.airPortChange).click();
 
                 }catch (NoSuchElementException ne){
-                    ne.printStackTrace();
+
                 }
 
         } else if (triptype.equalsIgnoreCase("Return") && isBundled.equalsIgnoreCase("Yes")) {
@@ -462,7 +497,7 @@ public class TSMethods {
                 driver.findElement(SRP.airPortChange).click();
 
             }catch (NoSuchElementException ne){
-                ne.printStackTrace();
+
             }
         }
 
@@ -479,7 +514,7 @@ public class TSMethods {
 
         }
         catch (NoSuchElementException | TimeoutException e) {
-            e.printStackTrace();
+
         }
 
         // Initializing boolean variable to asser flight details page
@@ -492,7 +527,6 @@ public class TSMethods {
 
         }catch (NullPointerException e){
 
-            e.printStackTrace();
 
         }
         if (istravellerPageAvailable){
@@ -514,7 +548,7 @@ public class TSMethods {
             File screenShotFile = new File(screenShotPath);
 
             // Sends slack notification
-            m.sendNotification(testCaseNumber, "Not redirected to flight details screen or not redirected within 60 seconds");
+           // m.sendNotification(testCaseNumber, "Not redirected to flight details screen or not redirected within 60 seconds");
 
             // Writes testcase ID into test result document
             m.writeToExcel(testCaseNumber, 0, outputExcel);
@@ -545,7 +579,6 @@ public class TSMethods {
 
         }catch (Exception e){
 
-            e.printStackTrace();
 
         }
 
@@ -559,7 +592,6 @@ public class TSMethods {
 
         } catch (NullPointerException e){
 
-            e.printStackTrace();
 
         }
 
@@ -569,7 +601,17 @@ public class TSMethods {
     }
 
 
-    public void enterPaxDetails(String testCaseNumber, String tripType, String adultCount, String youngAdultCount, String childCount, String infantCount, String departureAirline, String returnAirline, String mailID, String mobileNumber, String title, String firstName, String middleName, String lastName, String dateOfBirth, String monthOfBirth, String yearOfBirth, String passPortNumber, String dateOfPassportExpiry, String monthOfPassportExpiry, String yearOfPassportExpiry, String passPortNationality, String passPortIssuingCountry, String addBaggage, String whatsApp) throws IOException, InterruptedException {
+    public void enterPaxDetails(String isLoggedIn, String testCaseNumber, String tripType, String adultCount, String youngAdultCount, String childCount, String infantCount, String departureAirline, String returnAirline, String mailID, String mobileNumber, String title, String firstName, String middleName, String lastName, String dateOfBirth, String monthOfBirth, String yearOfBirth, String passPortNumber, String dateOfPassportExpiry, String monthOfPassportExpiry, String yearOfPassportExpiry, String passPortNationality, String passPortIssuingCountry, String addBaggage, String whatsApp) throws IOException, InterruptedException {
+
+
+        String enteredMobileNumber = driver.findElement(FlightPage.mobileNo).getAttribute("value");
+
+        if (isLoggedIn.equalsIgnoreCase("Yes") && (enteredMobileNumber.isEmpty() || enteredMobileNumber.isBlank())){
+
+        // driver.navigate().refresh();
+
+        }
+
 
         // To check is the airline is flysafair for test surname
         boolean isFAFlight = false;
@@ -604,15 +646,43 @@ public class TSMethods {
         // Sending mobile number
         driver.findElement(FlightPage.mobileNo).sendKeys(mobileNumber);
 
+        enteredMobileNumber = driver.findElement(FlightPage.mobileNo).getAttribute("value");
+
+        try {
+            if (!enteredMobileNumber.equalsIgnoreCase(mobileNumber)) {
+
+                driver.findElement(FlightPage.mobileNo).clear();
+                driver.findElement(FlightPage.mobileNo).sendKeys(mobileNumber);
+
+            }
+        } catch (NullPointerException e){
+
+        }
         // Sending mail ID
         driver.findElement(FlightPage.email).sendKeys(mailID);
 
+        String enteredMailID = driver.findElement(FlightPage.email).getAttribute("value");
+
+
+        try {
+            if (!enteredMailID.equalsIgnoreCase(mailID)) {
+
+                driver.findElement(FlightPage.email).clear();
+                driver.findElement(FlightPage.email).sendKeys(mailID);
+
+            }
+        } catch (NullPointerException e){
+
+        }
+
         // Deselecting whatsapp add on if product is included in test case
         if (whatsApp.equalsIgnoreCase("No")){
+            try {
+                // Deselects whatsapp
+                driver.findElement(FlightPage.whatsApp).click();
+            }catch (NoSuchElementException e){
 
-            // Deselects whatsapp
-            driver.findElement(FlightPage.whatsApp).click();
-
+            }
         }
 
         Thread.sleep(500);
@@ -699,7 +769,6 @@ public class TSMethods {
             passPortInfo = driver.findElement(FlightPage.ppInfo);
             passPortInfo = driver.findElement(FlightPage.ppInfo);
         } catch (NoSuchElementException ne) {
-            ne.printStackTrace();
             System.out.println("PassPort details not required for this flight");
         }
         try {
@@ -733,7 +802,7 @@ public class TSMethods {
 
             }
         } catch (Exception e) {
-            e.printStackTrace();
+
         }
 
         int adultCountTiInt = Integer.parseInt(adultCount);
@@ -752,7 +821,6 @@ public class TSMethods {
 
             driver.switchTo().defaultContent();
         } catch (NoSuchElementException | NoSuchFrameException e) {
-            e.printStackTrace();
 
         }
 
@@ -762,124 +830,316 @@ public class TSMethods {
 
     }
 
-    public void add_seats() throws InterruptedException {
-        try {
-        if (driver.findElement(By.xpath("(//h4[@class='seat-map-drawer__header-text d-inline seat_header'])[1]")).isDisplayed()){
+    public String add_seats(String addSeats) throws InterruptedException {
 
-            Thread.sleep(1000);
+        String totalPrice = "";
 
-            driver.findElement(By.xpath("//button[@class='btn btn-link st_btn st_btn_clear']")).click();
+        boolean seatsOffered = false;
 
-            Thread.sleep(1000);
+        try{
+            WebElement seats = driver.findElement(SeatsPage.seatSelectionBlock);
+            seatsOffered = true;
+        }catch (Exception e){
+            seatsOffered = false;
+            System.out.println("Seats not offered for this flight");
+        }
 
-        }}catch (NoSuchElementException e){
+        if (addSeats.equalsIgnoreCase("No") && seatsOffered) {
 
-            e.printStackTrace();
+            try {
+
+                if (driver.findElement(By.xpath("(//h4[@class='seat-map-drawer__header-text d-inline seat_header'])[1]")).isDisplayed()) {
+
+                    Thread.sleep(1000);
+
+                    driver.findElement(By.xpath("//button[@class='btn btn-link st_btn st_btn_clear']")).click();
+
+                    Thread.sleep(1000);
+
+                }
+            } catch (NoSuchElementException e) {
+
+            }
+        } else if (addSeats.equalsIgnoreCase("Yes") && seatsOffered) {
+
+            WebElement seatsSelectionBlock;
+            boolean isSeatsOffered = false;
+
+            try {
+
+                seatsSelectionBlock = driver.findElement(SeatsPage.seatSelectionBlock);
+                isSeatsOffered = true;
+
+            } catch (NoSuchElementException e) {
+
+                isSeatsOffered = false;
+                System.out.println("Seats selection not available for this flight");
+
+            }
+
+                if (isSeatsOffered) {
+
+                    Thread.sleep(1000);
+
+                    // Asserting seat map
+                    // Initializes webelement result to store displayed result
+                    WebElement seatMap = null;
+
+                    try {
+                        // To wait until result is loaded (Waits for 60 seconds maximum)
+                        wait.until(ExpectedConditions.visibilityOfElementLocated(SeatsPage.seatMap));
+                        seatMap = driver.findElement(SeatsPage.availableSeat);
+
+                    } catch (NoSuchElementException | TimeoutException e) {
+
+                    }
+
+                    // Initializing a boolean variable for result assertion
+                    boolean isSeatMapAvailable = false;
+
+                    try{
+                        // Stores true if result is available
+                        isSeatMapAvailable = seatMap.isDisplayed();
+
+                    }catch (NullPointerException e){
+
+                    }
+
+                    if (isSeatMapAvailable){
+                        System.out.println("Seat map loaded");
+                    }
+
+                    // Initializing a boolean variable for result assertion
+                    isSeatMapAvailable = false;
+
+                    try{
+                        // Stores true if result is avaiable
+                        isSeatMapAvailable = seatMap.isDisplayed();
+
+                    }catch (NullPointerException e){
+
+                    }
+
+                    if (!isSeatMapAvailable){
+
+                        m.takeScreenshot(driver, Paths.screenshotFolder, screenShotPath);
+                        totalPrice = "false";
+
+                    }
+
+
+                    Assert.assertTrue(isSeatMapAvailable, "Seats page  not loaded");
+
+
+                    //Selecting seats
+
+                    int totalSegmentCount = 0;
+
+                    List<WebElement> segments  = driver.findElements(SeatsPage.unselectedSegment);
+
+                    totalSegmentCount = segments.size()+1;
+
+                    SeatsPage seats = new SeatsPage(driver);
+
+                    Thread.sleep(100);
+                    driver.findElement(SeatsPage.availableSeat).click();
+
+                    Thread.sleep(2000);
+
+                    try {
+
+                        totalPrice = driver.findElement(SeatsPage.totalCostOfSeats).getText();
+
+                    } catch (NoSuchElementException e){
+
+                        driver.findElement(SeatsPage.availableSeat).click();
+
+                        Thread.sleep(2000);
+
+                        totalPrice = driver.findElement(SeatsPage.totalCostOfSeats).getText();
+
+                    }
+
+
+                    String getPrice [] = totalPrice.split("R");
+
+                    totalPrice = getPrice[1];
+
+                    driver.findElement(SeatsPage.continueToAddons).click();
+
+                    Thread.sleep(500);
+
+                    try{
+                        driver.findElement(SeatsPage.continueInPopUp).click();
+                    }catch (Exception e){
+
+                    }
+
+                    Thread.sleep(1000);
+                }
+
 
         }
 
 
+        return totalPrice;
     }
 
     public void add_Addons(String domain, String addFlexi) throws InterruptedException {
         // To deselect addOns
-        try {
-            List<WebElement> selectedAddons = driver.findElements(AddOnsPage.selectedAddons);
-            int numberOfSelectedAddOns = selectedAddons.size();
 
-            for (int i = 0; i < numberOfSelectedAddOns;) {
-                WebElement selectedAddon = selectedAddons.get(i);
-                if (selectedAddon.isDisplayed()) {
-                    selectedAddon.click();
-                }
-                // Re-find the list of selected addons after each interaction
-                selectedAddons = driver.findElements(AddOnsPage.selectedAddons);
-                int newNumberOfSelectedAddOns = selectedAddons.size();
+        boolean addOnsOffered = false;
 
-                // Check if the number of selected addons has decreased
-                if (newNumberOfSelectedAddOns < numberOfSelectedAddOns) {
-                    numberOfSelectedAddOns = newNumberOfSelectedAddOns;
-                    // Restart the loop as the indices may have shifted
-                    continue;
-                }
+        try{
 
-                numberOfSelectedAddOns = newNumberOfSelectedAddOns;
-                i++; // Proceed to the next addon
-            }
-        } catch (Exception e) {
-            System.out.println("No addons selected by default");
+            WebElement addOns = driver.findElement(AddOnsPage.addOnsBlock);
+            addOnsOffered = true;
+
+        }catch (Exception e){
+            addOnsOffered = false;
         }
 
-        // To add flexi
-        try {
-            List<WebElement> availableAddons = driver.findElements(AddOnsPage.addOnName);
-            List<WebElement> SelectAddons = driver.findElements(AddOnsPage.selectAddon);
-            int numberOfAddOns = availableAddons.size();
-            if (addFlexi.equalsIgnoreCase("Yes")){
-                for (int i = 0; i < numberOfAddOns; ) {
-                    WebElement availableAddon = availableAddons.get(i);
-                    WebElement SelectaddOn = SelectAddons.get(i);
-                    if (availableAddon.getText().contains("Flexible Travel Dates") && SelectaddOn.isDisplayed()) {
-                        SelectaddOn.click();
+        if (addOnsOffered) {
+
+            try {
+                List<WebElement> selectedAddons = driver.findElements(AddOnsPage.selectedAddons);
+                int numberOfSelectedAddOns = selectedAddons.size();
+
+                for (int i = 0; i < numberOfSelectedAddOns; ) {
+                    WebElement selectedAddon = selectedAddons.get(i);
+                    if (selectedAddon.isDisplayed()) {
+                        selectedAddon.click();
                     }
                     // Re-find the list of selected addons after each interaction
-                    availableAddons = driver.findElements(AddOnsPage.addOnName);
-                    int newNumberOfAddOns = availableAddons.size();
+                    selectedAddons = driver.findElements(AddOnsPage.selectedAddons);
+                    int newNumberOfSelectedAddOns = selectedAddons.size();
 
                     // Check if the number of selected addons has decreased
-                    if (newNumberOfAddOns < numberOfAddOns) {
-                        numberOfAddOns = newNumberOfAddOns;
+                    if (newNumberOfSelectedAddOns < numberOfSelectedAddOns) {
+                        numberOfSelectedAddOns = newNumberOfSelectedAddOns;
                         // Restart the loop as the indices may have shifted
                         continue;
                     }
 
-                    numberOfAddOns = newNumberOfAddOns;
+                    numberOfSelectedAddOns = newNumberOfSelectedAddOns;
                     i++; // Proceed to the next addon
-                }}
-        } catch (NoSuchElementException e) {
-            System.out.println("Add ons not available");
+                }
+            } catch (Exception e) {
+                System.out.println("No addons selected by default");
+            }
         }
 
+        if (addOnsOffered) {
 
-        if (domain.equalsIgnoreCase("NG")){
-            driver.findElement(AddOnsPage.checkBoxNG).click();
+            // To add flexi
+            try {
+                List<WebElement> availableAddons = driver.findElements(AddOnsPage.addOnName);
+                List<WebElement> SelectAddons = driver.findElements(AddOnsPage.selectAddon);
+                int numberOfAddOns = availableAddons.size();
+                if (addFlexi.equalsIgnoreCase("Yes")) {
+                    for (int i = 0; i < numberOfAddOns; ) {
+                        WebElement availableAddon = availableAddons.get(i);
+                        WebElement SelectaddOn = SelectAddons.get(i);
+                        if (availableAddon.getText().contains("Flexible Travel Dates") && SelectaddOn.isDisplayed()) {
+                            SelectaddOn.click();
+                        }
+                        // Re-find the list of selected addons after each interaction
+                        availableAddons = driver.findElements(AddOnsPage.addOnName);
+                        int newNumberOfAddOns = availableAddons.size();
+
+                        // Check if the number of selected addons has decreased
+                        if (newNumberOfAddOns < numberOfAddOns) {
+                            numberOfAddOns = newNumberOfAddOns;
+                            // Restart the loop as the indices may have shifted
+                            continue;
+                        }
+
+                        numberOfAddOns = newNumberOfAddOns;
+                        i++; // Proceed to the next addon
+                    }
+                }
+            } catch (NoSuchElementException e) {
+                System.out.println("Add ons not available");
+            }
+
+
+            if (domain.equalsIgnoreCase("NG") || domain.equalsIgnoreCase("B2B_NG")) {
+
+                Thread.sleep(2000);
+                driver.findElement(AddOnsPage.checkBoxNG).click();
+            }
         }
 
+        if (addOnsOffered){
         driver.findElement(AddOnsPage.contnue).click();
         Thread.sleep(200);
         try {
             driver.findElement(AddOnsPage.noIWillRiskIt).click();
         } catch (Exception e){
 
+        }}
+
+        try{
+            driver.findElement(AddOnsPage.contnue).click();
+        }catch (NoSuchElementException e){
+
+        }
+
+        Thread.sleep(1000);
+
+        try{
+
+            String duplicateBookingRef = driver.findElement(By.xpath("//div[@class='fare_txt']")).getText();
+
+            String duplicateBookingRefArray [] = duplicateBookingRef.split("check ");
+            duplicateBookingRef = duplicateBookingRefArray[1];
+
+            duplicateBookingRefArray = duplicateBookingRef.split("booking status");
+
+            duplicateBookingRef = duplicateBookingRefArray[0];
+
+            System.out.println("This appears to be a duplicate booking. There is another recent booking with reference "+ duplicateBookingRef);
+
+            driver.findElement(By.xpath("//button[@aria-label='Yes, Continue']")).click();
+
+        }catch (Exception e){
+
         }
     }
 
     public void paymentAndBooking(String environment, String testCaseNumber, String domain, String paymentMethod, String bankNameEFT, String isToBeCancelled) throws IOException, InterruptedException {
+
+        Thread.sleep(2000);
 
         String bookingReference = "";
 
         // Asserting Payment Page
         WebElement paymentPage = null;
         try {
-            wait.until(ExpectedConditions.visibilityOfElementLocated(PaymentPage.bookingReference));
-            paymentPage = driver.findElement(PaymentPage.bookingReference);
+            wait.until(ExpectedConditions.visibilityOfElementLocated(PaymentPage.bookingSummary));
+            paymentPage = driver.findElement(PaymentPage.bookingSummary);
+
         } catch (NoSuchElementException | TimeoutException e) {
-            e.printStackTrace();
+
         }
         boolean ispaymentPageAvailable = false;
         try{
             ispaymentPageAvailable = paymentPage.isDisplayed();
         }catch (NullPointerException e){
-            e.printStackTrace();
+
         }
         if (ispaymentPageAvailable){
             System.out.println("Payment page loaded");
-            bookingReference = driver.findElement(PaymentPage.bookingReference).getText();
+            try {
+                bookingReference = driver.findElement(PaymentPage.bookingReference).getText();
+            } catch (NoSuchElementException e){
+
+            }
         }else {
             m.takeScreenshot(driver, Paths.screenshotFolder, screenShotPath);
             m.getConsole(driver);
             File screenShotFile = new File(screenShotPath);
-            m.sendNotification(testCaseNumber, "Not redirected to payment screen or not redirected within 60 seconds");
+           // m.sendNotification(testCaseNumber, "Not redirected to payment screen or not redirected within 60 seconds");
 
             m.writeToExcel(testCaseNumber, 0, outputExcel);
             m.writeToExcel("-", 1, outputExcel);
@@ -896,7 +1156,7 @@ public class TSMethods {
         String timeTwo = "";
 
         //Payment in ZA - EFT
-        if (domain.equalsIgnoreCase("ZA")&& paymentMethod.equalsIgnoreCase("EFT")){
+        if ((domain.equalsIgnoreCase("ZA") || domain.equalsIgnoreCase("FS"))&& paymentMethod.equalsIgnoreCase("EFT")){
             wait.until(ExpectedConditions.visibilityOfElementLocated(PaymentPage.EFT));
             driver.findElement(PaymentPage.EFT).click();
 
@@ -918,7 +1178,7 @@ public class TSMethods {
         }
 
         //Paying with card
-        else if (paymentMethod.equalsIgnoreCase("cc/dc")){
+        else if (paymentMethod.equalsIgnoreCase("cc/dc") && (domain.equalsIgnoreCase("ZA") || domain.equalsIgnoreCase("FS"))){
             wait.until(ExpectedConditions.visibilityOfElementLocated(PaymentPage.credicCardOrDebitCard));
             driver.findElement(PaymentPage.credicCardOrDebitCard).click();
             String cardNumber = m.readDataFromExcel(dataPath, "Card detals", 2,1);
@@ -942,28 +1202,12 @@ public class TSMethods {
             WebElement CardExpiryYearElement = driver.findElement(PaymentPage.cardExpiryYear);
 
 
-
-            //           Select expiryMonthSelector = new Select(CardExpiryMonthElement);
-//            expiryMonthSelector.selectByIndex(cardExpiryMonth);
             m.selectFromDropDown(driver, CardExpiryMonthElement, cardExpiryMonth);
 
-//            Select expiryYearSelector = new Select(CardExpiryYearElement);
-//            expiryYearSelector.selectByValue(cardExpiryYear);
+
             m.selectFromDropDown(driver, CardExpiryYearElement, cardExpiryYear);
 
             driver.findElement(PaymentPage.CVV).sendKeys(CVV);
-
-
-//            driver.findElement(PaymentPage.addressLine1).sendKeys(AddressLine1);
-//            driver.findElement(PaymentPage.addressLine2).sendKeys(AddressLine2);
-//
-//            driver.findElement(PaymentPage.postalCode).sendKeys(PostalCode);
-//            driver.findElement(PaymentPage.city).sendKeys(city);
-//
-//            driver.findElement(PaymentPage.country).click();
-//            Thread.sleep(500);
-//            driver.findElement(PaymentPage.countryIndia).click();
-//            driver.findElement(PaymentPage.contactNo).sendKeys(m.doubleToString(contactNumber));
 
             driver.findElement(PaymentPage.payNow).click();
 
@@ -979,7 +1223,7 @@ public class TSMethods {
         }
 
         // Pay using NG EFT
-        else if (domain.equalsIgnoreCase("NG") && paymentMethod.equalsIgnoreCase("EFT")){
+        else if (domain.equalsIgnoreCase("NG") && paymentMethod.equalsIgnoreCase("EFT")) {
 
             wait.until(ExpectedConditions.visibilityOfElementLocated(PaymentPage.EFT));
             driver.findElement(PaymentPage.EFT).click();
@@ -998,8 +1242,8 @@ public class TSMethods {
             }
             driver.findElement(PaymentPage.reserve).click();
 
-        }
 
+        }
         //Pay using Paystack
         else if (domain.equalsIgnoreCase("NG") && (paymentMethod.equalsIgnoreCase("Instant EFT")||paymentMethod.equalsIgnoreCase("Paystack"))) {
 
@@ -1008,7 +1252,100 @@ public class TSMethods {
 
             driver.findElement(PaymentPage.payNow).click();
 
+
         }
+
+        // B2B NG Wallet
+        else if (domain.equalsIgnoreCase("B2B_NG") && paymentMethod.equalsIgnoreCase("Wallet")) {
+
+            Thread.sleep(2000);
+
+        driver.findElement(pageObjects.B2B.PaymentPage.payFromWallet).click();
+
+
+        System.out.println("Domain and payment method matched");
+
+        }
+
+        // B2B FS Wallet
+
+        else if (domain.equalsIgnoreCase("B2B_FS") && paymentMethod.equalsIgnoreCase("Wallet")) {
+
+            wait.until(ExpectedConditions.elementToBeClickable(pageObjects.B2B.PaymentPage.payFromWallet));
+            driver.findElement(pageObjects.B2B.PaymentPage.payFromWallet).click();
+
+        }
+
+        // B2B FS Reserve only
+        else if (domain.equalsIgnoreCase("B2B_FS") && paymentMethod.equalsIgnoreCase("Reserve")) {
+
+            driver.findElement(pageObjects.B2B.PaymentPage.reserveOnly).click();
+
+        }
+
+        // B2B CT EFT
+        else if (domain.equalsIgnoreCase("B2B_CT") && paymentMethod.equalsIgnoreCase("EFT")) {
+
+            driver.findElement(pageObjects.B2B.PaymentPage.EFTTab).click();
+
+            Thread.sleep(1000);
+
+            driver.findElement(pageObjects.B2B.PaymentPage.nedBank).click();
+            driver.findElement(pageObjects.B2B.PaymentPage.paywithEFT).click();
+
+
+        }
+
+        // B2B CT Card
+        else if (domain.equalsIgnoreCase("B2B_CT") && paymentMethod.equalsIgnoreCase("cc/dc")) {
+
+
+
+            String cardNumber = m.readDataFromExcel(dataPath, "Card detals", 2,1);
+            String cardHolderName = m.readDataFromExcel(dataPath, "Card detals", 2,2);
+            String cardExpiryMonth = (m.readDataFromExcel(dataPath, "Card detals", 2,3));
+            String cardExpiryYear = m.readDataFromExcel(dataPath, "Card detals", 2,4);
+            String CVV = m.doubleToString(m.readDataFromExcel(dataPath, "Card detals", 2,5));
+
+            driver.findElement(pageObjects.B2B.PaymentPage.cardNumber).sendKeys(cardNumber);
+
+
+            String enteredCardNumber = driver.findElement(pageObjects.B2B.PaymentPage.cardNumber).getAttribute("value");
+
+
+            try {
+                if (!enteredCardNumber.equalsIgnoreCase(cardNumber)) {
+
+                    driver.findElement(pageObjects.B2B.PaymentPage.cardNumber).clear();
+
+                    driver.findElement(pageObjects.B2B.PaymentPage.cardNumber).sendKeys(cardNumber);
+
+                }
+            } catch (NullPointerException e){
+
+            }
+
+            driver.findElement(pageObjects.B2B.PaymentPage.cardHolderName).sendKeys(cardHolderName);
+
+            WebElement CardExpiryMonthElement = driver.findElement(pageObjects.B2B.PaymentPage.cardExpiryMonth);
+            WebElement CardExpiryYearElement = driver.findElement(pageObjects.B2B.PaymentPage.cardExpiryYear);
+
+            m.selectFromDropDown(driver, CardExpiryYearElement, cardExpiryYear);
+            m.selectFromDropDown(driver, CardExpiryMonthElement, cardExpiryMonth);
+
+            m.selectFromDropDown(driver, CardExpiryYearElement, cardExpiryYear);
+            driver.findElement(pageObjects.B2B.PaymentPage.CVV).sendKeys(CVV);
+
+
+            driver.findElement(pageObjects.B2B.PaymentPage.payWithCard).click();
+
+
+        }
+
+        else {
+            System.out.println("Domain or payment method is not found :"+" Domain is "+ domain+" and payment method is "+ paymentMethod);
+        }
+
         timeOne = m.getCurrentTime();
 
 
@@ -1022,13 +1359,13 @@ public class TSMethods {
             timeTwo = m.getCurrentTime();
             bookingConfirm = driver.findElement(BookingConfirmationPage.isBookingConfirmed);
         } catch (NoSuchElementException | TimeoutException e) {
-            e.printStackTrace();
+
         }
         boolean isbookingRefAvailable = false;
         try{
             isbookingRefAvailable = bookingConfirm.isDisplayed();
         }catch (NullPointerException e){
-            e.printStackTrace();
+
         } catch (TimeoutException te){
             System.out.println("Booking failed due to this booking took more than 1 minute");
         }
@@ -1055,7 +1392,7 @@ public class TSMethods {
             m.takeScreenshot(driver, Paths.screenshotFolder, screenShotPath);
             m.getConsole(driver);
             File screenShotFile = new File(screenShotPath);
-            m.sendNotification(testCaseNumber, "Booking not succeeded");
+            //m.sendNotification(testCaseNumber, "Booking not succeeded");
             m.writeToExcel(testCaseNumber, 0, outputExcel);
             m.writeToExcel(bookingReference, 1, outputExcel);
             testStatus = "Failed";
@@ -1077,7 +1414,7 @@ public class TSMethods {
         isBookingDoneWithinTime = timeTookForBooking <= 45;
 
         if (!isBookingDoneWithinTime){
-            m.sendNotification(testCaseNumber, "Booking not completed within 45 seconds, time took for booking is "+ timeTookForBooking + " seconds");
+           // m.sendNotification(testCaseNumber, "Booking not completed within 45 seconds, time took for booking is "+ timeTookForBooking + " seconds");
             m.writeToExcel(testCaseNumber, 0, outputExcel);
             m.writeToExcel(bookingReference, 1, outputExcel);
             testStatus = "Failed";
@@ -1089,6 +1426,8 @@ public class TSMethods {
 
 
         Assert.assertTrue((isBookingDoneWithinTime), "Booking not completed within 45 seconds");
+        
+        
 
 
     }
@@ -1099,6 +1438,7 @@ public class TSMethods {
 
         Thread.sleep(500);
         driver.findElement(HomePage.myAccount).click();
+        Thread.sleep(800);
         driver.findElement(LoginPage.username).sendKeys(username);
         driver.findElement(LoginPage.password).sendKeys(password);
         driver.findElement(LoginPage.login).click();
@@ -1108,7 +1448,7 @@ public class TSMethods {
 
         try {
             driver.findElement(HomePage.profile).click();
-            Thread.sleep(500);
+            Thread.sleep(1000);
             driver.findElement(HomePage.myProfile).click();
             Thread.sleep(1000);
             String loggedInMail = driver.findElement(By.xpath("//input[@placeholder='name@gmail.com']")).getAttribute("value");
@@ -1128,8 +1468,37 @@ public class TSMethods {
 
         }
 
+        driver.findElement(By.xpath("(//img[@class='logoTS branding_img'])[3]")).click();
+        Thread.sleep(1000);
+
     }
 
+    public Map<String, String> getPriceBreakdown(WebDriver driver, WebElement table){
 
+        Map<String, String> dataMap = new HashMap<>();
+
+        // Find all rows within the table
+        List<WebElement> rows = table.findElements(By.tagName("tr"));
+
+        // Iterate through each row
+        for (WebElement row : rows) {
+            // Find th and td elements within the row
+            List<WebElement> cells = row.findElements(By.tagName("th"));
+            cells.addAll(row.findElements(By.tagName("td")));
+
+            // Extract text from th and td elements
+            if (cells.size() == 2) { // Assuming each row has exactly one th and one td
+                String key = cells.get(0).getText().trim();
+                String value = cells.get(1).getText().trim();
+
+                // Store in the map (if both key and value are not empty)
+                if (!key.isEmpty() && !value.isEmpty()) {
+                    dataMap.put(key, value);
+                }
+            }
+        }
+
+        return dataMap;
+    }
 
 }

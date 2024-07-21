@@ -6,7 +6,7 @@
     <test name="Test">
         <classes>
 
-            <class name="test.B2CCheckList.Signup"/>
+            <class name="test.B2CEndToEnd.Signup"/>
 
         </classes>
     </test>

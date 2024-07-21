@@ -1,8 +1,19 @@
 package pageObjects;
 
 import org.openqa.selenium.By;
+import org.openqa.selenium.WebElement;
 
 public class PaymentPage {
+
+
+    // Fare Breakdown
+    public static By fareAndTaxesBreakdownTable = By.xpath("(//table[@class='table'])[1]");
+    public static By fareBreakdownTable_1 = By.xpath("(//div[@class='add_ons ng-star-inserted']//table[@class='table'])[1]");
+    public static By fareBreakdownTable_2 = By.xpath("(//div[@class='add_ons ng-star-inserted']//table[@class='table'])[2]");
+
+
+    public static By bookingSummary = By.xpath("//h4[text()='Booking summary']");
+
 
     public static By EFT = By.xpath("//a[@id='eft-tab']");
     public static By nedBank = By.xpath("//*[@alt='nedbank']");
@@ -53,6 +64,16 @@ public class PaymentPage {
     public static By reserve = By.xpath("//button[@aria-label='Pay Now']");
 
     public static By bookingReference = By.cssSelector("div[class='refernce'] strong");
+
+
+    public static By departureDate = By.xpath("(//label[@class='dt_labl'])[1]");
+
+    public static By returnDate = By.xpath("(//label[@class='dt_labl'])[3]");
+
+    public static By departureFlightNumber = By.xpath("(//label[@class='air_labl'])[1]");
+
+    public static By returnFlightNumber = By.xpath("(//label[@class='air_labl'])[2]");
+    
 
 
 

@@ -1,8 +1,0 @@
-<!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd">
-<suite name="Test">
-    <test name="ChunkLoadTest">
-        <classes>
-            <class name="test.ChunkLoadTest.test" />
-        </classes>
-    </test>
-</suite>

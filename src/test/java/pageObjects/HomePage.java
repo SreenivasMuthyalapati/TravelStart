@@ -47,17 +47,21 @@ public class HomePage {
         return driver.findElement(By.xpath(date));
     }
 
-    public void paxSelector(String adultCount, String youngAdultCount, String childCount, String infantCount) {
+    public void paxSelector(String adultCount, String youngAdultCount, String childCount, String infantCount) throws InterruptedException {
 
+        Thread.sleep(300);
         String adultSelector = String.format("//li[@data-adult-id='%s']", adultCount);
         driver.findElement(By.xpath(adultSelector)).click();
 
+        Thread.sleep(300);
         String youngAdultSelector = String.format("//li[@data-youngadults-id='%s']", youngAdultCount);
         driver.findElement(By.xpath(youngAdultSelector)).click();
 
+        Thread.sleep(300);
         String childSelector = String.format("//li[@data-child-id='%s']", childCount);
         driver.findElement(By.xpath(childSelector)).click();
 
+        Thread.sleep(300);
         String infantSelector = String.format("//li[@data-infants-id='%s']", infantCount);
         driver.findElement(By.xpath(infantSelector)).click();
     }

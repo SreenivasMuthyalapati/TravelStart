@@ -12,7 +12,6 @@ public class Filters {
     public Filters(WebDriver driver) {
         this.driver = driver;
 
-
     }
 
     Method m = new Method();

@@ -20,6 +20,8 @@ import org.json.JSONException;
 import org.openqa.selenium.*;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.edge.EdgeDriver;
+import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.logging.LogEntries;
 import org.openqa.selenium.logging.LogEntry;
 import org.openqa.selenium.logging.LogType;
@@ -67,10 +69,12 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
 import org.json.JSONObject;
+import pageObjects.Paths;
 
 
 import static io.restassured.RestAssured.given;
 import static pageObjects.Paths.dataPath;
+import static testmethods.TSMethods.m;
 
 public class Method {
 	public static WebDriver driver;
@@ -167,7 +171,7 @@ public class Method {
 				}
 			}
 		} catch (IOException | EncryptedDocumentException e) {
-			e.printStackTrace();
+			
 		}
 		return columnValues;
 	}
@@ -212,7 +216,16 @@ public class Method {
 	}
 
 	public String getCID(WebDriver driver){
-		String correlationId = ((RemoteWebDriver) driver).getSessionId().toString();
+		String correlationId = "";
+
+		String URL = driver.getCurrentUrl();
+		String [] brokenURL = URL.split("correlation_id=");
+		try {
+			correlationId = brokenURL[1];
+		} catch (ArrayIndexOutOfBoundsException e){
+			correlationId = "NA";
+		}
+
         return correlationId;
     }
 
@@ -253,15 +266,20 @@ public class Method {
 			workbook.close();
 			fis.close();
 		} catch (IOException e) {
-			e.printStackTrace();
+			
 		}
 		return rowCount;
 	}
 
-	public void invokeBrowser(String browserName, WebDriver driver){
-		if (browserName.equalsIgnoreCase("Chrome")){
-			WebDriverManager.chromedriver().browserVersion("123.0.6312.86").setup();
+	public void invokeBrowser(String browser, WebDriver driver){
+		if (browser.equalsIgnoreCase("Chrome")) {
+			WebDriverManager.chromedriver().setup();
 			driver = new ChromeDriver();
+		} else if (browser.equalsIgnoreCase("Firefox")) {
+			WebDriverManager.firefoxdriver().setup();
+			driver = new FirefoxDriver();
+		} else if (browser.equalsIgnoreCase("Edge")) {
+			driver = new EdgeDriver();
 		}
 	}
 
@@ -354,11 +372,32 @@ public class Method {
 		// Get the current YearMonth
 		YearMonth currentYearMonth = YearMonth.now();
 
-
 		// Get the current month
 		Month currentMonth = currentYearMonth.getMonth();
 
 		String currentMonthInString = String.valueOf(currentMonth);
+
+		String selectedMonth = driver.findElement(By.xpath("(//div[@class='ngb-dp-month-name ng-star-inserted'])[1]")).getText();
+		String selectedMonthArr[] = selectedMonth.split(" ");
+
+		driver.findElement(HomePage.departureDate).click();
+
+		Thread.sleep(500);
+
+		selectedMonth  =selectedMonthArr[0];
+
+		boolean isCalenderPrefilled = false;
+
+		if (!selectedMonth.equalsIgnoreCase(currentMonthInString)){
+
+			isCalenderPrefilled = true;
+
+		}
+
+		currentMonthInString = selectedMonth;
+
+		Thread.sleep(2000);
+
 
 		int numberOfMonthsDifference = monthMap.get(departureMonth.toUpperCase()) - monthMap.get(currentMonthInString.toUpperCase());
 
@@ -368,6 +407,17 @@ public class Method {
 
 			driver.findElement(HomePage.nextMonth).click();
 		}} else if (numberOfMonthsDifference < 0) {
+
+			if (isCalenderPrefilled){
+
+				for (int a = 0; a < numberOfMonthsDifference; a++) {
+					Thread.sleep(200);
+
+					driver.findElement(By.xpath("(//button[@title='Previous month'])[1]")).click();
+				}
+
+			}
+
 			numberOfMonthsDifference = (12 - monthMap.get(currentMonthInString.toUpperCase()));
 			numberOfMonthsDifference = (monthMap.get(departureMonth.toUpperCase())) + numberOfMonthsDifference;
 
@@ -398,6 +448,8 @@ public class Method {
 		monthMap.put("DECEMBER", 12);
 
 		int numberOfMonthsDifference = monthMap.get(returnMonth.toUpperCase()) - monthMap.get(departureMonth.toUpperCase());
+
+		driver.findElement(By.xpath("//input[@id='arr_date0']")).click();
 
 		if (numberOfMonthsDifference > 0){
 			for (int a = 0; a < numberOfMonthsDifference; a++) {
@@ -630,7 +682,7 @@ public class Method {
 				try{
 					passPortInfo = driver.findElement(FlightPage.ppInfo);
 				} catch (NoSuchElementException e){
-					e.printStackTrace();
+					
 				}
                 try{
                 if (passPortInfo.isDisplayed()){
@@ -672,7 +724,7 @@ public class Method {
 					}
 
 				}}catch (NullPointerException e){
-					e.printStackTrace();
+					
 				}
 
 			}
@@ -695,32 +747,6 @@ public class Method {
 
 	private static final String SLACK_WEBHOOK_URL = "https://hooks.slack.com/services/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";
 
-	public void sendNotification(String testName, String failureReason) {
-		try {
-			URL url = new URL(SLACK_WEBHOOK_URL);
-			HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-			conn.setDoOutput(true);
-			conn.setRequestMethod("POST");
-			conn.setRequestProperty("Content-Type", "application/json");
-
-			String message = "{\"text\":\"Test failed: " + testName + "\\nReason: " + failureReason + "\"}";
-
-			OutputStream os = conn.getOutputStream();
-			os.write(message.getBytes());
-			os.flush();
-
-			if (conn.getResponseCode() == HttpURLConnection.HTTP_OK) {
-				System.out.println("Slack notification sent successfully.");
-			} else {
-				System.out.println("Failed to send Slack notification. Response code: " + conn.getResponseCode());
-			}
-			conn.disconnect();
-		} catch (Exception e) {
-			e.printStackTrace();
-			System.out.println("Exception occurred while sending Slack notification: " + e.getMessage());
-		}
-	}
-
 	public long timeCalculator(String time1, String time2){
 		// Define two LocalTime objects representing your times
 		LocalTime timeOne = LocalTime.parse(time1);
@@ -733,10 +759,23 @@ public class Method {
 
 	public void selectFromDropDown(WebDriver driver, WebElement dropdownElement, String value) throws InterruptedException {
 
-		try {
-			WebDriverWait wait = new WebDriverWait(driver, 5);
+		WebDriverWait wait = new WebDriverWait(driver, 5);
+
+		try{
+
 
 			dropdownElement.click();
+
+			Thread.sleep(1000);
+
+
+		}catch (NoSuchElementException e){
+
+		}
+
+		try {
+
+
 
 			wait.until(ExpectedConditions.visibilityOfElementLocated((By.xpath("//span[@class='mat-option-text'][text()='" + value + "']"))));
 
@@ -780,7 +819,6 @@ public class Method {
 			// Create an HttpClient instance
 			CloseableHttpClient httpClient = HttpClients.createDefault();
 
-			// Create a DELETE request to cancel the booking
 			HttpGet request = new HttpGet(apiUrl);
 
 			// Add the Authorization header with the bearer token
@@ -826,7 +864,7 @@ public class Method {
 
 						}
 					} catch (JSONException e) {
-						e.printStackTrace();
+						
 					}
 				}
 			} else {
@@ -999,8 +1037,346 @@ public class Method {
 		}
 
 		return accountActive;
+
 	}
 
 
+
+	public String deeplinkGeneratorSRP (String environment, String domain, String tripType, String from, String to, String depDay, String depMonth, String depYear, String retDay, String retMonth, String retYear, String adultCount, String teenCount, String childCount, String infantCount){
+
+		String deepLink = "";
+
+		if (environment.equalsIgnoreCase("LIVE")){
+
+			if (domain.equalsIgnoreCase("ZA") && tripType.equalsIgnoreCase("Oneway")){
+
+				deepLink = "https://www.travelstart.co.za/search-on-index?version=3&timestamp=2024-07-15_15-48-06-048&from_0="+from+"&from_type_0=city&to_0="+to+"&to_type_0=airport&depart_date_0="+depYear+"-"+depMonth+"-"+depDay+"&is_flex_dates=false&trip_type=OneWay&adults="+adultCount+"&teens="+teenCount+"&children="+childCount+"&infants="+infantCount+"&currency=ZAR&cpy_source=tszaweb&correlation_id="+Method.generateCID()+"&search=true&show_search_options=false&language=en&class=Economy";
+
+			}
+			else if (domain.equalsIgnoreCase("NG") && tripType.equalsIgnoreCase("Oneway")){
+
+				deepLink = "https://www.travelstart.com.ng/search-on-index?version=3&timestamp=2024-07-15_15-48-06-048&from_0="+from+"&from_type_0=city&to_0="+to+"&to_type_0=airport&depart_date_0="+depYear+"-"+depMonth+"-"+depDay+"&is_flex_dates=false&trip_type=OneWay&adults="+adultCount+"&teens="+teenCount+"&children="+childCount+"&infants="+infantCount+"&currency=ZAR&cpy_source=tszaweb&correlation_id="+Method.generateCID()+"&search=true&show_search_options=false&language=en&class=Economy";
+
+			}
+			else if (domain.equalsIgnoreCase("ZA") && tripType.equalsIgnoreCase("Return")){
+
+				deepLink = "https://www.travelstart.co.za/search-on-index?version=3&timestamp=2024-07-15_15-48-06-048&from_0="+from+"&from_type_0=city&to_0="+to+"&to_type_0=airport&depart_date_0="+depYear+"-"+depMonth+"-"+depDay+"&from_1="+to+"&from_type_1=airport&to_1="+from+"&to_type_1=city&depart_date_1="+retYear+"-"+retMonth+"-"+retDay+"&is_flex_dates=false&trip_type=Roundtrip&adults="+adultCount+"&teens="+teenCount+"&children="+childCount+"&infants="+infantCount+"&currency=ZAR&cpy_source=tszaweb&correlation_id="+Method.generateCID()+"&search=true&show_search_options=false&language=en&class=Economy";
+
+			}
+			else if (domain.equalsIgnoreCase("NG") && tripType.equalsIgnoreCase("Return")){
+
+				deepLink = "https://www.travelstart.com.ng/search-on-index?version=3&timestamp=2024-07-15_15-48-06-048&from_0="+from+"&from_type_0=city&to_0="+to+"&to_type_0=airport&depart_date_0="+depYear+"-"+depMonth+"-"+depDay+"&from_1="+to+"&from_type_1=airport&to_1="+from+"&to_type_1=city&depart_date_1="+retYear+"-"+retMonth+"-"+retDay+"&is_flex_dates=false&trip_type=Roundtrip&adults="+adultCount+"&teens="+teenCount+"&children="+childCount+"&infants="+infantCount+"&currency=ZAR&cpy_source=tszaweb&correlation_id="+Method.generateCID()+"&search=true&show_search_options=false&language=en&class=Economy";
+
+			}
+
+		}
+
+		else if (environment.equalsIgnoreCase("BETA")){
+
+			if (domain.equalsIgnoreCase("ZA") && tripType.equalsIgnoreCase("Oneway")){
+
+				deepLink = "https://beta.travelstart.co.za/search-on-index?version=3&timestamp=2024-07-15_15-48-06-048&from_0="+from+"&from_type_0=city&to_0="+to+"&to_type_0=airport&depart_date_0="+depYear+"-"+depMonth+"-"+depDay+"&is_flex_dates=false&trip_type=OneWay&adults="+adultCount+"&teens="+teenCount+"&children="+childCount+"&infants="+infantCount+"&currency=ZAR&cpy_source=tszaweb&correlation_id="+Method.generateCID()+"&search=true&show_search_options=false&language=en&class=Economy";
+
+			}
+			else if (domain.equalsIgnoreCase("NG") && tripType.equalsIgnoreCase("Oneway")){
+
+				deepLink = "https://beta.travelstart.com.ng/search-on-index?version=3&timestamp=2024-07-15_15-48-06-048&from_0="+from+"&from_type_0=city&to_0="+to+"&to_type_0=airport&depart_date_0="+depYear+"-"+depMonth+"-"+depDay+"&is_flex_dates=false&trip_type=OneWay&adults="+adultCount+"&teens="+teenCount+"&children="+childCount+"&infants="+infantCount+"&currency=ZAR&cpy_source=tszaweb&correlation_id="+Method.generateCID()+"&search=true&show_search_options=false&language=en&class=Economy";
+
+			}
+			else if (domain.equalsIgnoreCase("ZA") && tripType.equalsIgnoreCase("Return")){
+
+				deepLink = "https://beta.travelstart.co.za/search-on-index?version=3&timestamp=2024-07-15_15-48-06-048&from_0="+from+"&from_type_0=city&to_0="+to+"&to_type_0=airport&depart_date_0="+depYear+"-"+depMonth+"-"+depDay+"&from_1="+to+"&from_type_1=airport&to_1="+from+"&to_type_1=city&depart_date_1="+retYear+"-"+retMonth+"-"+retDay+"&is_flex_dates=false&trip_type=Roundtrip&adults="+adultCount+"&teens="+teenCount+"&children="+childCount+"&infants="+infantCount+"&currency=ZAR&cpy_source=tszaweb&correlation_id="+Method.generateCID()+"&search=true&show_search_options=false&language=en&class=Economy";
+
+			}
+			else if (domain.equalsIgnoreCase("NG") && tripType.equalsIgnoreCase("Return")){
+
+				deepLink = "https://beta.travelstart.com.ng/search-on-index?version=3&timestamp=2024-07-15_15-48-06-048&from_0="+from+"&from_type_0=city&to_0="+to+"&to_type_0=airport&depart_date_0="+depYear+"-"+depMonth+"-"+depDay+"&from_1="+to+"&from_type_1=airport&to_1="+from+"&to_type_1=city&depart_date_1="+retYear+"-"+retMonth+"-"+retDay+"&is_flex_dates=false&trip_type=Roundtrip&adults="+adultCount+"&teens="+teenCount+"&children="+childCount+"&infants="+infantCount+"&currency=ZAR&cpy_source=tszaweb&correlation_id="+Method.generateCID()+"&search=true&show_search_options=false&language=en&class=Economy";
+
+			}
+
+		}
+
+		else if (environment.equalsIgnoreCase("preprod")){
+
+			if (domain.equalsIgnoreCase("ZA") && tripType.equalsIgnoreCase("Oneway")){
+
+				deepLink = "https://preprod.travelstart.co.za/search-on-index?version=3&timestamp=2024-07-15_15-48-06-048&from_0="+from+"&from_type_0=city&to_0="+to+"&to_type_0=airport&depart_date_0="+depYear+"-"+depMonth+"-"+depDay+"&is_flex_dates=false&trip_type=OneWay&adults="+adultCount+"&teens="+teenCount+"&children="+childCount+"&infants="+infantCount+"&currency=ZAR&cpy_source=tszaweb&correlation_id="+Method.generateCID()+"&search=true&show_search_options=false&language=en&class=Economy";
+
+			}
+			else if (domain.equalsIgnoreCase("NG") && tripType.equalsIgnoreCase("Oneway")){
+
+				deepLink = "https://preprod.travelstart.com.ng/search-on-index?version=3&timestamp=2024-07-15_15-48-06-048&from_0="+from+"&from_type_0=city&to_0="+to+"&to_type_0=airport&depart_date_0="+depYear+"-"+depMonth+"-"+depDay+"&is_flex_dates=false&trip_type=OneWay&adults="+adultCount+"&teens="+teenCount+"&children="+childCount+"&infants="+infantCount+"&currency=ZAR&cpy_source=tszaweb&correlation_id="+Method.generateCID()+"&search=true&show_search_options=false&language=en&class=Economy";
+
+			}
+			else if (domain.equalsIgnoreCase("ZA") && tripType.equalsIgnoreCase("Return")){
+
+				deepLink = "https://preprod.travelstart.co.za/search-on-index?version=3&timestamp=2024-07-15_15-48-06-048&from_0="+from+"&from_type_0=city&to_0="+to+"&to_type_0=airport&depart_date_0="+depYear+"-"+depMonth+"-"+depDay+"&from_1="+to+"&from_type_1=airport&to_1="+from+"&to_type_1=city&depart_date_1="+retYear+"-"+retMonth+"-"+retDay+"&is_flex_dates=false&trip_type=Roundtrip&adults="+adultCount+"&teens="+teenCount+"&children="+childCount+"&infants="+infantCount+"&currency=ZAR&cpy_source=tszaweb&correlation_id="+Method.generateCID()+"&search=true&show_search_options=false&language=en&class=Economy";
+
+			}
+			else if (domain.equalsIgnoreCase("NG") && tripType.equalsIgnoreCase("Return")){
+
+				deepLink = "https://preprod.travelstart.com.ng/search-on-index?version=3&timestamp=2024-07-15_15-48-06-048&from_0="+from+"&from_type_0=city&to_0="+to+"&to_type_0=airport&depart_date_0="+depYear+"-"+depMonth+"-"+depDay+"&from_1="+to+"&from_type_1=airport&to_1="+from+"&to_type_1=city&depart_date_1="+retYear+"-"+retMonth+"-"+retDay+"&is_flex_dates=false&trip_type=Roundtrip&adults="+adultCount+"&teens="+teenCount+"&children="+childCount+"&infants="+infantCount+"&currency=ZAR&cpy_source=tszaweb&correlation_id="+Method.generateCID()+"&search=true&show_search_options=false&language=en&class=Economy";
+
+			}
+
+		}
+
+		else if (environment.equalsIgnoreCase("alpha")){
+
+			if (domain.equalsIgnoreCase("ZA") && tripType.equalsIgnoreCase("Oneway")){
+
+				deepLink = "https://alpha.travelstart.co.za/search-on-index?version=3&timestamp=2024-07-15_15-48-06-048&from_0="+from+"&from_type_0=city&to_0="+to+"&to_type_0=airport&depart_date_0="+depYear+"-"+depMonth+"-"+depDay+"&is_flex_dates=false&trip_type=OneWay&adults="+adultCount+"&teens="+teenCount+"&children="+childCount+"&infants="+infantCount+"&currency=ZAR&cpy_source=tszaweb&correlation_id="+Method.generateCID()+"&search=true&show_search_options=false&language=en&class=Economy";
+
+			}
+			else if (domain.equalsIgnoreCase("NG") && tripType.equalsIgnoreCase("Oneway")){
+
+				deepLink = "https://alpha.travelstart.com.ng/search-on-index?version=3&timestamp=2024-07-15_15-48-06-048&from_0="+from+"&from_type_0=city&to_0="+to+"&to_type_0=airport&depart_date_0="+depYear+"-"+depMonth+"-"+depDay+"&is_flex_dates=false&trip_type=OneWay&adults="+adultCount+"&teens="+teenCount+"&children="+childCount+"&infants="+infantCount+"&currency=ZAR&cpy_source=tszaweb&correlation_id="+Method.generateCID()+"&search=true&show_search_options=false&language=en&class=Economy";
+
+			}
+			else if (domain.equalsIgnoreCase("ZA") && tripType.equalsIgnoreCase("Return")){
+
+				deepLink = "https://alpha.travelstart.co.za/search-on-index?version=3&timestamp=2024-07-15_15-48-06-048&from_0="+from+"&from_type_0=city&to_0="+to+"&to_type_0=airport&depart_date_0="+depYear+"-"+depMonth+"-"+depDay+"&from_1="+to+"&from_type_1=airport&to_1="+from+"&to_type_1=city&depart_date_1="+retYear+"-"+retMonth+"-"+retDay+"&is_flex_dates=false&trip_type=Roundtrip&adults="+adultCount+"&teens="+teenCount+"&children="+childCount+"&infants="+infantCount+"&currency=ZAR&cpy_source=tszaweb&correlation_id="+Method.generateCID()+"&search=true&show_search_options=false&language=en&class=Economy";
+
+			}
+			else if (domain.equalsIgnoreCase("NG") && tripType.equalsIgnoreCase("Return")){
+
+				deepLink = "https://alpha.travelstart.com.ng/search-on-index?version=3&timestamp=2024-07-15_15-48-06-048&from_0="+from+"&from_type_0=city&to_0="+to+"&to_type_0=airport&depart_date_0="+depYear+"-"+depMonth+"-"+depDay+"&from_1="+to+"&from_type_1=airport&to_1="+from+"&to_type_1=city&depart_date_1="+retYear+"-"+retMonth+"-"+retDay+"&is_flex_dates=false&trip_type=Roundtrip&adults="+adultCount+"&teens="+teenCount+"&children="+childCount+"&infants="+infantCount+"&currency=ZAR&cpy_source=tszaweb&correlation_id="+Method.generateCID()+"&search=true&show_search_options=false&language=en&class=Economy";
+
+			}
+
+
+		}
+
+        return deepLink;
+    }
+
+
+
+	public static String generateCID(){
+
+		String CID = Method.generateRandomFileName();
+
+		int length = CID.length();
+		CID = CID.substring(length / 2);
+		CID = "automation"+CID;
+
+        return CID;
+
+
+
+    }
+
+
+
+	public WebDriver launchBrowser(String browser, WebDriver driver){
+
+		if (browser.equalsIgnoreCase("Chrome")) {
+			WebDriverManager.chromedriver().setup();
+			driver = new ChromeDriver();
+		} else if (browser.equalsIgnoreCase("Firefox")) {
+			WebDriverManager.firefoxdriver().setup();
+			driver = new FirefoxDriver();
+		} else if (browser.equalsIgnoreCase("Edge")) {
+			driver = new EdgeDriver();
+		}
+
+        return driver;
+    }
+
+
+	public String getBaseURL (String environment, String domain) throws IOException {
+
+		String baseURL = "";
+
+		// Setting up URL for ZA domain
+		if (domain.equalsIgnoreCase("ZA")){
+
+			environment = environment.toUpperCase();
+
+			switch (environment) {
+
+				case "LIVE" -> baseURL = m.readDataFromExcel(dataPath, "URL's", 4, 1);
+				case "BETA" -> baseURL = (m.readDataFromExcel(dataPath, "URL's", 6, 1));
+				case "PREPROD" -> baseURL = (m.readDataFromExcel(dataPath, "URL's", 8, 1));
+				case "ALPHA" -> baseURL = (m.readDataFromExcel(dataPath, "URL's", 10, 1));
+
+				default -> System.out.println("Invalid environment name");
+
+
+			}
+		}
+		// Setting up URL for NG domain
+		else if (domain.equalsIgnoreCase("NG")) {
+
+			switch (environment) {
+
+				case "LIVE" -> baseURL = (m.readDataFromExcel(dataPath, "URL's", 5, 1));
+				case "BETA" -> baseURL = (m.readDataFromExcel(dataPath, "URL's", 7, 1));
+				case "PREPROD" -> baseURL = (m.readDataFromExcel(dataPath, "URL's", 9, 1));
+				case "ALPHA" -> baseURL = (m.readDataFromExcel(dataPath, "URL's", 11, 1));
+
+				default -> System.out.println("Invalid envinorment name");
+
+			}
+		}
+		// Setting FS META
+		else if (domain.equalsIgnoreCase("FS")) {
+
+			switch (environment) {
+
+				case "LIVE" -> baseURL = (m.readDataFromExcel(dataPath, "URL's", 12, 1));
+				case "BETA" -> baseURL = (m.readDataFromExcel(dataPath, "URL's", 13, 1));
+				case "PREPROD" -> baseURL = (m.readDataFromExcel(dataPath, "URL's", 14, 1));
+				case "ALPHA" -> baseURL = (m.readDataFromExcel(dataPath, "URL's", 15, 1));
+
+				default -> System.out.println("Invalid envinorment name");
+
+			}
+		}
+
+
+
+        return baseURL;
+
+    }
+
+
+	public String getBaseURL (String environment, String domain, String cpy_source) throws IOException {
+
+		String baseURL = "";
+
+		// Setting up URL for ZA domain
+		if (domain.equalsIgnoreCase("ZA")){
+
+			environment = environment.toUpperCase();
+
+			switch (environment) {
+
+				case "LIVE" -> baseURL = m.readDataFromExcel(dataPath, "URL's", 4, 1);
+				case "BETA" -> baseURL = (m.readDataFromExcel(dataPath, "URL's", 6, 1));
+				case "PREPROD" -> baseURL = (m.readDataFromExcel(dataPath, "URL's", 8, 1));
+				case "ALPHA" -> baseURL = (m.readDataFromExcel(dataPath, "URL's", 10, 1));
+
+				default -> System.out.println("Invalid environment name");
+
+
+			}
+		}
+		// Setting up URL for NG domain
+		else if (domain.equalsIgnoreCase("NG")) {
+
+			switch (environment) {
+
+				case "LIVE" -> baseURL = (m.readDataFromExcel(dataPath, "URL's", 5, 1));
+				case "BETA" -> baseURL = (m.readDataFromExcel(dataPath, "URL's", 7, 1));
+				case "PREPROD" -> baseURL = (m.readDataFromExcel(dataPath, "URL's", 9, 1));
+				case "ALPHA" -> baseURL = (m.readDataFromExcel(dataPath, "URL's", 11, 1));
+
+				default -> System.out.println("Invalid envinorment name");
+
+			}
+		}
+		// Setting FS META
+		else if (domain.equalsIgnoreCase("FS")) {
+
+			switch (environment) {
+
+				case "LIVE" -> baseURL = (m.readDataFromExcel(dataPath, "URL's", 12, 1));
+				case "BETA" -> baseURL = (m.readDataFromExcel(dataPath, "URL's", 13, 1));
+				case "PREPROD" -> baseURL = (m.readDataFromExcel(dataPath, "URL's", 14, 1));
+				case "ALPHA" -> baseURL = (m.readDataFromExcel(dataPath, "URL's", 15, 1));
+
+				default -> System.out.println("Invalid envinorment name");
+
+			}
+		}
+
+		if (cpy_source.equalsIgnoreCase("tszaweb")|| cpy_source.equalsIgnoreCase("tsngweb")|| cpy_source.isEmpty() || cpy_source.isBlank() || cpy_source.equals("-")){
+
+			baseURL = baseURL;
+
+		}
+		else {
+			baseURL = baseURL+"?cpysource="+cpy_source;
+		}
+
+
+		return baseURL;
+
+
+	}
+
+	public void verifyElementAvailability(WebDriverWait wait, By targetElementLocator, String targetElementName)
+	{
+
+		// Asserting Traveller Page
+		WebElement targetElement = null;
+		try {
+
+			// Waits until flight details page is loaded for maximum 60 seconds
+			wait.until(ExpectedConditions.visibilityOfElementLocated(targetElementLocator));
+			targetElement = driver.findElement(targetElementLocator);
+
+		}
+		catch (NoSuchElementException | TimeoutException e) {
+
+		}
+
+		// Initializing boolean variable to asser flight details page
+		boolean istargetElementLoaded = false;
+
+		try{
+
+			// Assigning boolean value to assertion variable if flight details page is available
+			istargetElementLoaded = targetElement.isDisplayed();
+
+		}catch (NullPointerException e){
+
+
+		}
+		if (istargetElementLoaded){
+
+			System.out.println( targetElementName +" loaded on frontend");
+
+		}
+
+		// To return test failure information into test result document if flight details page is not loaded
+		else {
+
+			// Takes screenshot if flight details page is not loaded
+			m.takeScreenshot(driver, Paths.screenshotFolder, Paths.screenshotFolder);
+
+
+		}
+
+		// Proceeding if fare increase pop up appears
+		try {
+
+			// Clicks on proceed on fare increase pop up
+			driver.findElement(FlightPage.fareIncreaseContinue).click();
+
+		}catch (Exception e){
+
+
+		}
+
+		// Initializing boolean variable to assert traveller details page
+		boolean isTravellerPageAvailable = false;
+
+		try {
+
+			// Stores boolean value as true if traveller details page is loaded
+			isTravellerPageAvailable = targetElement.isDisplayed();
+
+		} catch (NullPointerException e){
+
+
+		}
+
+		// Asserting if traveller details page is available or not
+		Assert.assertTrue(isTravellerPageAvailable, "Loading of "+ targetElementName+" is failed");
+
+
+	}
 
 }
