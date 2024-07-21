@@ -999,7 +999,121 @@ public class Method {
 		}
 
 		return accountActive;
+
 	}
+
+
+
+	public String deeplinkGeneratorSRP (String environment, String domain, String tripType, String from, String to, String depDay, String depMonth, String depYear, String retDay, String retMonth, String retYear, String adultCount, String teenCount, String childCount, String infantCount){
+
+		String deepLink = "";
+
+		if (environment.equalsIgnoreCase("LIVE")){
+
+			if (domain.equalsIgnoreCase("ZA") && tripType.equalsIgnoreCase("Oneway")){
+
+				deepLink = "https://www.travelstart.co.za/search-on-index?version=3&timestamp=2024-07-15_15-48-06-048&from_0="+from+"&from_type_0=city&to_0="+to+"&to_type_0=airport&depart_date_0="+depYear+"-"+depMonth+"-"+depDay+"&is_flex_dates=false&trip_type=OneWay&adults="+adultCount+"&teens="+teenCount+"&children="+childCount+"&infants="+infantCount+"&currency=ZAR&cpy_source=tszaweb&correlation_id=9b09175f-9e38-4bef-94a7-5d0884217b26&search=true&show_search_options=false&language=en&class=Economy";
+
+			}
+			else if (domain.equalsIgnoreCase("NG") && tripType.equalsIgnoreCase("Oneway")){
+
+				deepLink = "https://www.travelstart.com.ng/search-on-index?version=3&timestamp=2024-07-15_15-48-06-048&from_0="+from+"&from_type_0=city&to_0="+to+"&to_type_0=airport&depart_date_0="+depYear+"-"+depMonth+"-"+depDay+"&is_flex_dates=false&trip_type=OneWay&adults="+adultCount+"&teens="+teenCount+"&children="+childCount+"&infants="+infantCount+"&currency=ZAR&cpy_source=tszaweb&correlation_id=9b09175f-9e38-4bef-94a7-5d0884217b26&search=true&show_search_options=false&language=en&class=Economy";
+
+			}
+			else if (domain.equalsIgnoreCase("ZA") && tripType.equalsIgnoreCase("Return")){
+
+				deepLink = "https://www.travelstart.co.za/search-on-index?version=3&timestamp=2024-07-15_15-48-06-048&from_0="+from+"&from_type_0=city&to_0="+to+"&to_type_0=airport&depart_date_0="+depYear+"-"+depMonth+"-"+depDay+"&from_1="+to+"&from_type_1=airport&to_1="+from+"&to_type_1=city&depart_date_1="+retYear+"-"+retMonth+"-"+retDay+"&is_flex_dates=false&trip_type=Roundtrip&adults="+adultCount+"&teens="+teenCount+"&children="+childCount+"&infants="+infantCount+"&currency=ZAR&cpy_source=tszaweb&correlation_id=9b09175f-9e38-4bef-94a7-5d0884217b26&search=true&show_search_options=false&language=en&class=Economy";
+
+			}
+			else if (domain.equalsIgnoreCase("NG") && tripType.equalsIgnoreCase("Return")){
+
+				deepLink = "https://www.travelstart.com.ng/search-on-index?version=3&timestamp=2024-07-15_15-48-06-048&from_0="+from+"&from_type_0=city&to_0="+to+"&to_type_0=airport&depart_date_0="+depYear+"-"+depMonth+"-"+depDay+"&from_1="+to+"&from_type_1=airport&to_1="+from+"&to_type_1=city&depart_date_1="+retYear+"-"+retMonth+"-"+retDay+"&is_flex_dates=false&trip_type=Roundtrip&adults="+adultCount+"&teens="+teenCount+"&children="+childCount+"&infants="+infantCount+"&currency=ZAR&cpy_source=tszaweb&correlation_id=9b09175f-9e38-4bef-94a7-5d0884217b26&search=true&show_search_options=false&language=en&class=Economy";
+
+			}
+
+		}
+
+		else if (environment.equalsIgnoreCase("BETA")){
+
+			if (domain.equalsIgnoreCase("ZA") && tripType.equalsIgnoreCase("Oneway")){
+
+				deepLink = "https://beta.travelstart.co.za/search-on-index?version=3&timestamp=2024-07-15_15-48-06-048&from_0="+from+"&from_type_0=city&to_0="+to+"&to_type_0=airport&depart_date_0="+depYear+"-"+depMonth+"-"+depDay+"&is_flex_dates=false&trip_type=OneWay&adults="+adultCount+"&teens="+teenCount+"&children="+childCount+"&infants="+infantCount+"&currency=ZAR&cpy_source=tszaweb&correlation_id=9b09175f-9e38-4bef-94a7-5d0884217b26&search=true&show_search_options=false&language=en&class=Economy";
+
+			}
+			else if (domain.equalsIgnoreCase("NG") && tripType.equalsIgnoreCase("Oneway")){
+
+				deepLink = "https://beta.travelstart.com.ng/search-on-index?version=3&timestamp=2024-07-15_15-48-06-048&from_0="+from+"&from_type_0=city&to_0="+to+"&to_type_0=airport&depart_date_0="+depYear+"-"+depMonth+"-"+depDay+"&is_flex_dates=false&trip_type=OneWay&adults="+adultCount+"&teens="+teenCount+"&children="+childCount+"&infants="+infantCount+"&currency=ZAR&cpy_source=tszaweb&correlation_id=9b09175f-9e38-4bef-94a7-5d0884217b26&search=true&show_search_options=false&language=en&class=Economy";
+
+			}
+			else if (domain.equalsIgnoreCase("ZA") && tripType.equalsIgnoreCase("Return")){
+
+				deepLink = "https://beta.travelstart.co.za/search-on-index?version=3&timestamp=2024-07-15_15-48-06-048&from_0="+from+"&from_type_0=city&to_0="+to+"&to_type_0=airport&depart_date_0="+depYear+"-"+depMonth+"-"+depDay+"&from_1="+to+"&from_type_1=airport&to_1="+from+"&to_type_1=city&depart_date_1="+retYear+"-"+retMonth+"-"+retDay+"&is_flex_dates=false&trip_type=Roundtrip&adults="+adultCount+"&teens="+teenCount+"&children="+childCount+"&infants="+infantCount+"&currency=ZAR&cpy_source=tszaweb&correlation_id=9b09175f-9e38-4bef-94a7-5d0884217b26&search=true&show_search_options=false&language=en&class=Economy";
+
+			}
+			else if (domain.equalsIgnoreCase("NG") && tripType.equalsIgnoreCase("Return")){
+
+				deepLink = "https://beta.travelstart.com.ng/search-on-index?version=3&timestamp=2024-07-15_15-48-06-048&from_0="+from+"&from_type_0=city&to_0="+to+"&to_type_0=airport&depart_date_0="+depYear+"-"+depMonth+"-"+depDay+"&from_1="+to+"&from_type_1=airport&to_1="+from+"&to_type_1=city&depart_date_1="+retYear+"-"+retMonth+"-"+retDay+"&is_flex_dates=false&trip_type=Roundtrip&adults="+adultCount+"&teens="+teenCount+"&children="+childCount+"&infants="+infantCount+"&currency=ZAR&cpy_source=tszaweb&correlation_id=9b09175f-9e38-4bef-94a7-5d0884217b26&search=true&show_search_options=false&language=en&class=Economy";
+
+			}
+
+		}
+
+		else if (environment.equalsIgnoreCase("preprod")){
+
+			if (domain.equalsIgnoreCase("ZA") && tripType.equalsIgnoreCase("Oneway")){
+
+				deepLink = "https://preprod.travelstart.co.za/search-on-index?version=3&timestamp=2024-07-15_15-48-06-048&from_0="+from+"&from_type_0=city&to_0="+to+"&to_type_0=airport&depart_date_0="+depYear+"-"+depMonth+"-"+depDay+"&is_flex_dates=false&trip_type=OneWay&adults="+adultCount+"&teens="+teenCount+"&children="+childCount+"&infants="+infantCount+"&currency=ZAR&cpy_source=tszaweb&correlation_id=9b09175f-9e38-4bef-94a7-5d0884217b26&search=true&show_search_options=false&language=en&class=Economy";
+
+			}
+			else if (domain.equalsIgnoreCase("NG") && tripType.equalsIgnoreCase("Oneway")){
+
+				deepLink = "https://preprod.travelstart.com.ng/search-on-index?version=3&timestamp=2024-07-15_15-48-06-048&from_0="+from+"&from_type_0=city&to_0="+to+"&to_type_0=airport&depart_date_0="+depYear+"-"+depMonth+"-"+depDay+"&is_flex_dates=false&trip_type=OneWay&adults="+adultCount+"&teens="+teenCount+"&children="+childCount+"&infants="+infantCount+"&currency=ZAR&cpy_source=tszaweb&correlation_id=9b09175f-9e38-4bef-94a7-5d0884217b26&search=true&show_search_options=false&language=en&class=Economy";
+
+			}
+			else if (domain.equalsIgnoreCase("ZA") && tripType.equalsIgnoreCase("Return")){
+
+				deepLink = "https://preprod.travelstart.co.za/search-on-index?version=3&timestamp=2024-07-15_15-48-06-048&from_0="+from+"&from_type_0=city&to_0="+to+"&to_type_0=airport&depart_date_0="+depYear+"-"+depMonth+"-"+depDay+"&from_1="+to+"&from_type_1=airport&to_1="+from+"&to_type_1=city&depart_date_1="+retYear+"-"+retMonth+"-"+retDay+"&is_flex_dates=false&trip_type=Roundtrip&adults="+adultCount+"&teens="+teenCount+"&children="+childCount+"&infants="+infantCount+"&currency=ZAR&cpy_source=tszaweb&correlation_id=9b09175f-9e38-4bef-94a7-5d0884217b26&search=true&show_search_options=false&language=en&class=Economy";
+
+			}
+			else if (domain.equalsIgnoreCase("NG") && tripType.equalsIgnoreCase("Return")){
+
+				deepLink = "https://preprod.travelstart.com.ng/search-on-index?version=3&timestamp=2024-07-15_15-48-06-048&from_0="+from+"&from_type_0=city&to_0="+to+"&to_type_0=airport&depart_date_0="+depYear+"-"+depMonth+"-"+depDay+"&from_1="+to+"&from_type_1=airport&to_1="+from+"&to_type_1=city&depart_date_1="+retYear+"-"+retMonth+"-"+retDay+"&is_flex_dates=false&trip_type=Roundtrip&adults="+adultCount+"&teens="+teenCount+"&children="+childCount+"&infants="+infantCount+"&currency=ZAR&cpy_source=tszaweb&correlation_id=9b09175f-9e38-4bef-94a7-5d0884217b26&search=true&show_search_options=false&language=en&class=Economy";
+
+			}
+
+		}
+
+		else if (environment.equalsIgnoreCase("alpha")){
+
+			if (domain.equalsIgnoreCase("ZA") && tripType.equalsIgnoreCase("Oneway")){
+
+				deepLink = "https://alpha.travelstart.co.za/search-on-index?version=3&timestamp=2024-07-15_15-48-06-048&from_0="+from+"&from_type_0=city&to_0="+to+"&to_type_0=airport&depart_date_0="+depYear+"-"+depMonth+"-"+depDay+"&is_flex_dates=false&trip_type=OneWay&adults="+adultCount+"&teens="+teenCount+"&children="+childCount+"&infants="+infantCount+"&currency=ZAR&cpy_source=tszaweb&correlation_id=9b09175f-9e38-4bef-94a7-5d0884217b26&search=true&show_search_options=false&language=en&class=Economy";
+
+			}
+			else if (domain.equalsIgnoreCase("NG") && tripType.equalsIgnoreCase("Oneway")){
+
+				deepLink = "https://alpha.travelstart.com.ng/search-on-index?version=3&timestamp=2024-07-15_15-48-06-048&from_0="+from+"&from_type_0=city&to_0="+to+"&to_type_0=airport&depart_date_0="+depYear+"-"+depMonth+"-"+depDay+"&is_flex_dates=false&trip_type=OneWay&adults="+adultCount+"&teens="+teenCount+"&children="+childCount+"&infants="+infantCount+"&currency=ZAR&cpy_source=tszaweb&correlation_id=9b09175f-9e38-4bef-94a7-5d0884217b26&search=true&show_search_options=false&language=en&class=Economy";
+
+			}
+			else if (domain.equalsIgnoreCase("ZA") && tripType.equalsIgnoreCase("Return")){
+
+				deepLink = "https://alpha.travelstart.co.za/search-on-index?version=3&timestamp=2024-07-15_15-48-06-048&from_0="+from+"&from_type_0=city&to_0="+to+"&to_type_0=airport&depart_date_0="+depYear+"-"+depMonth+"-"+depDay+"&from_1="+to+"&from_type_1=airport&to_1="+from+"&to_type_1=city&depart_date_1="+retYear+"-"+retMonth+"-"+retDay+"&is_flex_dates=false&trip_type=Roundtrip&adults="+adultCount+"&teens="+teenCount+"&children="+childCount+"&infants="+infantCount+"&currency=ZAR&cpy_source=tszaweb&correlation_id=9b09175f-9e38-4bef-94a7-5d0884217b26&search=true&show_search_options=false&language=en&class=Economy";
+
+			}
+			else if (domain.equalsIgnoreCase("NG") && tripType.equalsIgnoreCase("Return")){
+
+				deepLink = "https://alpha.travelstart.com.ng/search-on-index?version=3&timestamp=2024-07-15_15-48-06-048&from_0="+from+"&from_type_0=city&to_0="+to+"&to_type_0=airport&depart_date_0="+depYear+"-"+depMonth+"-"+depDay+"&from_1="+to+"&from_type_1=airport&to_1="+from+"&to_type_1=city&depart_date_1="+retYear+"-"+retMonth+"-"+retDay+"&is_flex_dates=false&trip_type=Roundtrip&adults="+adultCount+"&teens="+teenCount+"&children="+childCount+"&infants="+infantCount+"&currency=ZAR&cpy_source=tszaweb&correlation_id=9b09175f-9e38-4bef-94a7-5d0884217b26&search=true&show_search_options=false&language=en&class=Economy";
+
+			}
+
+
+		}
+
+        return deepLink;
+    }
+
+
+
 
 
 

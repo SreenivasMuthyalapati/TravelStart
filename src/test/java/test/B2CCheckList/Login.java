@@ -33,6 +33,7 @@ public class Login{
     static String browser;
     static String environment;
     static String outputExcel = Paths.excelOutputPath;
+
     static String baseURL;
     static String runTime;
     static String screenShotPath = "";

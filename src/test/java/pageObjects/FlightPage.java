@@ -244,11 +244,16 @@ public class FlightPage {
     public static By ppnationalityIndia = By.xpath("(//*[text()='India'])[1]");
     public static By ppInsuingCountryIndia = By.xpath("(//*[text()='India'])[2]");
     public static By addCheckedBaggage = By.xpath("//label[@class='baggage_select mb-0']");
-    public static By departureDate = By.xpath("(//span[@class='date_Info'])[1]");
-    public static By depTimeOnward = By.xpath("(//label[@class='time_labl'])[1]");
-    public static By arrTimeOnward = By.xpath("(//label[@class='time_labl'])[2]");
-    public static By depTimeReturn = By.xpath("(//label[@class='time_labl'])[3]");
-    public static By arrTimeReturn = By.xpath("(//label[@class='time_labl'])[4]");
+
+
+    public static By flightNumber1 = By.xpath("(//span[@class='flt_num d-lg-block'])[1]");
+    public static By flightNumber2 = By.xpath("(//span[@class='flt_num d-lg-block'])[2]");
+
+    public static By departureDate = By.xpath("(//label[@class='dept_city'])[1]");
+    public static By returnDate = By.xpath("(//label[@class='dept_city'])[3]");
+
+    public static By departureCity = By.xpath("(//label[@class='dept_city'])[2]");
+    public static By arrivalCity = By.xpath("(//label[@class='arr_city'])[2]");
 
 
 

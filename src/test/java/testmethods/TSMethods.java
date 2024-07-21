@@ -24,14 +24,19 @@ public class TSMethods {
     static String screenShotPath ="";
     static String testStatus = "";
     //Initializing wait explicitly
-    WebDriverWait wait;
+    static WebDriverWait wait;
+
 
     // Constructor to initialize WebDriverWait
     public TSMethods(WebDriver driver) {
-        this.driver = driver;
-        wait = new WebDriverWait(driver, 60);
-    }
+        try {
 
+            TSMethods.driver = driver;
+            wait = new WebDriverWait(driver, 60);
+        }catch (NullPointerException e){
+
+        }
+    }
 
 
 
@@ -217,6 +222,8 @@ public class TSMethods {
 
             // Returns runtime into test result document
             m.writeToExcel(runTime, 5, outputExcel);
+
+            Assert.assertTrue(isResultAvailable, "Traveller page  not loaded");
 
         }
 
@@ -762,19 +769,41 @@ public class TSMethods {
 
     }
 
-    public void add_seats() throws InterruptedException {
-        try {
-        if (driver.findElement(By.xpath("(//h4[@class='seat-map-drawer__header-text d-inline seat_header'])[1]")).isDisplayed()){
+    public void add_seats(String addSeats) throws InterruptedException {
 
-            Thread.sleep(1000);
+        if (addSeats.equalsIgnoreCase("No")) {
 
-            driver.findElement(By.xpath("//button[@class='btn btn-link st_btn st_btn_clear']")).click();
+            try {
 
-            Thread.sleep(1000);
+                if (driver.findElement(By.xpath("(//h4[@class='seat-map-drawer__header-text d-inline seat_header'])[1]")).isDisplayed()) {
 
-        }}catch (NoSuchElementException e){
+                    Thread.sleep(1000);
 
-            e.printStackTrace();
+                    driver.findElement(By.xpath("//button[@class='btn btn-link st_btn st_btn_clear']")).click();
+
+                    Thread.sleep(1000);
+
+                }
+            } catch (NoSuchElementException e) {
+
+            }
+        } else if (addSeats.equalsIgnoreCase("Yes")) {
+
+            try {
+
+                if (driver.findElement(By.xpath("(//h4[@class='seat-map-drawer__header-text d-inline seat_header'])[1]")).isDisplayed()) {
+
+                    Thread.sleep(1000);
+
+
+                    Thread.sleep(1000);
+
+                }
+            } catch (NoSuchElementException e) {
+
+                System.out.println("Seats selection not available for this flight");
+
+            }
 
         }
 
