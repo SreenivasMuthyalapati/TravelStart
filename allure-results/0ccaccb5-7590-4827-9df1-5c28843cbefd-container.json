@@ -1,0 +1,1 @@
+{"uuid":"0ccaccb5-7590-4827-9df1-5c28843cbefd","name":"test.Booking.BookingFlow.close","children":["06ff7547-d9d7-4cc4-8dda-1ab6692d80bc"],"description":"","befores":[],"afters":[{"name":"close","status":"passed","stage":"finished","description":"","steps":[],"attachments":[],"parameters":[],"start":1721972333701,"stop":1721972333868}],"start":1721972333701,"stop":1721972333868}
