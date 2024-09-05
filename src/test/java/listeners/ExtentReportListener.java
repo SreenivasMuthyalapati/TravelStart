@@ -6,6 +6,7 @@ import com.aventstack.extentreports.reporter.ExtentSparkReporter;
 import org.testng.ITestContext;
 import org.testng.ITestListener;
 import org.testng.ITestResult;
+import pageObjects.Paths;
 
 public class ExtentReportListener implements ITestListener {
     private static ExtentReports extent;
@@ -13,7 +14,7 @@ public class ExtentReportListener implements ITestListener {
 
     @Override
     public void onStart(ITestContext context) {
-        ExtentSparkReporter spark = new ExtentSparkReporter("C:\\Users\\Sreen\\IdeaProjects\\travelStart\\TestResult\\report.html");
+        ExtentSparkReporter spark = new ExtentSparkReporter(Paths.dataBasePath+"\\TestResult\\report.html");
         extent = new ExtentReports();
         extent.attachReporter(spark);
     }
@@ -26,6 +27,7 @@ public class ExtentReportListener implements ITestListener {
     @Override
     public void onTestSuccess(ITestResult result) {
         test.pass("Test passed");
+
     }
 
     @Override

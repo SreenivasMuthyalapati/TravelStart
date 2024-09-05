@@ -239,7 +239,7 @@ public class SRPDeepLinks {
 
             File screenShotFile = new File(screenShotPath);
 
-            m.sendNotification(testCaseID, "Result not loaded or result not loaded within time limit");
+            //m.sendNotification(testCaseID, "Result not loaded or result not loaded within time limit");
 
             m.writeToExcel(testCaseID, 0, outputExcel);
 
@@ -328,7 +328,7 @@ public class SRPDeepLinks {
 
         // Flight Details Page
 
-        bookingMethod.enterPaxDetails(testCaseID, tripType, adultCount, teenCount, childCount, infantCount, departureAirline, returnAirline,mailID, mobileNumber, title, firstName, middleName, lastName, dateOfBirth, monthOfBirth, yearOfBirth, passPortNumber, dateOfPassportExpiry, monthOfPassportExpiry, yearOfPassportExpiry, passPortNationality, passPortIssuingCountry, addBaggage, whatsApp);
+        //bookingMethod.enterPaxDetails(testCaseID, tripType, adultCount, teenCount, childCount, infantCount, departureAirline, returnAirline,mailID, mobileNumber, title, firstName, middleName, lastName, dateOfBirth, monthOfBirth, yearOfBirth, passPortNumber, dateOfPassportExpiry, monthOfPassportExpiry, yearOfPassportExpiry, passPortNationality, passPortIssuingCountry, addBaggage, whatsApp);
 
         flightNumberFlightDetailsPage = driver.findElement(FlightPage.flightNumber1).getText();
         departureDateFlightDetailsPage = driver.findElement(FlightPage.departureDate).getText();
