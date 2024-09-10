@@ -289,6 +289,14 @@ public class B2B_Booking {
 
         bookingFlowMethods.paymentAndBooking(environment, testCaseNumber, domain, paymentMethod, bankNameEFT, isToBeCancelled);
 
+        //Make Payment
+        driver.switchTo().defaultContent();
+
+        driver.findElement(By.xpath("//div[@class='bookFlowHeader mb-1']")).click();
+
+        B2BMethods.clickMakePaymentFromDashboard(driver, "");
+        B2BMethods.makePaymentForReservedBooking(driver, "", "");
+
 
     }
 

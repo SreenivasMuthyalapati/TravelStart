@@ -1343,7 +1343,9 @@ public class TSMethods {
         }
 
         else {
+
             System.out.println("Domain or payment method is not found :"+" Domain is "+ domain+" and payment method is "+ paymentMethod);
+
         }
 
         timeOne = m.getCurrentTime();
