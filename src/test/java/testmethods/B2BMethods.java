@@ -1,15 +1,12 @@
 package testmethods;
 
-import org.openqa.selenium.NoSuchElementException;
-import org.openqa.selenium.TimeoutException;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
+import org.openqa.selenium.*;
 import org.openqa.selenium.support.ui.ExpectedConditions;
-import org.openqa.selenium.support.ui.Wait;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.Assert;
 import pageObjects.B2B.Dashboard;
 import pageObjects.B2B.LoginPage;
+import pageObjects.B2B.MakePaymentConfirmationPage;
 import pageObjects.B2B.SearchPage;
 import pageObjects.Paths;
 
@@ -18,7 +15,6 @@ import java.io.IOException;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import static testmethods.TSMethods.screenShotPath;
 
@@ -35,7 +31,7 @@ public class B2BMethods {
             throw new IllegalArgumentException("WebDriver cannot be null");
         }
         this.driver = driver;
-        this.wait = new WebDriverWait(driver, 60);
+        this.wait = new WebDriverWait(driver, Duration.ofSeconds(60));
         this.m = new Method(); // assuming Method is initialized like this
     }
 
@@ -179,4 +175,90 @@ public class B2BMethods {
         }
 
     }
+
+
+    public void clickMakePaymentFromDashboard(WebDriver driver, String bookingReference) throws InterruptedException {
+
+        try {
+
+            wait.until(ExpectedConditions.visibilityOfElementLocated(Dashboard.moreActions));
+            driver.findElement(Dashboard.moreActions).click();
+            Thread.sleep(300);
+
+        } catch (NoSuchElementException | TimeoutException e){
+
+            System.out.println("Booking summary actions were not loaded");
+
+        }
+
+        try {
+
+            wait.until(ExpectedConditions.visibilityOfElementLocated(Dashboard.makePaymentAction));
+            driver.findElement(Dashboard.makePaymentAction).click();
+            Thread.sleep(300);
+
+        } catch (NoSuchElementException | TimeoutException e){
+
+            System.out.println("Booking summary actions were not loaded");
+
+        }
+
+
+        WebElement makePaymentCTA;
+
+        try {
+
+            wait.until(ExpectedConditions.visibilityOfElementLocated(MakePaymentConfirmationPage.makePaymentCTA));
+
+            makePaymentCTA = driver.findElement(MakePaymentConfirmationPage.makePaymentCTA);
+
+            Thread.sleep(1000);
+
+            makePaymentCTA.click();
+
+            Thread.sleep(300);
+
+        } catch (NoSuchElementException | TimeoutException e){
+
+            System.out.println("Payment confirmation page was not loaded");
+
+
+        }
+
+
+    }
+
+
+
+    public void makePaymentForReservedBooking(WebDriver driver, String domain, String paymentMethod) throws InterruptedException {
+
+        try {
+
+            wait.until(ExpectedConditions.visibilityOfElementLocated(SearchPage.bookingFlowiFreame));
+
+            WebElement bookingIframe = driver.findElement(SearchPage.bookingFlowiFreame);
+
+            driver.switchTo().frame(bookingIframe);
+
+        } catch (NoSuchElementException | TimeoutException e){
+
+            System.out.println("Booking flow iframe was not loaded");
+
+        }
+
+
+        boolean isPaymentPageLoaded = false;
+
+        try{
+            wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//h4[text()='Booking summary']")));
+            WebElement bookingSummary = driver.findElement(SearchPage.bookingFlowiFreame);
+            isPaymentPageLoaded = bookingSummary.isDisplayed();
+        }catch (NoSuchElementException | NullPointerException | TimeoutException e){
+
+        }
+
+       // Assert.assertTrue(isPaymentPageLoaded, "Failed to load payment page when making payment for reserved booking");
+
+    }
+
 }

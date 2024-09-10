@@ -6,7 +6,9 @@ import com.aventstack.extentreports.reporter.ExtentSparkReporter;
 import org.testng.ITestContext;
 import org.testng.ITestListener;
 import org.testng.ITestResult;
+import org.testng.annotations.AfterSuite;
 import pageObjects.Paths;
+import testmethods.SendEmail;
 
 public class ExtentReportListener implements ITestListener {
     private static ExtentReports extent;
@@ -27,6 +29,7 @@ public class ExtentReportListener implements ITestListener {
     @Override
     public void onTestSuccess(ITestResult result) {
         test.pass("Test passed");
+        //test.info("");
 
     }
 
@@ -43,5 +46,27 @@ public class ExtentReportListener implements ITestListener {
     @Override
     public void onFinish(ITestContext context) {
         extent.flush();
+    }
+
+    @AfterSuite
+    public void Login() {
+        //Instantiate SendEmail class
+        SendEmail emailSender = new SendEmail();
+//
+//        // Call the sendEmail method
+        emailSender.sendEmail();
+//        // Initialize ChromeDriver
+//        ChromeOptions options = new ChromeOptions();
+//        // Add options as needed, e.g., options.addArguments("--remote-debugging-port=9222");
+//        ChromeDriver driver = new ChromeDriver(options);
+//        // Initialize the NetworkTabReader
+//        NetworkTabReader networkReader = new NetworkTabReader((ChromeDriver) driver);
+//        networkReader.enableNetworkTracking();
+//
+//        // Retrieve network logs if needed
+//        networkReader.getNetworkLogs();
+//
+//        // Cleanup
+//        networkReader.stopNetworkTracking();
     }
 }

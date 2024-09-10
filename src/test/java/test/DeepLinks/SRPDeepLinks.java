@@ -1,6 +1,5 @@
 package test.DeepLinks;
 
-import ch.qos.logback.core.net.SyslogOutputStream;
 import io.github.bonigarcia.wdm.WebDriverManager;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.openqa.selenium.NoSuchElementException;
@@ -25,6 +24,7 @@ import testmethods.TSMethods;
 
 import java.io.File;
 import java.io.IOException;
+import java.time.Duration;
 
 public class SRPDeepLinks {
 
@@ -147,8 +147,8 @@ public class SRPDeepLinks {
         }
 
         bookingMethod = new TSMethods(driver);
-
-        wait = new WebDriverWait(driver, 60);
+        wait = new WebDriverWait(driver, Duration.ofSeconds(60));
+//        wait = new WebDriverWait(driver, 60);
 
     }
 

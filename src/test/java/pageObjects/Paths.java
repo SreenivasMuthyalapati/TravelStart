@@ -2,7 +2,7 @@ package pageObjects;
 
 public class Paths {
 
-    public static String dataBasePath = "C:\\Users\\Sreen\\IdeaProjects\\travelStart";
+    public static String dataBasePath = "C:\\Users\\lihle\\IdeaProjects\\travelStart";
 
 
     //Data Paths

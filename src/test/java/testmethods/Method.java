@@ -1,53 +1,41 @@
 package testmethods;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonObject;
 import io.github.bonigarcia.wdm.WebDriverManager;
-import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import io.restassured.response.Response;
-import org.apache.commons.compress.archivers.dump.InvalidFormatException;
 import org.apache.commons.io.FileUtils;
-
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.*;
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPut;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.util.EntityUtils;
 import org.apache.poi.EncryptedDocumentException;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.json.JSONArray;
 import org.json.JSONException;
-import org.openqa.selenium.*;
+import org.json.JSONObject;
 import org.openqa.selenium.NoSuchElementException;
+import org.openqa.selenium.*;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.edge.EdgeDriver;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.logging.LogEntries;
 import org.openqa.selenium.logging.LogEntry;
 import org.openqa.selenium.logging.LogType;
-import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.Assert;
-import org.testng.SkipException;
-import org.apache.http.HttpHeaders;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
-import org.apache.http.HttpHeaders;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClients;
 import pageObjects.CloudFlare;
 import pageObjects.FlightPage;
 import pageObjects.HomePage;
+import pageObjects.Paths;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.io.*;
+import java.time.Duration;
 import java.time.LocalTime;
 import java.time.Month;
 import java.time.YearMonth;
@@ -55,22 +43,6 @@ import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
-
-//import jxl.read.biff.BiffException;
-
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClients;
-import org.apache.http.util.EntityUtils;
-import org.json.JSONObject;
-import pageObjects.Paths;
-
 
 import static io.restassured.RestAssured.given;
 import static pageObjects.Paths.dataPath;
@@ -759,7 +731,8 @@ public class Method {
 
 	public void selectFromDropDown(WebDriver driver, WebElement dropdownElement, String value) throws InterruptedException {
 
-		WebDriverWait wait = new WebDriverWait(driver, 5);
+		WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(60));
+
 
 		try{
 

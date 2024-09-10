@@ -2,23 +2,26 @@ package test;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
-import io.restassured.path.json.JsonPath;
 import io.restassured.response.Response;
 import org.openqa.selenium.*;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
-import org.openqa.selenium.support.ui.Wait;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.Assert;
-import org.testng.ITestResult;
 import org.testng.SkipException;
-import org.testng.annotations.*;
-import pageObjects.*;
+import org.testng.annotations.AfterMethod;
+import org.testng.annotations.DataProvider;
+import org.testng.annotations.Ignore;
+import org.testng.annotations.Test;
+import pageObjects.BenefitsPage;
+import pageObjects.LoginPage;
+import pageObjects.Paths;
+import pageObjects.UpgradePaymentPage;
 
 import java.io.IOException;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 public class TsPlusSubscription {
 
@@ -121,8 +124,7 @@ public class TsPlusSubscription {
         Thread.sleep(5000);
 
         // Subcription
-        WebDriverWait wait = new WebDriverWait(driver, 45);
-
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(45));
         Thread.sleep(3000);
 
         wait.until(ExpectedConditions.visibilityOfElementLocated(BenefitsPage.upgradeNow));
@@ -154,7 +156,7 @@ public class TsPlusSubscription {
 
         WebElement welcomeMsg = null;
 
-        WebDriverWait waitSubs = new WebDriverWait(driver, 180);
+        WebDriverWait waitSubs = new WebDriverWait(driver, Duration.ofSeconds(180));
         try {
             waitSubs.until(ExpectedConditions.visibilityOfElementLocated(UpgradePaymentPage.welcome));
         } catch (TimeoutException e) {

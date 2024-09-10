@@ -10,11 +10,11 @@
 	</properties>
 
 	<dependencies>
-		<!-- Selenium -->
+		<!-- Selenium 3.141.59 -->
 		<dependency>
 			<groupId>org.seleniumhq.selenium</groupId>
 			<artifactId>selenium-java</artifactId>
-			<version>3.141.59</version>
+			<version>4.12.0</version>
 		</dependency>
 		<!-- TestNG -->
 		<dependency>
@@ -47,6 +47,11 @@
 			<version>1.1.4</version>
 			<scope>test</scope>
 		</dependency>
+		<dependency>
+			<groupId>net.lightbody.bmp</groupId>
+			<artifactId>browsermob-core</artifactId>
+			<version>2.1.5</version> <!-- Use the latest stable version -->
+		</dependency>
 		<!-- Log4j -->
 		<dependency>
 			<groupId>org.apache.logging.log4j</groupId>
@@ -78,6 +83,12 @@
 			<artifactId>jcommander</artifactId>
 			<version>1.82</version>
 		</dependency>
+		<dependency>
+			<groupId>com.google.guava</groupId>
+			<artifactId>guava</artifactId>
+			<version>31.1-jre</version> <!-- Ensure this is a compatible version -->
+		</dependency>
+
 		<!-- Apache HttpClient -->
 		<dependency>
 			<groupId>org.apache.httpcomponents</groupId>
@@ -129,6 +140,24 @@
 			<artifactId>json</artifactId>
 			<version>20210307</version>
 		</dependency>
+		<dependency>
+			<groupId>travelStart</groupId>
+			<artifactId>travelStart</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.13</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.sendgrid</groupId>
+			<artifactId>sendgrid-java</artifactId>
+			<version>4.9.3</version>
+		</dependency>
+
 	</dependencies>
 
 	<repositories>

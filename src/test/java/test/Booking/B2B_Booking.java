@@ -1,36 +1,26 @@
 package test.Booking;
 
 import io.github.bonigarcia.wdm.WebDriverManager;
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.openqa.selenium.*;
+import org.openqa.selenium.Alert;
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.edge.EdgeDriver;
 import org.openqa.selenium.firefox.FirefoxDriver;
-import org.openqa.selenium.support.ui.ExpectedConditions;
-import org.openqa.selenium.support.ui.Select;
-import org.openqa.selenium.support.ui.WebDriverWait;
-import org.testng.Assert;
 import org.testng.ITestResult;
 import org.testng.SkipException;
-import org.testng.annotations.*;
-import pageObjects.*;
-import pageObjects.B2B.Dashboard;
-import pageObjects.B2B.SearchPage;
+import org.testng.annotations.AfterMethod;
+import org.testng.annotations.DataProvider;
+import org.testng.annotations.Test;
+import pageObjects.Paths;
 import testmethods.B2BMethods;
 import testmethods.Method;
 import testmethods.TSMethods;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Scanner;
 
 public class B2B_Booking {
 
@@ -163,8 +153,6 @@ public class B2B_Booking {
         return testCase.toArray(new Object[0][]);
     }
 
-
-
     @Test(dataProvider = "TestCase")
     public void bookingFlow(String testCaseNumber, String shouldRun, String domain, String tripType, String origin, String destination, String departureDate, String departureMonth, String returnDate, String returnMonth, String adultCount, String youngAdultCount, String childCount, String infantCount,String isBundled, String departureAirline, String returnAirline, String mailID, String mobileNumber, String title, String firstName, String middleName, String lastName, String dateOfBirth, String monthOfBirth, String yearOfBirth, String passPortNumber, String dateOfPassportExpiry, String monthOfPassportExpiry, String yearOfPassportExpiry, String passPortNationality, String passPortIssuingCountry, String addBaggage, String addFlexi, String whatsApp, String paymentMethod, String bankNameEFT, String isToBeCancelled) throws IOException, InterruptedException {
 
@@ -288,6 +276,14 @@ public class B2B_Booking {
         bookingFlowMethods.add_Addons(domain, addFlexi);
 
         bookingFlowMethods.paymentAndBooking(environment, testCaseNumber, domain, paymentMethod, bankNameEFT, isToBeCancelled);
+
+        //Make Payment
+        driver.switchTo().defaultContent();
+
+        driver.findElement(By.xpath("//div[@class='bookFlowHeader mb-1']")).click();
+
+        B2BMethods.clickMakePaymentFromDashboard(driver, "");
+        B2BMethods.makePaymentForReservedBooking(driver, "", "");
 
 
     }
