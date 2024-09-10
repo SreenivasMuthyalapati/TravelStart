@@ -18,6 +18,7 @@ import org.testng.SkipException;
 import org.testng.annotations.*;
 import pageObjects.*;
 import testmethods.Method;
+import testmethods.PaymentPageMethods;
 import testmethods.TSMethods;
 
 import java.io.File;
@@ -64,7 +65,9 @@ public class BookingFlow {
             System.out.println("Test Failed! Correlation ID: " + m.getCID(driver));
         }
         if (driver != null) {
+
             driver.quit();
+
         }
     }
 
@@ -259,6 +262,8 @@ public class BookingFlow {
 
         String CID = Method.generateCID();
 
+        System.out.println("URL: "+baseURL);
+
         // Launch URL
         driver.get(baseURL);
         Thread.sleep(300);
@@ -270,7 +275,7 @@ public class BookingFlow {
             Alert alert = driver.switchTo().alert();
             alert.accept();
         } catch (Exception e) {
-            e.printStackTrace();
+
         }
 
         Thread.sleep(2000);
@@ -285,12 +290,19 @@ public class BookingFlow {
         }
 
         bookingFlowMethods.searchFlight(testCaseNumber, tripType, origin, destination, departureDate, departureMonth, returnDate, returnMonth,  adultCount, youngAdultCount, childCount, infantCount);
+
         bookingFlowMethods.SelectAirline(testCaseNumber, tripType, isBundled, departureAirline, returnAirline);
         bookingFlowMethods.clickBook(testCaseNumber, tripType, isBundled);
         bookingFlowMethods.enterPaxDetails(isLoggedInUser, testCaseNumber, tripType, adultCount, youngAdultCount, childCount, infantCount, departureAirline, returnAirline, mailID, mobileNumber, title, firstName, middleName, lastName, dateOfBirth, monthOfBirth, yearOfBirth, passPortNumber, dateOfPassportExpiry, monthOfPassportExpiry, yearOfPassportExpiry, passPortNationality, passPortIssuingCountry, addBaggage, whatsApp);
         bookingFlowMethods.add_seats(addSeats);
+        System.out.println(bookingFlowMethods.getPriceBreakdown((FlightPage.fareBreakdownTables)));
         bookingFlowMethods.add_Addons(domain, addFlexi);
+        Thread.sleep(2000);
+        //System.out.println(bookingFlowMethods.getPriceBreakdown((FlightPage.fareBreakdownTables)));
+        PaymentPageMethods paymentPageMethods = new PaymentPageMethods();
+        String bookingRef = paymentPageMethods.getBookingReference(driver);
         bookingFlowMethods.paymentAndBooking(environment, testCaseNumber, domain, paymentMethod, bankNameEFT, isToBeCancelled);
+
 
 
     }

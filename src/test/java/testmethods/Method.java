@@ -12,6 +12,7 @@ import org.apache.commons.io.FileUtils;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.*;
 import org.apache.poi.EncryptedDocumentException;
+import org.apache.poi.hssf.record.PageBreakRecord;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -48,6 +49,8 @@ import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.io.*;
+import java.text.BreakIterator;
+import java.time.Duration;
 import java.time.LocalTime;
 import java.time.Month;
 import java.time.YearMonth;
@@ -74,6 +77,7 @@ import pageObjects.Paths;
 
 import static io.restassured.RestAssured.given;
 import static pageObjects.Paths.dataPath;
+import static testmethods.TSMethods.baseURL;
 import static testmethods.TSMethods.m;
 
 public class Method {
@@ -1168,7 +1172,7 @@ public class Method {
 
 
 
-	public WebDriver launchBrowser(String browser, WebDriver driver){
+	public WebDriver launchBrowser( WebDriver driver, String browser){
 
 		if (browser.equalsIgnoreCase("Chrome")) {
 			WebDriverManager.chromedriver().setup();
@@ -1181,6 +1185,106 @@ public class Method {
 		}
 
         return driver;
+    }
+
+	public boolean isBundled(String domain, String tripType, String origin, String destination){
+
+		boolean isBundled = true;
+		boolean isOriginDomestic = false;
+		boolean isDestinationDomestic = false;
+
+		String ZAAirports[] = {"JNB","CPT","DUR","GRG","PLZ","UTN","ELS","AGZ","ALJ","ADY","BFN","AAM"};
+		String NGAirports[] = {"ABV","LOS","AKR","ABB","BCU","BNI","CBQ","ENU","GMO","IBA","ILR","JOS"};
+        //param =  origin
+
+		if (domain.equalsIgnoreCase("ZA")){
+			
+			for (int i = 0; i < ZAAirports.length; i++){
+				
+				String airport = ZAAirports[i];
+				
+				if (airport.equalsIgnoreCase(origin)){
+
+					isOriginDomestic = true;
+					break;
+
+				} else {
+					isOriginDomestic = false;
+				}
+				
+			}
+
+			for (int i = 0; i < ZAAirports.length; i++){
+
+				String airport = ZAAirports[i];
+
+				if (airport.equalsIgnoreCase(destination)){
+
+					isDestinationDomestic = true;
+					break;
+
+				} else {
+
+					isDestinationDomestic = false;
+
+				}
+
+			}
+
+		} else if (domain.equalsIgnoreCase("NG")) {
+
+			for (int i = 0; i < NGAirports.length; i++){
+
+				String airport = NGAirports[i];
+
+				if (airport.equalsIgnoreCase(origin)){
+					isOriginDomestic = true;
+				} else {
+					isOriginDomestic = false;
+				}
+
+				if (isOriginDomestic) break;
+
+			}
+
+			for (int i = 0; i < NGAirports.length; i++){
+
+				String airport = NGAirports[i];
+
+				if (airport.equalsIgnoreCase(origin)){
+					isDestinationDomestic = true;
+				} else {
+					isDestinationDomestic = false;
+				}
+
+				if (isDestinationDomestic) break;
+
+			}
+		}
+
+
+		if (tripType.equalsIgnoreCase("Oneway")) {
+
+			isBundled = true;
+
+		}
+
+		else if (tripType.equalsIgnoreCase("Return")){
+
+			if (isOriginDomestic && isDestinationDomestic){
+
+				isBundled = false;
+
+			}else{
+
+				isBundled = true;
+			}
+
+
+		}
+
+
+        return isBundled;
     }
 
 
@@ -1245,10 +1349,12 @@ public class Method {
 
 		String baseURL = "";
 
+		environment = environment.toUpperCase();
+
 		// Setting up URL for ZA domain
 		if (domain.equalsIgnoreCase("ZA")){
 
-			environment = environment.toUpperCase();
+
 
 			switch (environment) {
 
@@ -1306,11 +1412,15 @@ public class Method {
 
 	}
 
-	public void verifyElementAvailability(WebDriverWait wait, By targetElementLocator, String targetElementName)
-	{
+	public boolean verifyElementAvailability(By targetElementLocator, String targetElementName) {
 
 		// Asserting Traveller Page
 		WebElement targetElement = null;
+
+		long duration = 5;
+
+		WebDriverWait wait = new WebDriverWait(driver, duration);
+
 		try {
 
 			// Waits until flight details page is loaded for maximum 60 seconds
@@ -1344,39 +1454,452 @@ public class Method {
 		else {
 
 			// Takes screenshot if flight details page is not loaded
+			System.out.println( targetElementName +" not loaded on frontend, screenshot saved in belows path");
 			m.takeScreenshot(driver, Paths.screenshotFolder, Paths.screenshotFolder);
 
 
 		}
 
-		// Proceeding if fare increase pop up appears
+
+		return istargetElementLoaded;
+	}
+
+
+	public boolean verifyRedirection(WebDriver driver, By targetElementLocator, String targetElementName){
+
+		// Asserting Traveller Page
+		WebElement targetElement = null;
+
+		long duration = 60;
+
+		WebDriverWait wait = new WebDriverWait(driver, duration);
+
 		try {
 
-			// Clicks on proceed on fare increase pop up
-			driver.findElement(FlightPage.fareIncreaseContinue).click();
+			// Waits until flight details page is loaded for maximum 60 seconds
+			wait.until(ExpectedConditions.visibilityOfElementLocated(targetElementLocator));
+			targetElement = driver.findElement(targetElementLocator);
 
-		}catch (Exception e){
+		}
+		catch (NoSuchElementException | TimeoutException e) {
+
+		}
+
+		// Initializing boolean variable to asser flight details page
+		boolean istargetElementLoaded = false;
+
+		try{
+
+			// Assigning boolean value to assertion variable if flight details page is available
+			istargetElementLoaded = targetElement.isDisplayed();
+
+		}catch (NullPointerException e){
+
+
+		}
+		if (istargetElementLoaded){
+
+			System.out.println( targetElementName +" loaded on frontend");
+
+		}
+
+		// To return test failure information into test result document if flight details page is not loaded
+		else {
+
+			// Takes screenshot if flight details page is not loaded
+			System.out.println( targetElementName +" not loaded on frontend, screenshot saved in belows path");
+			m.takeScreenshot(driver, Paths.screenshotFolder, Paths.screenshotFolder);
 
 
 		}
 
-		// Initializing boolean variable to assert traveller details page
-		boolean isTravellerPageAvailable = false;
 
-		try {
+		return istargetElementLoaded;
 
-			// Stores boolean value as true if traveller details page is loaded
-			isTravellerPageAvailable = targetElement.isDisplayed();
-
-		} catch (NullPointerException e){
-
-
-		}
-
-		// Asserting if traveller details page is available or not
-		Assert.assertTrue(isTravellerPageAvailable, "Loading of "+ targetElementName+" is failed");
 
 
 	}
+
+	public boolean verifyRedirection(WebDriver driver, By desiredElementLocator, By errorElementLocator) throws InterruptedException {
+
+		boolean isFlowWorking = false;
+		boolean errorOccured = false;
+
+		WebElement desiredElement;
+
+		WebElement errorElement;
+
+		int wait = 3000;
+
+		for (int i = 0; i < 20; i++){
+
+			Thread.sleep(wait);
+
+			try{
+
+				desiredElement = driver.findElement(desiredElementLocator);
+
+				if (desiredElement.isDisplayed() && desiredElement.isEnabled()){
+
+					isFlowWorking = true;
+
+				}
+
+			}
+			catch (NoSuchElementException | NullPointerException e){
+
+				try{
+
+					errorElement = driver.findElement(errorElementLocator);
+
+					if (errorElement.isDisplayed()){
+
+						isFlowWorking = false;
+						errorOccured = true;
+
+					}
+
+				}catch (NoSuchElementException | NullPointerException e1){
+
+
+				}
+
+			}
+
+			if (isFlowWorking) break;
+
+			if (errorOccured) break;
+
+		}
+
+
+        return isFlowWorking;
+    }
+
+
+	public boolean assertAppLaunch(WebDriver driver, String domain, String environment){
+
+		boolean isAppLaunched = false;
+
+		String URL =driver.getCurrentUrl();
+
+		String expected = "";
+
+		if (domain.equalsIgnoreCase("ZA") && environment.equalsIgnoreCase("Live")){
+
+			expected = "https://www.travelstart.co.za";
+
+		}
+
+		if (URL.equalsIgnoreCase(expected)){
+			isAppLaunched = true;
+		}
+
+        return false;
+    }
+
+
+	public String getUUID(String environment, String bookingReference) throws IOException {
+
+		String UUID = "";
+
+		String apiUrl = "";
+
+		if (environment.equalsIgnoreCase("Preprod")) {
+			apiUrl = "https://preprod-wapi.travelstart.com/website-services/api/itinerary/summary/" + bookingReference;
+		} else if (environment.equalsIgnoreCase("live")) {
+			apiUrl = "https://wapi.travelstart.com/website-services/api/itinerary/summary/" + bookingReference;
+		} else if (environment.equalsIgnoreCase("beta")) {
+			apiUrl = "https://beta-wapi.travelstart.com/website-services/api/itinerary/summary/" + bookingReference;
+		}
+
+		// Bearer token for authorization
+		String bearerToken = "f7904a2f-cb89-46a6-bbc9-158ad96160b2";
+
+		if(environment.equalsIgnoreCase("Preprod")){
+			bearerToken = "f7904a2f-cb89-46a6-bbc9-158ad96160b2";
+		} else if (environment.equalsIgnoreCase("Live")) {
+			bearerToken = "7119e7c4-e507-449c-8cac-d31ca3435f34a8c85694-f8e3-4941-b3ba-f1da94d38ce5";
+		} else if (environment.equalsIgnoreCase("Beta") || environment.equalsIgnoreCase("Alpha")){
+			bearerToken = "f416567b-8837-4704-b597-7937f58ab20c";
+		}
+
+		// Create an HttpClient instance
+		CloseableHttpClient httpClient = HttpClients.createDefault();
+
+		HttpGet request = new HttpGet(apiUrl);
+
+		// Add the Authorization header with the bearer token
+		request.addHeader("Authorization", "Bearer " + bearerToken);
+
+		// Send the GET request and get the response
+		HttpResponse response = httpClient.execute(request);
+
+
+		// Check the response status code to determine if the cancellation was successful
+		int statusCode = response.getStatusLine().getStatusCode();
+
+		if (statusCode == 200) {
+
+			// Parse the response body
+
+			HttpEntity entity = response.getEntity();
+
+			String responseBody = EntityUtils.toString(entity);
+
+			JSONObject jsonResponse = new JSONObject(responseBody);
+
+			UUID = jsonResponse.getString("uuid");
+
+
+		}else {
+
+			System.out.println("UUID Retrieval failed. Itinerary API returned status code: "+ statusCode);
+
+		}
+
+
+			return UUID;
+    }
+
+	public String getCpySource(String environment, String bookingReference) throws IOException {
+		String cpySource = "";
+
+		JSONObject bookingSummaryResponse = this.getBookingSummaryResponse(environment, bookingReference);
+		cpySource = bookingSummaryResponse.getString("companyCode");
+
+
+
+
+        return cpySource;
+    }
+
+	public JSONObject getBookingSummaryResponse(String environment, String bookingReference) throws IOException {
+
+		JSONObject bookingSummaryResponse = null;
+
+			String apiUrl = "";
+
+			if (environment.equalsIgnoreCase("Preprod")) {
+				apiUrl = "https://preprod-wapi.travelstart.com/website-services/api/itinerary/summary/" + bookingReference;
+			} else if (environment.equalsIgnoreCase("live")) {
+				apiUrl = "https://wapi.travelstart.com/website-services/api/itinerary/summary/" + bookingReference;
+			} else if (environment.equalsIgnoreCase("beta")) {
+				apiUrl = "https://beta-wapi.travelstart.com/website-services/api/itinerary/summary/" + bookingReference;
+			}
+
+			// Bearer token for authorization
+			String bearerToken = "f7904a2f-cb89-46a6-bbc9-158ad96160b2";
+
+			if(environment.equalsIgnoreCase("Preprod")){
+				bearerToken = "f7904a2f-cb89-46a6-bbc9-158ad96160b2";
+			} else if (environment.equalsIgnoreCase("Live")) {
+				bearerToken = "7119e7c4-e507-449c-8cac-d31ca3435f34a8c85694-f8e3-4941-b3ba-f1da94d38ce5";
+			} else if (environment.equalsIgnoreCase("Beta") || environment.equalsIgnoreCase("Alpha")){
+				bearerToken = "f416567b-8837-4704-b597-7937f58ab20c";
+			}
+
+			// Create an HttpClient instance
+			CloseableHttpClient httpClient = HttpClients.createDefault();
+
+			HttpGet request = new HttpGet(apiUrl);
+
+			// Add the Authorization header with the bearer token
+			request.addHeader("Authorization", "Bearer " + bearerToken);
+
+			// Send the GET request and get the response
+			HttpResponse response = httpClient.execute(request);
+
+
+			// Check the response status code to determine if the cancellation was successful
+			int statusCode = response.getStatusLine().getStatusCode();
+
+			if (statusCode == 200) {
+
+				// Parse the response body
+
+				HttpEntity entity = response.getEntity();
+
+				String responseBody = EntityUtils.toString(entity);
+
+				bookingSummaryResponse = new JSONObject(responseBody);
+
+
+			}else {
+
+				System.out.println("Booking response Retrieval failed. Itinerary API returned status code: "+ statusCode);
+
+			}
+
+			return bookingSummaryResponse;
+
+
+	}
+
+	public String getInvID(String environment, String bookingReference) throws IOException {
+
+		String invID = "";
+
+		String apiUrl = "";
+
+		if (environment.equalsIgnoreCase("Preprod")) {
+			apiUrl = "https://preprod-wapi.travelstart.com/website-services/api/itinerary/summary/" + bookingReference;
+		} else if (environment.equalsIgnoreCase("live")) {
+			apiUrl = "https://wapi.travelstart.com/website-services/api/itinerary/summary/" + bookingReference;
+		} else if (environment.equalsIgnoreCase("beta")) {
+			apiUrl = "https://beta-wapi.travelstart.com/website-services/api/itinerary/summary/" + bookingReference;
+		}
+
+		// Bearer token for authorization
+		String bearerToken = "f7904a2f-cb89-46a6-bbc9-158ad96160b2";
+
+		if(environment.equalsIgnoreCase("Preprod")){
+			bearerToken = "f7904a2f-cb89-46a6-bbc9-158ad96160b2";
+		} else if (environment.equalsIgnoreCase("Live")) {
+			bearerToken = "7119e7c4-e507-449c-8cac-d31ca3435f34a8c85694-f8e3-4941-b3ba-f1da94d38ce5";
+		} else if (environment.equalsIgnoreCase("Beta") || environment.equalsIgnoreCase("Alpha")){
+			bearerToken = "f416567b-8837-4704-b597-7937f58ab20c";
+		}
+
+		// Create an HttpClient instance
+		CloseableHttpClient httpClient = HttpClients.createDefault();
+
+		HttpGet request = new HttpGet(apiUrl);
+
+		// Add the Authorization header with the bearer token
+		request.addHeader("Authorization", "Bearer " + bearerToken);
+
+		// Send the GET request and get the response
+		HttpResponse response = httpClient.execute(request);
+
+
+		// Check the response status code to determine if the cancellation was successful
+		int statusCode = response.getStatusLine().getStatusCode();
+
+		if (statusCode == 200) {
+
+			// Parse the response body
+
+			HttpEntity entity = response.getEntity();
+
+			String responseBody = EntityUtils.toString(entity);
+
+			JSONObject jsonResponse = new JSONObject(responseBody);
+
+			JSONArray invoiceListArray = jsonResponse.getJSONArray("invoiceList");
+
+			JSONObject invoiceListBody = invoiceListArray.getJSONObject(0);
+
+			invID = String.valueOf(invoiceListBody.getBigInteger("invoiceId"));
+
+
+
+		}else {
+
+			System.out.println("UUID Retrieval failed. Itinerary API returned status code: "+ statusCode);
+
+		}
+
+        return invID;
+    }
+
+	public String generatePaymentLink(String environment, String domain, String bookingReference) throws IOException {
+
+		String paymentLink = "";
+
+		String UUID = m.getUUID(environment, bookingReference);
+		String invID = m.getInvID(environment, bookingReference);
+		String cpySource = m.getCpySource(environment, bookingReference);
+		String CID = Method.generateCID();
+
+		String baseURL = "https://www.travelstart.co.za/find-itinerary?";
+
+
+		if (domain.equalsIgnoreCase("ZA")) {
+
+			if (environment.equalsIgnoreCase("Live")) {
+				baseURL = "https://www.travelstart.co.za/find-itinerary?";
+			} else if (environment.equalsIgnoreCase("Preprod")) {
+				baseURL = "https://preprod.travelstart.co.za/find-itinerary?";
+			} else if (environment.equalsIgnoreCase("Beta")) {
+				baseURL = "https://beta.travelstart.co.za/find-itinerary?";
+			} else if (environment.equalsIgnoreCase("Alpha")) {
+				baseURL = "https://alpha.travelstart.co.za/find-itinerary?";
+			}
+
+		} else if (domain.equalsIgnoreCase("NG")) {
+
+			if (environment.equalsIgnoreCase("Live")) {
+				baseURL = "https://www.travelstart.com.ng/find-itinerary?";
+			} else if (environment.equalsIgnoreCase("Preprod")) {
+				baseURL = "https://preprod.travelstart.com.ng/find-itinerary?";
+			} else if (environment.equalsIgnoreCase("Beta")) {
+				baseURL = "https://beta.travelstart.com.ng/find-itinerary?";
+			} else if (environment.equalsIgnoreCase("Alpha")) {
+				baseURL = "https://alpha.travelstart.com.ng/find-itinerary?";
+			}
+
+		}
+
+		paymentLink = baseURL+"uuid="+UUID+"&invid="+invID+"&cpysource="+cpySource+"&utm_source=transactional&utm_medium=email&utm_campaign=booking-confirmation&utm_content=payment-link"+"&correlation_id="+CID;
+
+
+		return paymentLink;
+    }
+
+
+	public double amountToDouble(String value){
+
+		String currency = "";
+
+		boolean hasCurrency = false;
+		boolean hasComma = false;
+
+		if (value.contains("₦")){
+			currency = "₦";
+			hasCurrency = true;
+		} else if (value.contains("R")) {
+			currency = "R";
+			hasCurrency = true;
+		}
+
+		if (hasCurrency){
+
+			value = value.replace(currency, "");
+
+		}
+
+		if (value.contains(",")) {
+
+			hasComma = true;
+
+		}
+
+		if (hasComma){
+
+			value = value.replace(",", "");
+
+		}
+
+		if (value.contains("+")){
+
+			value = value.replace("+", "");
+
+		}
+
+		if (value.contains("-")){
+
+			value = value.replace("-", "");
+
+		}
+
+
+		// Convert to int
+
+		double amount = Double.parseDouble(value);
+
+        return amount;
+
+    }
 
 }

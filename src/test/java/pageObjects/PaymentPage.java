@@ -6,14 +6,13 @@ import org.openqa.selenium.WebElement;
 public class PaymentPage {
 
 
-    // Fare Breakdown
-    public static By fareAndTaxesBreakdownTable = By.xpath("(//table[@class='table'])[1]");
-    public static By fareBreakdownTable_1 = By.xpath("(//div[@class='add_ons ng-star-inserted']//table[@class='table'])[1]");
-    public static By fareBreakdownTable_2 = By.xpath("(//div[@class='add_ons ng-star-inserted']//table[@class='table'])[2]");
-
+    public static By paymentMethodsSection = By.xpath("//section[@class='payment_cards_section ng-star-inserted']");
 
     public static By bookingSummary = By.xpath("//h4[text()='Booking summary']");
 
+    public static By paymentTabs = By.xpath("nav-item ng-star-inserted");
+
+    public static By bookingFee = By.xpath("//span[@class='float-right feeAmount']");
 
     public static By EFT = By.xpath("//a[@id='eft-tab']");
     public static By nedBank = By.xpath("//*[@alt='nedbank']");
@@ -56,10 +55,6 @@ public class PaymentPage {
     public static By payStack = By.xpath("//a[@id='paystack-tab']");
 
 
-
-
-
-
     public static By payNow = By.xpath("//button[@aria-label='Pay Now']");
     public static By reserve = By.xpath("//button[@aria-label='Pay Now']");
 
@@ -73,7 +68,44 @@ public class PaymentPage {
     public static By departureFlightNumber = By.xpath("(//label[@class='air_labl'])[1]");
 
     public static By returnFlightNumber = By.xpath("(//label[@class='air_labl'])[2]");
-    
+
+
+    // Voucher
+    public static By voucherField = By.xpath("(//input[@class='form-control voucher_color ng-pristine ng-invalid ng-touched'])[1]");
+
+    public static By applyVoucher = By.xpath("(//button[@fdprocessedid='hqyxas'])[1]");
+
+    public static By voucherValidationMessage = By.xpath("(//div[@class='validation_msg ng-star-inserted'])[1]");
+
+
+    // Price details
+    public static By totoalPrice = By.xpath("(//span[@class='total'])[1]");
+
+    public static By fareBreakdownTables = By.xpath("//table[@aria-describedby='fares']");
+
+    public static By priceTable(String value){
+
+        String locator = "(//table[@aria-describedby='fares'])["+value+"]";
+
+        By tableElement = By.xpath(locator);
+
+        return tableElement;
+    }
+
+
+    // Budget Credit Card
+
+    public static By bccTab = By.xpath("(//span[normalize-space()='Budget Credit Card'])[1]");
+
+    public static By saveCards = By.xpath("(//div[@class='user_cards ng-star-inserted'])[1]");
+
+    public static By selectSavedCard = By.xpath("(//img[@alt='selected'])[1]");
+
+    public static By bookingFailPopUP = By.xpath("(//div[@class='modal-content dialog_content add_txt'])[1]");
+
+    public static By bookingFailMessage = By.xpath("(//div[@class='mt-3'])[1]");
+
+    public static By bookingFailPopUpOKCTA = By.xpath("(//button[@class='btn ok-btn primary_btn ng-star-inserted'])[1]");
 
 
 

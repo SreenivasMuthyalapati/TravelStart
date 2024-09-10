@@ -19,6 +19,7 @@ public class BookingCancellation {
         for (int i = 0; i<bookingsCount; i++){
 
             System.out.println(i+1 + ": ");
+
             System.out.println();
 
             String environment = m.readDataFromExcel(Paths.bookingReferencesForCancellation,"Bookings References", i+1, 1);

@@ -1,5 +1,6 @@
 package testmethods;
 
+import io.reactivex.rxjava3.internal.operators.flowable.FlowableGenerate;
 import org.apache.commons.math3.analysis.function.Add;
 import org.openqa.selenium.*;
 import org.openqa.selenium.support.ui.ExpectedConditions;
@@ -37,7 +38,7 @@ public class TSMethods {
         try {
 
             TSMethods.driver = driver;
-            wait = new WebDriverWait(driver, 60);
+            wait = new WebDriverWait(driver, 90);
         }catch (NullPointerException e){
 
         }
@@ -69,12 +70,12 @@ public class TSMethods {
         driver.findElement(HomePage.departureCity).sendKeys(origin);
 
         // Waits for 2 seconds for city suggestions to come up
-        Thread.sleep(2000);
+        Thread.sleep(1700);
 
         // Selecting city from suggestion
         driver.findElement(HomePage.option).click();
 
-        // Entering return city
+        // Entering arrival city
         driver.findElement(HomePage.arrivalCity).click();
         driver.findElement(HomePage.arrivalCity).sendKeys(destination);
 
@@ -130,6 +131,7 @@ public class TSMethods {
             // Clicks on desired return date in calendar
             WebElement returnDateElement = dateSelect.dateSelector(ReturnDate);
             returnDateElement.click();
+
         }
 
 
@@ -164,86 +166,16 @@ public class TSMethods {
         System.out.println("Correlation ID: "+ m.getCID(driver));
 
         // Asserting result
-        // Initializes webelement result to store displayed result
-        WebElement result = null;
 
-        try {
-            // To wait until result is loaded (Waits for 60 seconds maximum)
-            wait.until(ExpectedConditions.visibilityOfElementLocated(SRP.results));
-            result = driver.findElement(SRP.results);
-
-        } catch (NoSuchElementException | TimeoutException e) {
-
-        }
-
-        // Initializing a boolean variable for result assertion
         boolean isResultAvailable = false;
 
-        try{
-            // Stores true if result is available
-            isResultAvailable = result.isDisplayed();
+        isResultAvailable = m.verifyRedirection(driver, SRP.results, SRP.errorModel);
 
-        }catch (NullPointerException e){
-
-        }
-
-        if (isResultAvailable){
-            System.out.println("Result loaded");
-        }
-
-        // Initializing a boolean variable for result assertion
-        isResultAvailable = false;
-
-        try{
-            // Stores true if result is avaiable
-            isResultAvailable = result.isDisplayed();
-
-        }catch (NullPointerException e){
-
-        }
-
-        if (isResultAvailable){
-            System.out.println("Result loaded");
-        }else {
-
-            // Returns test fail information into test result document
-
-            // To take screenshot if result is not loaded
-            m.takeScreenshot(driver, Paths.screenshotFolder, screenShotPath);
-
-            // Gets console if any error exists in console
-            m.getConsole(driver);
-
-            // Stores screenshot file into FILE variable
-            File screenShotFile = new File(screenShotPath);
-
-            // Sends a slack notification
-           // m.sendNotification(testCaseNumber, "Result not loaded or result not loaded within time limit");
-
-            // Returns test case ID into test result document
-            m.writeToExcel(testCaseNumber, 0, outputExcel);
-
-            // Returns booking reference number into test result document
-            m.writeToExcel("-", 1, outputExcel);
-
-            // Returns test status into test result document
-            testStatus = "Failed";
-            m.writeToExcel(testStatus, 2, outputExcel);
-
-            // Returns test failure reason into test result document
-            m.writeToExcel("Result not loaded or result not loaded within time limit", 3, outputExcel);
-
-            // Returns correlation ID into test result document
-            m.writeToExcel(m.getCID(driver), 4, outputExcel);
-
-            // Returns runtime into test result document
-            m.writeToExcel(runTime, 5, outputExcel);
-        }
-
-            Assert.assertTrue(isResultAvailable, "Result not loaded");
+        Assert.assertTrue(isResultAvailable, "Result not loaded");
 
 
     }
+
 
     public void SelectAirline(String testCaseNumber, String tripType,String isBundled, String departureAirline, String returnAirline) throws IOException, InterruptedException {
 
@@ -262,7 +194,7 @@ public class TSMethods {
             try {
 
                 // Selects airline in filters
-                WebElement airlineFilterElement = airlineInstance.airlineFilter(departureAirline);
+                WebElement airlineFilterElement = driver.findElement(airlineInstance.airlineFilter(departureAirline));
                 airlineFilterElement.click();
 
             }
@@ -320,7 +252,7 @@ public class TSMethods {
 
                 Thread.sleep(1000);
                 // Selects desired airline in filters
-                WebElement airlineFilterElement = airlineInstance.airlineFilter(departureAirline);
+                WebElement airlineFilterElement = driver.findElement(airlineInstance.airlineFilter(departureAirline));
                 airlineFilterElement.click();
 
             }
@@ -380,7 +312,7 @@ public class TSMethods {
             try {
 
                 // Selects desired airline in filters
-                WebElement airlineFilterElement = airlineInstance.airlineFilter(departureAirline);
+                WebElement airlineFilterElement = driver.findElement(airlineInstance.airlineFilter(departureAirline));
                 airlineFilterElement.click();
 
             }
@@ -419,7 +351,7 @@ public class TSMethods {
             try {
 
                 // Selects desired return airline
-                WebElement airlineFilterElement = airlineInstance.airlineFilter(returnAirline);
+                WebElement airlineFilterElement = driver.findElement(airlineInstance.airlineFilter(departureAirline));
                 airlineFilterElement.click();
 
             }
@@ -474,7 +406,9 @@ public class TSMethods {
     public void clickBook(String testCaseNumber, String triptype, String isBundled) throws InterruptedException, IOException {
 
         if (triptype.equalsIgnoreCase("Oneway")){
+
             driver.findElement(SRP.book).click();
+
         } else if (triptype.equalsIgnoreCase("Return") && isBundled.equalsIgnoreCase("No")) {
             driver.findElement(SRP.domBook).click();
 
@@ -499,6 +433,15 @@ public class TSMethods {
             }catch (NoSuchElementException ne){
 
             }
+        }
+
+        try {
+
+            // Clicks on proceed on airport change pop up
+            driver.findElement(By.xpath("//button[@class='btn ok-btn mr-3 text-center primary_btn']")).click();
+
+        }catch (NoSuchElementException| ElementNotInteractableException e){
+
         }
 
         // Waits for 1 second for DOM to get refreshed
@@ -538,36 +481,7 @@ public class TSMethods {
         // To return test failure information into test result document if flight details page is not loaded
         else {
 
-            // Takes screenshot if flight details page is not loaded
-            m.takeScreenshot(driver, Paths.screenshotFolder, screenShotPath);
-
-            // Gets console if any console error occurs
-            m.getConsole(driver);
-
-            // Stotes screenshot into a FILE variable
-            File screenShotFile = new File(screenShotPath);
-
-            // Sends slack notification
-           // m.sendNotification(testCaseNumber, "Not redirected to flight details screen or not redirected within 60 seconds");
-
-            // Writes testcase ID into test result document
-            m.writeToExcel(testCaseNumber, 0, outputExcel);
-
-            // Writes booking reference into test result document
-            m.writeToExcel("-", 1, outputExcel);
-
-            // Writes test status into test result document
-            testStatus = "Failed";
-            m.writeToExcel(testStatus, 2, outputExcel);
-
-            // Writes test failure reason into test result document
-            m.writeToExcel(("Not redirected to flight details screen or not redirected within 60 seconds"), 3, outputExcel);
-
-            // Writes session ID into test result document
-            m.writeToExcel(m.getCID(driver), 4, outputExcel);
-
-            //Writes runtime into test result document
-            m.writeToExcel(runTime, 5, outputExcel);
+            System.out.println("Traveller Page not loaded");
 
         }
 
@@ -604,15 +518,6 @@ public class TSMethods {
     public void enterPaxDetails(String isLoggedIn, String testCaseNumber, String tripType, String adultCount, String youngAdultCount, String childCount, String infantCount, String departureAirline, String returnAirline, String mailID, String mobileNumber, String title, String firstName, String middleName, String lastName, String dateOfBirth, String monthOfBirth, String yearOfBirth, String passPortNumber, String dateOfPassportExpiry, String monthOfPassportExpiry, String yearOfPassportExpiry, String passPortNationality, String passPortIssuingCountry, String addBaggage, String whatsApp) throws IOException, InterruptedException {
 
 
-        String enteredMobileNumber = driver.findElement(FlightPage.mobileNo).getAttribute("value");
-
-        if (isLoggedIn.equalsIgnoreCase("Yes") && (enteredMobileNumber.isEmpty() || enteredMobileNumber.isBlank())){
-
-        // driver.navigate().refresh();
-
-        }
-
-
         // To check is the airline is flysafair for test surname
         boolean isFAFlight = false;
 
@@ -644,36 +549,13 @@ public class TSMethods {
 
         // Sending contact details in booking
         // Sending mobile number
+        driver.findElement(FlightPage.mobileNo).clear();
         driver.findElement(FlightPage.mobileNo).sendKeys(mobileNumber);
 
-        enteredMobileNumber = driver.findElement(FlightPage.mobileNo).getAttribute("value");
 
-        try {
-            if (!enteredMobileNumber.equalsIgnoreCase(mobileNumber)) {
-
-                driver.findElement(FlightPage.mobileNo).clear();
-                driver.findElement(FlightPage.mobileNo).sendKeys(mobileNumber);
-
-            }
-        } catch (NullPointerException e){
-
-        }
         // Sending mail ID
+        driver.findElement(FlightPage.email).clear();
         driver.findElement(FlightPage.email).sendKeys(mailID);
-
-        String enteredMailID = driver.findElement(FlightPage.email).getAttribute("value");
-
-
-        try {
-            if (!enteredMailID.equalsIgnoreCase(mailID)) {
-
-                driver.findElement(FlightPage.email).clear();
-                driver.findElement(FlightPage.email).sendKeys(mailID);
-
-            }
-        } catch (NullPointerException e){
-
-        }
 
         // Deselecting whatsapp add on if product is included in test case
         if (whatsApp.equalsIgnoreCase("No")){
@@ -728,18 +610,6 @@ public class TSMethods {
         WebElement month = driver.findElement(FlightPage.monthDOB);
         WebElement year = driver.findElement(FlightPage.yearDOB);
 
-//        //Selecting date of birth from dropdown
-//        Select daySelector = new Select(day);
-//        daySelector.selectByIndex(m.stringToInt(dateOfBirth));
-//
-//        //Selecting month of birth from dropdown
-//        Select monthSelector = new Select(month);
-//        monthSelector.selectByIndex(m.stringToInt(monthOfBirth));
-//
-//        //Selecting year of birth
-//        String yearOfBirthSelect = m.doubleToString(yearOfBirth);
-//        Select yearSelector = new Select(year);
-//        yearSelector.selectByValue(yearOfBirthSelect);
 
         // Selection of date of birth
 
@@ -780,12 +650,6 @@ public class TSMethods {
                 WebElement passportExpirymonth = driver.findElement(FlightPage.ppExpiryMonth);
                 WebElement passportExpiryyear = driver.findElement(FlightPage.ppExpiryYear);
 
-//                Select passportExpirydaySelector = new Select(passportExpiryday);
-//                passportExpirydaySelector.selectByIndex(m.stringToInt(dateOfPassportExpiry));
-//                Select passportExpirymonthSelector = new Select(passportExpirymonth);
-//                passportExpirymonthSelector.selectByIndex(m.stringToInt(monthOfPassportExpiry));
-//                Select passportExpiryyearSelector = new Select(passportExpiryyear);
-//                passportExpiryyearSelector.selectByValue(m.doubleToString(yearOfPassportExpiry));
 
                 // Select passport expiry using click method
 
@@ -830,9 +694,11 @@ public class TSMethods {
 
     }
 
-    public String add_seats(String addSeats) throws InterruptedException {
+    public double add_seats(String addSeats) throws InterruptedException {
 
-        String totalPrice = "";
+        String totalPrice;
+        
+        double totalPriceinDouble = 0;
 
         boolean seatsOffered = false;
 
@@ -923,7 +789,7 @@ public class TSMethods {
                     if (!isSeatMapAvailable){
 
                         m.takeScreenshot(driver, Paths.screenshotFolder, screenShotPath);
-                        totalPrice = "false";
+                        totalPrice = "";
 
                     }
 
@@ -961,16 +827,17 @@ public class TSMethods {
                     }
 
 
-                    String getPrice [] = totalPrice.split("R");
+                   // totalPriceinDouble = (m.amountToDouble(totalPrice));
 
-                    totalPrice = getPrice[1];
 
                     driver.findElement(SeatsPage.continueToAddons).click();
 
                     Thread.sleep(500);
 
                     try{
+
                         driver.findElement(SeatsPage.continueInPopUp).click();
+
                     }catch (Exception e){
 
                     }
@@ -982,7 +849,7 @@ public class TSMethods {
         }
 
 
-        return totalPrice;
+        return totalPriceinDouble;
     }
 
     public void add_Addons(String domain, String addFlexi) throws InterruptedException {
@@ -1343,7 +1210,9 @@ public class TSMethods {
         }
 
         else {
+
             System.out.println("Domain or payment method is not found :"+" Domain is "+ domain+" and payment method is "+ paymentMethod);
+
         }
 
         timeOne = m.getCurrentTime();
@@ -1473,21 +1342,31 @@ public class TSMethods {
 
     }
 
-    public Map<String, String> getPriceBreakdown(WebDriver driver, WebElement table){
+    public Map<String, String> getPriceBreakdown(By tablesElement){
+
+        List<WebElement> tables = driver.findElements(tablesElement);
+
+        int priceBreakdownCategoriesCount = tables.size();
 
         Map<String, String> dataMap = new HashMap<>();
 
+        for (int i =0; i < priceBreakdownCategoriesCount; i++){
         // Find all rows within the table
-        List<WebElement> rows = table.findElements(By.tagName("tr"));
+
+            WebElement table = driver.findElement(FlightPage.priceTable(String.valueOf(i+1)));
+
+            List<WebElement> rows = table.findElements(By.tagName("tr"));
 
         // Iterate through each row
         for (WebElement row : rows) {
             // Find th and td elements within the row
+
             List<WebElement> cells = row.findElements(By.tagName("th"));
             cells.addAll(row.findElements(By.tagName("td")));
 
             // Extract text from th and td elements
-            if (cells.size() == 2) { // Assuming each row has exactly one th and one td
+            if (cells.size() == 2) {
+                // Assuming each row has exactly one th and one td
                 String key = cells.get(0).getText().trim();
                 String value = cells.get(1).getText().trim();
 
@@ -1496,7 +1375,7 @@ public class TSMethods {
                     dataMap.put(key, value);
                 }
             }
-        }
+        }}
 
         return dataMap;
     }

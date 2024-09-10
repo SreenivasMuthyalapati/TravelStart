@@ -13,7 +13,7 @@ public class Paths {
     public static String excelOutputPath = dataBasePath+"\\TestResult\\BookingOutput.xlsx";
     public static String bookingReferencesForCancellation = dataBasePath+"\\TestData\\BookingReferences.xls";
     public static String TSPlusDataPath = dataBasePath+"\\TestData\\TS+ Subscription Data.xls";
-    public static String B2CChecklistDataPath = dataBasePath+"\\TestData\\B2CCheckListData.xls";
+    public static String B2CBookingE2ETestData = "C:\\Users\\Sreen\\IdeaProjects\\travelStart\\TestData\\B2CBookingFlowEndToEnd.xls";
     public static String deepLinks = dataBasePath+"\\TestData\\Deeplinks.xls";
     public static String testOutput = dataBasePath+"\\TestResult\\TestOutPut.xlsx";
     public static String b2bTestData = dataBasePath+"\\TestData\\B2BBookingData.xls";
