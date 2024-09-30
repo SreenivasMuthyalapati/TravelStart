@@ -27,11 +27,11 @@ public class SeatsPage {
     public static By areYouSurePopUp = By.xpath("(//h5[contains(text(),'Are you sure?')])[1]");
 
 
-    public WebElement switchSegment(String segmentNumber){
+    public By switchSegment(String segmentNumber){
 
-        String segmentElementXpath = "(//span[@class='paxSeat'])["+segmentNumber+"]";
+        String segmentElementXpath = "//div[@id='segmentId1\u001F1']";
 
         //return segmentElement;
-        return driver.findElement(By.xpath(segmentElementXpath));
+        return By.xpath(segmentElementXpath);
     }
 }

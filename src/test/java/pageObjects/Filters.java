@@ -24,9 +24,15 @@ public class Filters {
 
     //Airline
 
-    public WebElement airlineFilter(String value) {
+    public static By airlineFilter(String value) {
+
         String xpath = String.format("(//input[@value='%s']/parent::div[@class='mat-checkbox-inner-container mat-checkbox-inner-container-no-side-margin'])[2]", value);
-        return driver.findElement(By.xpath(xpath));
+        By airlineSelect = By.xpath(xpath);
+
+        return airlineSelect;
     }
+
+    public static By closeFilters = By.xpath("(//span[@class='close_icn'])[2]");
+
 
 }

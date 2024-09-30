@@ -1,5 +1,10 @@
 package test.B2CEndToEnd;
 
+import testmethods.HomePageMethods;
+import testmethods.Method;
+import testmethods.SRPMethods;
+import testmethods.TravellerDetailsPageMethods;
+
 public class BookingFlowE2E {
 
 
@@ -66,34 +71,16 @@ public class BookingFlowE2E {
     */
 
     // Class variables and instances
+    public static Method method = new Method();
+    public static HomePageMethods homePageMethods = new HomePageMethods();
+    public static SRPMethods srpMethods = new SRPMethods();
+    public static TravellerDetailsPageMethods travellerDetailsPageMethods = new TravellerDetailsPageMethods();
 
 
     // Validation and Assertion variables
-    // Global variables:
-
-    public static String departureDate;
-    public static String returnDate;
-    public static String[] departureAndReturnAirport;
 
 
-    // SRP variables:
-
-    public static String priceInSRP;
-    public static String[] flightNumbersInSRP;
-    public static int segmentCount;
-    public static String[] segmentsInSRP;
-    public static String[] segmentDatesInSRP;
-    public static String[] flightTimingsInSRP;
-
-
-    //TravellerPage variables
-
-    public static String baseFareAndTaxes;
-    public static String totalAmountInTravellerPage;
-    public static String segmentsInTravellerPage;
-    public static String[] flightNumbersInTravellerPage;
-    public static String[] segmentDatesInTravellerPage;
-    public static String[] flightTimingsInTravellerPage;
+   
     
 
 }

@@ -166,6 +166,7 @@ public class FlightPage {
     }
 
     public static By ppIssuingCountry = By.xpath("//div[@id='passPortCountry0']");
+
     public void selectppIssuingCountry(int value, String ppCountry) throws InterruptedException {
         value = value+1;
         String ppCountryVlue = String.valueOf(value);
@@ -243,7 +244,7 @@ public class FlightPage {
     }
     public static By ppnationalityIndia = By.xpath("(//*[text()='India'])[1]");
     public static By ppInsuingCountryIndia = By.xpath("(//*[text()='India'])[2]");
-    public static By addCheckedBaggage = By.xpath("//label[@class='baggage_select mb-0']");
+
 
 
     public static By flightNumber1 = By.xpath("(//span[@class='flt_num d-lg-block'])[1]");
@@ -268,5 +269,36 @@ public class FlightPage {
 
 
 
+    // Fare breakdown elements
+    public static By fareBreakdownTables = By.xpath("//table[@aria-describedby='fares']");
+
+    public static By priceTable(String value){
+
+        String locator = "(//table[@aria-describedby='fares'])["+value+"]";
+
+        By tableElement = By.xpath(locator);
+
+        return tableElement;
+    }
+
+
+    public static By flightNotAvailablePopUp = By.xpath("(//div[@id='noFlightsModal'])[1]");
+
+    public static By flightCost = By.xpath("(//span[@class='total mt-2'])[1]");
+
+    public static By whatsAppPrice = By.xpath("(//span[@class='mr-1 whatsapp_Amount ng-star-inserted'])[1]");
+
+
+    // Baggage Elements
+    public static By baggageSection = By.xpath("(//div[@class='cat_colpse_two collapse_card mb-2 baggageCard_Expanded mb_100 ng-star-inserted'])[1]");
+
+    public static By addCheckedBaggage = By.xpath("(//span[@class='select_baggage ml-auto d-inline-flex'])[1]");
+
+    public static By addCheckInBaggage = By.xpath("(//label[@class='baggage_select mb-0'])[1]");
+
+    public static By checkedBaggageToastMessage = By.xpath("(//div[@class='toastMsg ng-star-inserted'])[1]");
+
+
+    
 
 }

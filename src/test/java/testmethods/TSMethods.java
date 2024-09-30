@@ -1,7 +1,9 @@
 package testmethods;
 
+import org.apache.commons.math3.analysis.function.Add;
 import org.openqa.selenium.*;
 import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.Wait;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.Assert;
 import org.testng.SkipException;
@@ -9,7 +11,7 @@ import pageObjects.*;
 
 import java.io.File;
 import java.io.IOException;
-import java.time.Duration;
+import java.lang.classfile.attribute.SyntheticAttribute;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -35,7 +37,7 @@ public class TSMethods {
         try {
 
             TSMethods.driver = driver;
-            wait = new WebDriverWait(driver, Duration.ofSeconds(60));
+            wait = new WebDriverWait(driver, 60);
         }catch (NullPointerException e){
 
         }
@@ -47,7 +49,7 @@ public class TSMethods {
 
 
         try {
-            wait.until(ExpectedConditions.presenceOfElementLocated(HomePage.oneWay));
+            wait.until(ExpectedConditions.visibilityOfElementLocated(HomePage.oneWay));
 
         }catch (TimeoutException e){
 
