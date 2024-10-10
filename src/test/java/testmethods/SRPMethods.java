@@ -3,8 +3,10 @@ package testmethods;
 import org.openqa.selenium.*;
 import org.testng.SkipException;
 import pageObjects.Filters;
+import pageObjects.FlightPage;
 import pageObjects.SRP;
 
+import java.awt.datatransfer.FlavorListener;
 import java.io.File;
 
 public class SRPMethods {
@@ -49,14 +51,14 @@ public class SRPMethods {
 
     }
 
-    public void selectAirlineFilter(WebDriver driver, boolean isBundled, String departAirline){
+    public void selectAirlineFilter(WebDriver driver, String tripType, boolean isBundled, String departAirline){
 
-        if (isBundled){
 
             try {
                 WebElement airlineCheckBox = driver.findElement(Filters.airlineFilter(departAirline));
 
                 airlineCheckBox.click();
+
             } catch (NoSuchElementException e){
 
                 System.out.println("Test is skipped as the given airline " +departAirline+ " was not available in search result");
@@ -64,28 +66,36 @@ public class SRPMethods {
                 throw new SkipException("Test is skipped as the given airline " +departAirline+ " was not available in search result");
 
             }
-        }
 
 
     }
 
-    public void selectAirlineFilter(WebDriver driver, boolean isBundled, String departAirline, String returnAirline){
+
+
+    public void selectAirlineFilter(WebDriver driver, String tripType, boolean isBundled, String departAirline, String returnAirline){
+
+        if (tripType.equalsIgnoreCase("Oneway")){
+
+            this.selectAirlineFilter(driver, tripType, isBundled, departAirline);
+
+        } else if (tripType.equalsIgnoreCase("Return")) {
+
 
         if (isBundled){
 
-            this.selectAirlineFilter(driver, isBundled, departAirline);
+            this.selectAirlineFilter(driver, tripType, isBundled, departAirline);
 
         } else if (!isBundled) {
 
-            this.selectAirlineFilter(driver, isBundled, departAirline);
+            this.selectAirlineFilter(driver, tripType, isBundled, departAirline);
 
             // Clicks on return airline filter button
             driver.findElement(Filters.returnAirline).click();
 
-            this.selectAirlineFilter(driver, isBundled, returnAirline);
+            this.selectAirlineFilter(driver, tripType, isBundled, returnAirline);
 
 
-        }
+        }}
 
 
     }
@@ -164,9 +174,17 @@ public class SRPMethods {
             String onwardStops = driver.findElement(SRP.onwardStopsAndCabinInfo).getText();
             String onwardStopsArr[] = onwardStops.split("Stop");
             onwardStops = onwardStopsArr[0];
-            onwardStops = onwardStops.trim();
-            onwardSegmentCount = Integer.parseInt(onwardStops) + 1;
 
+
+            if (!onwardStops.equalsIgnoreCase("Non ")) {
+
+                onwardStops = onwardStops.trim();
+                //System.out.println(onwardStops);
+                onwardSegmentCount = Integer.parseInt(onwardStops) + 1;
+            } else if (onwardStops.equalsIgnoreCase("Non ")) {
+
+                onwardSegmentCount = 1;
+            }
         }
 
         else if (tripType.equalsIgnoreCase("Return") && isBundled){
@@ -174,15 +192,32 @@ public class SRPMethods {
             String onwardStops = driver.findElement(SRP.onwardStopsAndCabinInfo).getText();
             String onwardStopsArr[] = onwardStops.split("Stop");
             onwardStops = onwardStopsArr[0];
-            onwardStops = onwardStops.trim();
-            onwardSegmentCount = Integer.parseInt(onwardStops) + 1;
+
+            if (!onwardStops.equalsIgnoreCase("Non ")) {
+
+                onwardStops = onwardStops.trim();
+                onwardSegmentCount = Integer.parseInt(onwardStops) + 1;
+            } else if (onwardStops.equalsIgnoreCase("Non ")) {
+
+                onwardSegmentCount = 1;
+            }
+
+
 
             String returnStops = driver.findElement(SRP.returnStopsAndCabinInfo).getText();
             String returnStopsArr[] = returnStops.split("Stop");
             returnStops = returnStopsArr[0];
-            returnStops = returnStops.trim();
-            ReturnSegmentCount = Integer.parseInt(returnStops) + 1;
 
+            if (!returnStops.equalsIgnoreCase("Non ")) {
+
+                returnStops = returnStops.trim();
+                ReturnSegmentCount = Integer.parseInt(returnStops) + 1;
+
+            } else if (returnStops.equalsIgnoreCase("Non ")) {
+
+                ReturnSegmentCount= 1;
+
+            }
         } else if (tripType.equalsIgnoreCase("Return") && !isBundled) {
 
             onwardSegmentCount = 1;
@@ -197,7 +232,60 @@ public class SRPMethods {
 
     }
 
+    public String getCurrency(WebDriver driver, boolean isBundled){
 
+        String currency = "";
+
+        if (isBundled){
+
+            currency = driver.findElement(SRP.totalFareBundled).getText();
+
+        } else if (!isBundled) {
+
+            currency = driver.findElement(SRP.flightPriceUnbundled).getText();
+
+        }
+
+        currency = currency.replace(" ","");
+
+        char currencyChar;
+
+        currencyChar = currency.charAt(0);
+
+        currency = String.valueOf(currencyChar);
+
+        return currency;
+    }
+
+    public boolean isCurrencyValid(WebDriver driver, String domain, boolean isBundled){
+
+        String expectedCurrency = "";
+        boolean isCurrencyValid = false;
+
+        String currency = this.getCurrency(driver, isBundled);
+
+        if (domain.equalsIgnoreCase("ZA")){
+
+            expectedCurrency = "R";
+
+        }else if (domain.equalsIgnoreCase("NG")){
+
+            expectedCurrency = "₦";
+
+        }
+
+        if (currency.equalsIgnoreCase(expectedCurrency)){
+
+            isCurrencyValid = true;
+
+        }else {
+
+            isCurrencyValid = false;
+
+        }
+
+        return isCurrencyValid;
+    }
 
 
 }

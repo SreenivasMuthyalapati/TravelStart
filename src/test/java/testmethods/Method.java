@@ -77,8 +77,7 @@ import pageObjects.Paths;
 
 import static io.restassured.RestAssured.given;
 import static pageObjects.Paths.dataPath;
-import static testmethods.TSMethods.baseURL;
-import static testmethods.TSMethods.m;
+import static testmethods.TSMethods.*;
 
 public class Method {
 	public static WebDriver driver;
@@ -1444,21 +1443,6 @@ public class Method {
 
 
 		}
-		if (istargetElementLoaded){
-
-			System.out.println( targetElementName +" loaded on frontend");
-
-		}
-
-		// To return test failure information into test result document if flight details page is not loaded
-		else {
-
-			// Takes screenshot if flight details page is not loaded
-			System.out.println( targetElementName +" not loaded on frontend, screenshot saved in belows path");
-			m.takeScreenshot(driver, Paths.screenshotFolder, Paths.screenshotFolder);
-
-
-		}
 
 
 		return istargetElementLoaded;
@@ -1494,21 +1478,6 @@ public class Method {
 			istargetElementLoaded = targetElement.isDisplayed();
 
 		}catch (NullPointerException e){
-
-
-		}
-		if (istargetElementLoaded){
-
-			System.out.println( targetElementName +" loaded on frontend");
-
-		}
-
-		// To return test failure information into test result document if flight details page is not loaded
-		else {
-
-			// Takes screenshot if flight details page is not loaded
-			System.out.println( targetElementName +" not loaded on frontend, screenshot saved in belows path");
-			m.takeScreenshot(driver, Paths.screenshotFolder, Paths.screenshotFolder);
 
 
 		}
@@ -1901,5 +1870,33 @@ public class Method {
         return amount;
 
     }
+
+	public String removeAlphaSpecialAndSpaceFromString(String input){
+
+		// Replace all non-digit characters with an empty string
+		String result = input.replaceAll("\\D+", "");
+
+
+        return result;
+    }
+
+	public Map<String, Integer> statusMap = new HashMap<>();
+
+	// Constructor to initialize the map
+	public Method() {
+		statusMap.put("PASSED", 0);
+		statusMap.put("FAILED", 0);
+		statusMap.put("SKIPPED", 0);
+	}
+
+	// Method to update and return the status map based on the provided status
+	public Map<String, Integer> updateTestStatus(String status) {
+		if (statusMap.containsKey(status)) {
+			statusMap.put(status, statusMap.get(status) + 1);
+		} else {
+			System.out.println("Invalid status: " + status);
+		}
+		return statusMap;
+	}
 
 }

@@ -258,8 +258,17 @@ public class FlightPage {
 
 
 
+    // Meals
 
-    public static By vegetarianMeal = By.xpath("//*[text()='Vegetarian Meal']");
+    public static By mealDropDown(String value){
+
+        By dropDownLocator = By.xpath("(//input[@formcontrolname='mealSelection'])["+value+"]");
+
+        return dropDownLocator;
+    }
+
+    public static By mealOption = By.xpath("(//div[@class='mat_option_names'])[2]");
+
     public static By contnue = By.xpath("//button[@class='btn addons_continueBtn primary_btn onHover mt-3']");
 
 
@@ -292,13 +301,32 @@ public class FlightPage {
     // Baggage Elements
     public static By baggageSection = By.xpath("(//div[@class='cat_colpse_two collapse_card mb-2 baggageCard_Expanded mb_100 ng-star-inserted'])[1]");
 
+    public static By checkedBaggageSection = By.xpath("(//div[@class='checked_baggage mt-3'])[1]");
+
+    public static By checkInBaggageSection = By.xpath("(//div[@class='check_In_baggage_sec ng-star-inserted'])[1]");
+
     public static By addCheckedBaggage = By.xpath("(//span[@class='select_baggage ml-auto d-inline-flex'])[1]");
 
-    public static By addCheckInBaggage = By.xpath("(//label[@class='baggage_select mb-0'])[1]");
+    public static By addCheckInBaggage(String paxNumber){
+
+        By addBaggageElement = By.xpath("(//label[@class='baggage_select mb-0'])["+paxNumber+"]");
+
+
+        return addBaggageElement;
+
+    }
+
+    public static By checkInBaggageItinerary = By.xpath("//div[@class='baggageItin']");
 
     public static By checkedBaggageToastMessage = By.xpath("(//div[@class='toastMsg ng-star-inserted'])[1]");
 
+    public static By checkInBaggageCost = By.xpath("//span[@class='float-right ng-star-inserted']");
 
-    
+
+
+    // Meals objects
+
+    public static By selectedMealCost = By.xpath("(//span[@class='pull-right ng-star-inserted'])[1]");
+
 
 }

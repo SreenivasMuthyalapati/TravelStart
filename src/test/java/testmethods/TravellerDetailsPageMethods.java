@@ -8,6 +8,7 @@ import org.openqa.selenium.WebElement;
 import pageObjects.FlightPage;
 
 import java.io.IOException;
+import java.util.List;
 
 public class TravellerDetailsPageMethods {
 
@@ -115,6 +116,10 @@ public class TravellerDetailsPageMethods {
     }
 
     public void enterContactDetails(WebDriver driver, String mobileNumber, String mailID){
+
+        TSMethods tsMethods = new TSMethods(driver);
+
+        tsMethods.manageNotification(driver, "Deny");
 
         // Sending mobile number
         driver.findElement(FlightPage.mobileNo).clear();
@@ -273,50 +278,191 @@ public class TravellerDetailsPageMethods {
     }
 
 
-    public String getBaggageType(WebDriver driver, boolean isBaggageSelectionOffered){
-
-        WebElement checkedBaggage = null;
+        public String getBaggageType(WebDriver driver, boolean isBaggageSelectionOffered) {
+            WebElement checkedBaggage = null;
         WebElement checkInBaggage = null;
 
-        String baggageType = "";
-
-        try{
-
-            checkedBaggage = driver.findElement(FlightPage.addCheckedBaggage);
-
-        }catch (NoSuchElementException|NullPointerException e){
-
-        }
-
-        try{
-
-            checkInBaggage = driver.findElement(FlightPage.addCheckInBaggage);
-
-        }catch (NoSuchElementException|NullPointerException e){
-
-        }
-
-        boolean isCheckedBaggageAvailable = false;
-        boolean isCheckInBaggageAvailable = false;
-
         try {
-            isCheckedBaggageAvailable = checkedBaggage.isDisplayed();
-        }catch (NullPointerException e){
+            // Attempt to find and check for checked baggage section
+            checkedBaggage = driver.findElement(FlightPage.checkedBaggageSection);
+            if (checkedBaggage.isDisplayed()) {
+                return "Checked";
+            }
+        } catch (NoSuchElementException | NullPointerException e) {
 
         }
 
         try {
-            isCheckInBaggageAvailable = checkInBaggage.isDisplayed();
-        }catch (NullPointerException e){
+            // Attempt to find and check for check-in baggage section
+            checkInBaggage = driver.findElement(FlightPage.checkInBaggageSection);
+            if (checkInBaggage.isDisplayed()) {
+                return "CheckIn";
+            }
+        } catch (NoSuchElementException | NullPointerException e) {
 
         }
 
-        if (isCheckedBaggageAvailable){
-            baggageType = "Checked";
-        }else if (isCheckInBaggageAvailable){
-            baggageType = "CheckIn";
-        }
-        return baggageType;
+        // Return a default if no baggage type is found
+        return "None";
     }
+
+    public int getCheckInBaggageIntineraryCount(WebDriver driver){
+
+        int itineraryCount = 0;
+
+        List<WebElement> itineraries = driver.findElements(FlightPage.checkInBaggageItinerary);
+
+        itineraryCount = itineraries.size();
+
+        return itineraryCount;
+
+    }
+
+
+    public void addBaggage(WebDriver driver, String baggageType, String adultCount, String youngAdultCount, String childCount) throws InterruptedException {
+
+        int adultCountInt = Integer.parseInt(adultCount);
+        int youngAdultCountInt = Integer.parseInt(youngAdultCount);
+        int childCountInt = Integer.parseInt(childCount);
+
+        int totalPaxCount = adultCountInt+youngAdultCountInt+childCountInt;
+
+        if (baggageType.equalsIgnoreCase("Checked")){
+
+            try{
+
+                driver.findElement(FlightPage.addCheckedBaggage).click();
+
+            }catch (Exception e){
+
+            }
+
+        } else if (baggageType.equalsIgnoreCase("CheckIn")) {
+
+            int baggageItinerariesCount = 0;
+
+            try{
+
+                baggageItinerariesCount = this.getCheckInBaggageIntineraryCount(driver);
+
+            }catch (Exception e){
+
+            }
+
+            int BaggagesCount = totalPaxCount*baggageItinerariesCount;
+
+            for (int i = 1; i<=BaggagesCount; i++){
+
+                driver.findElement(FlightPage.addCheckInBaggage(String.valueOf(i))).click();
+                Thread.sleep(200);
+
+            }
+
+        }
+
+    }
+
+    public double getBaggageCost(WebDriver driver, String baggageType){
+
+        double BaggageCost = 0;
+
+        if (baggageType.equalsIgnoreCase("Checked")){
+
+            String toastMessage = driver.findElement(FlightPage.checkedBaggageToastMessage).getText();
+
+            String costString = m.removeAlphaSpecialAndSpaceFromString(toastMessage);
+
+            BaggageCost = m.amountToDouble(costString);
+
+        } else if (baggageType.equalsIgnoreCase("CheckIn")) {
+
+            List<WebElement> baggageCostElements = driver.findElements(FlightPage.checkInBaggageCost);
+
+            List<String> baggageCostStrings = new java.util.ArrayList<>(List.of());
+
+            List<Double> baggageCostInDouble = new java.util.ArrayList<>(List.of());
+
+            for (int i = 0; i< baggageCostElements.size(); i++){
+
+                baggageCostStrings.add(baggageCostElements.get(i).getText());
+                baggageCostInDouble.add(m.amountToDouble(baggageCostStrings.get(i)));
+
+                BaggageCost = BaggageCost+baggageCostInDouble.get(i);
+            }
+
+        }
+
+        return BaggageCost;
+    }
+
+
+
+    // Meals methods
+
+    public boolean isMealsOffered(WebDriver driver){
+
+        boolean isMealsOffered = false;
+
+        WebElement meals = null;
+
+        try{
+
+            meals = driver.findElement(FlightPage.mealDropDown("1"));
+
+        }catch (NoSuchElementException e){
+
+        }
+
+        try{
+
+            if (meals.isDisplayed()){
+
+                isMealsOffered = true;
+            }
+            else {
+
+                isMealsOffered = false;
+
+            }
+        } catch (NullPointerException e) {
+
+        }
+
+        return isMealsOffered;
+    }
+
+    // Selects meal for all pax and returns double value of total meals cost
+    public double selectMeal(WebDriver driver, String adultCount, String youngAdultCount,String childCount, String infantCount) throws InterruptedException {
+
+        int adtCount = Integer.parseInt(adultCount);
+        int yadtCount = Integer.parseInt(youngAdultCount);
+        int chCount = Integer.parseInt(childCount);
+        int infCount = Integer.parseInt(infantCount);
+
+        int totalPaxCount = adtCount+yadtCount+chCount+infCount;
+
+        double totalMealsCost = 0;
+
+        for (int i =1; i<= totalPaxCount; i++) {
+
+            try {
+                driver.findElement(FlightPage.mealDropDown(String.valueOf(i))).click();
+                Thread.sleep(500);
+                String mealCost = driver.findElement(FlightPage.selectedMealCost).getText();
+                driver.findElement(FlightPage.mealOption).click();
+                Thread.sleep(500);
+                double mealCostDouble = m.amountToDouble(mealCost);
+
+                totalMealsCost = totalMealsCost+mealCostDouble;
+
+            }catch (NoSuchElementException | ElementNotInteractableException e){
+
+            }
+
+        }
+        return totalMealsCost;
+    }
+
+
 
 }

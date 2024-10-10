@@ -9,6 +9,7 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.Assert;
 import org.testng.SkipException;
 import pageObjects.*;
+import pageObjects.B2B.WebPush;
 
 import java.io.File;
 import java.io.IOException;
@@ -1378,6 +1379,48 @@ public class TSMethods {
         }}
 
         return dataMap;
+    }
+
+
+    public void manageNotification(WebDriver driver, String action){
+
+        WebElement iframe = null;
+        boolean isIframeAvailable = false;
+
+        try{
+            iframe = driver.findElement(WebPush.webPushiFrame);
+
+            if (iframe.isDisplayed()){
+
+                isIframeAvailable = true;
+
+            }else{
+
+                isIframeAvailable = false;
+            }
+
+        }catch (NoSuchElementException | NullPointerException e){
+
+        }
+
+        if (isIframeAvailable){
+
+            driver.switchTo().frame(iframe);
+
+            if (action.equalsIgnoreCase("Allow")){
+
+                driver.findElement(WebPush.allowNotification).click();
+
+            } else if (action.equalsIgnoreCase("Deny")) {
+
+                driver.findElement(WebPush.deyNotification).click();
+
+            }
+
+            driver.switchTo().defaultContent();
+
+        }
+
     }
 
 }

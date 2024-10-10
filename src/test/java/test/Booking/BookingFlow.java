@@ -303,6 +303,7 @@ public class BookingFlow {
         String bookingRef = paymentPageMethods.getBookingReference(driver);
         bookingFlowMethods.paymentAndBooking(environment, testCaseNumber, domain, paymentMethod, bankNameEFT, isToBeCancelled);
 
+        m.cancelBooking(environment, bookingRef);
 
 
     }

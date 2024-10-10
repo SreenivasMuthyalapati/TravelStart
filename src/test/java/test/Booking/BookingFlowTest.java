@@ -219,7 +219,7 @@ public class BookingFlowTest {
 
         srpMethods.openFilters(driver, isBundled);
 
-        srpMethods.selectAirlineFilter(driver, isBundled, departureAirline, returnAirline);
+        srpMethods.selectAirlineFilter(driver, tripType, isBundled, departureAirline, returnAirline);
 
         srpMethods.applyFilters(driver);
 
@@ -227,34 +227,52 @@ public class BookingFlowTest {
 
         System.out.println("Segments: "+ srpMethods.getTotalSegmentCount(driver, tripType, isBundled));
 
-//        srpMethods.proceedToTravellerPage(driver, isBundled);
+        srpMethods.proceedToTravellerPage(driver, isBundled);
 
 
-//        TravellerDetailsPageMethods travellerDetailsPageMethods = new TravellerDetailsPageMethods();
-//
-//        boolean isTravellerPageLoaded = travellerDetailsPageMethods.isTravellerPageLoaded(driver);
-//
-//        boolean isFareIncreased = false;
-//
-//        double increasedFare = 0;
-//
-//        isFareIncreased = travellerDetailsPageMethods.isFareIncreased(driver, increasedFare);
-//
-//        double flightCost = travellerDetailsPageMethods.getFlightCost(driver);
-//
-//        System.out.println(flightCost);
-//
-//        double whatsappPrice = travellerDetailsPageMethods.selectWhatsapp(driver, true);
-//
-//        travellerDetailsPageMethods.enterContactDetails(driver, mobileNumber, mailID);
-//
-//        travellerDetailsPageMethods.enterPaxDetails(driver, tripType, departureAirline, returnAirline, title, firstName, lastName, dateOfBirth, monthOfBirth, yearOfBirth, passPortNumber, dateOfPassportExpiry, monthOfPassportExpiry, yearOfPassportExpiry, adultCount, youngAdultCount, childCount, infantCount);
+        TravellerDetailsPageMethods travellerDetailsPageMethods = new TravellerDetailsPageMethods();
 
+        boolean isTravellerPageLoaded = travellerDetailsPageMethods.isTravellerPageLoaded(driver);
 
+        boolean isFareIncreased = false;
+
+        double increasedFare = 0;
+
+        isFareIncreased = travellerDetailsPageMethods.isFareIncreased(driver, increasedFare);
+
+        double flightCost = travellerDetailsPageMethods.getFlightCost(driver);
+
+        System.out.println(flightCost);
+
+        double whatsappPrice = travellerDetailsPageMethods.selectWhatsapp(driver, true);
+
+        travellerDetailsPageMethods.enterContactDetails(driver, mobileNumber, mailID);
+
+        travellerDetailsPageMethods.enterPaxDetails(driver, tripType, departureAirline, returnAirline, title, firstName, lastName, dateOfBirth, monthOfBirth, yearOfBirth, passPortNumber, dateOfPassportExpiry, monthOfPassportExpiry, yearOfPassportExpiry, adultCount, youngAdultCount, childCount, infantCount);
+
+        boolean isBaggageOffered = travellerDetailsPageMethods.isBaggageSelectionOffered(driver);
+        String baggageType = "";
+
+        if (isBaggageOffered){
+
+            baggageType = travellerDetailsPageMethods.getBaggageType(driver, isBaggageOffered);
+            travellerDetailsPageMethods.addBaggage(driver, baggageType, adultCount, youngAdultCount, childCount);
+            Thread.sleep(5000);
+        }
+
+        boolean isMealsOffered = travellerDetailsPageMethods.isMealsOffered(driver);
+
+        if(isMealsOffered){
+
+            System.out.println(travellerDetailsPageMethods.selectMeal(driver, adultCount, youngAdultCount, childCount, infantCount));
+
+            }
+
+        Thread.sleep(5000);
+
+        }
 
     }
 
 
 
-
-}

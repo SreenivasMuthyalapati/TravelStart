@@ -18,7 +18,8 @@ public class SRP {
     public static By baggageInfo = By.xpath("(//div[@class='baggage_Info ng-star-inserted'])[1]");
     public static By depDateInput = By.xpath("//input[@aria-label='dept_date']");
 
-    public static By totalFareBundled = By.xpath("//div[@class='fare']");
+    public static By totalFareUnbundled = By.xpath("(//div[@class='fare'])[1]");
+    public static By totalFareBundled = By.xpath("(//div[@class='price_labl'])[1]");
 
     public static By inboundFlightUnbundled = By.xpath("(//div[@class='row m-0 inBound return'])[1]");
     public static By outboundFlightUnbundled = By.xpath("(//div[@class='row m-0 outBound return'])[1]");
@@ -50,5 +51,6 @@ public class SRP {
     // Stops info
     public static By onwardStopsAndCabinInfo = By.xpath("(//div[@class='stops ng-star-inserted'])[1]");
     public static By returnStopsAndCabinInfo = By.xpath("(//div[@class='stops ng-star-inserted'])[2]");
+
 
 }
