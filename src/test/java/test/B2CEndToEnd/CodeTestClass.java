@@ -1,5 +1,6 @@
 package test.B2CEndToEnd;
 
+import configs.dataPaths;
 import pageObjects.PaymentPage;
 import testmethods.DeeplinksMethods;
 import testmethods.Method;
@@ -15,7 +16,7 @@ public class CodeTestClass {
 
     public static void main(String[] args) throws IOException {
         
-        //sendEmail.sendEmail();
+        sendEmail.sendEmail(dataPaths.URLs);
         //System.out.println(m.generatePaymentLink("preprod", "ZA", "ZA00109497"));
 
     }

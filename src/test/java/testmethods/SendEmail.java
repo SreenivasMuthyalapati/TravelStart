@@ -46,7 +46,6 @@ public class SendEmail {
 
         // Access the API key
         String apiKey = dotenv.get("SENDGRID_API_KEY");
-        System.out.println("API KEY IS: "+apiKey);
 
         String username = System.getProperty("user.name").toUpperCase();
 
