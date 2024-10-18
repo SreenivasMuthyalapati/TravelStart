@@ -17,6 +17,7 @@ import org.testng.ITestResult;
 import org.testng.SkipException;
 import org.testng.annotations.*;
 import pageObjects.*;
+import testmethods.ExcelUtils;
 import testmethods.Method;
 import testmethods.PaymentPageMethods;
 import testmethods.TSMethods;
@@ -32,13 +33,14 @@ import java.util.Scanner;
 
 public class BookingFlow {
 
+    static ExcelUtils excelUtils = new ExcelUtils();
     static XSSFWorkbook workbook;
     static WebDriver driver;
     static Method m = new Method();
-    static String dataPath = Paths.dataPath;
+    static String dataPath = configs.dataPaths.dataPath;
     static String environment;
     static String browser;
-    static String outputExcel = Paths.excelOutputPath;
+    static String outputExcel = configs.dataPaths.excelOutputPath;
     static String baseURL;
     static String runTime;
     static String screenShotPath ="";
@@ -46,8 +48,8 @@ public class BookingFlow {
     // Extracting environment from test data sheet
     static {
         try {
-            environment = m.readDataFromExcel(dataPath, "URL's", 1, 1);
-            browser = m.readDataFromExcel(dataPath, "URL's", 0, 1);
+            environment = excelUtils.readDataFromExcel(dataPath, "URL's", 1, 1);
+            browser = excelUtils.readDataFromExcel(dataPath, "URL's", 0, 1);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -83,47 +85,47 @@ public class BookingFlow {
 
         for (int i = 2; i < totalPaxCount; i++) {
 
-            String testCaseNumber = m.readDataFromExcel(dataPath, "Booking Test Cases", i, 0);
-            String shouldRun = m.readDataFromExcel(dataPath, "Booking Test Cases", i, 1);
-            String domain = m.readDataFromExcel(dataPath, "Booking Test Cases", i, 2);
-            String cpy_source = m.readDataFromExcel(dataPath, "Booking Test Cases", i, 3);
-            String tripType = m.readDataFromExcel(dataPath, "Booking Test Cases", i, 4);
-            String origin = m.readDataFromExcel(dataPath, "Booking Test Cases", i, 5);
-            String destination = m.readDataFromExcel(dataPath, "Booking Test Cases", i, 6);
-            String departureDate = m.readDataFromExcel(dataPath, "Booking Test Cases", i, 7);
-            String departureMonth = m.readDataFromExcel(dataPath, "Booking Test Cases", i, 8);
-            String returnDate = m.readDataFromExcel(dataPath, "Booking Test Cases", i, 9);
-            String returnMonth = m.readDataFromExcel(dataPath, "Booking Test Cases", i, 10);
-            String adultCount = m.readDataFromExcel(dataPath, "Booking Test Cases", i, 11);
-            String youngAdultCount = m.readDataFromExcel(dataPath, "Booking Test Cases", i, 12);
-            String childCount = m.readDataFromExcel(dataPath, "Booking Test Cases", i, 13);
-            String infantCount = m.readDataFromExcel(dataPath, "Booking Test Cases", i, 14);
-            String isBundled = m.readDataFromExcel(dataPath, "Booking Test Cases", i, 15);
-            String departureAirline = m.readDataFromExcel(dataPath, "Booking Test Cases", i, 16);
-            String returnAirline = m.readDataFromExcel(dataPath, "Booking Test Cases", i, 17);
-            String mailID = m.readDataFromExcel(dataPath, "Booking Test Cases", i, 18);
-            String mobileNumber = (m.readDataFromExcel(dataPath, "Booking Test Cases", i, 19));
-            String title = m.readDataFromExcel(dataPath, "Booking Test Cases", i, 20);
-            String firstName = m.readDataFromExcel(dataPath, "Booking Test Cases", i, 21);
-            String middleName = m.readDataFromExcel(dataPath, "Booking Test Cases", i, 22);
-            String lastName = m.readDataFromExcel(dataPath, "Booking Test Cases", i, 23);
-            String dateOfBirth = m.readDataFromExcel(dataPath, "Booking Test Cases", i, 24);
-            String monthOfBirth = m.readDataFromExcel(dataPath, "Booking Test Cases", i, 25);
-            String yearOfBirth = m.readDataFromExcel(dataPath, "Booking Test Cases", i, 26);
-            String passPortNumber = m.readDataFromExcel(dataPath, "Booking Test Cases", i, 27);
-            String dateOfPassportExpiry = m.readDataFromExcel(dataPath, "Booking Test Cases", i, 28);
-            String monthOfPassportExpiry = m.readDataFromExcel(dataPath, "Booking Test Cases", i, 29);
-            String yearOfPassportExpiry = m.readDataFromExcel(dataPath, "Booking Test Cases", i, 30);
-            String passPortNationality = m.readDataFromExcel(dataPath, "Booking Test Cases", i, 31);
-            String passPortIssuingCountry = m.readDataFromExcel(dataPath, "Booking Test Cases", i, 32);
-            String addBaggage = m.readDataFromExcel(dataPath, "Booking Test Cases", i, 33);
-            String addFlexi = m.readDataFromExcel(dataPath, "Booking Test Cases", i, 34);
-            String whatsapp = m.readDataFromExcel(dataPath, "Booking Test Cases", i, 35);
-            String addSeats = m.readDataFromExcel(dataPath, "Booking Test Cases", i, 36);
-            String paymentMethod = m.readDataFromExcel(dataPath, "Booking Test Cases", i, 37);
-            String bankNameEFT = m.readDataFromExcel(dataPath, "Booking Test Cases", i, 38);
-            String isLoggedInUser = m.readDataFromExcel(dataPath, "Booking Test Cases", i, 39);
-            String isToBeCancelled = m.readDataFromExcel(dataPath, "Booking Test Cases", i, 40);
+            String testCaseNumber = excelUtils.readDataFromExcel(dataPath, "Booking Test Cases", i, 0);
+            String shouldRun = excelUtils.readDataFromExcel(dataPath, "Booking Test Cases", i, 1);
+            String domain = excelUtils.readDataFromExcel(dataPath, "Booking Test Cases", i, 2);
+            String cpy_source = excelUtils.readDataFromExcel(dataPath, "Booking Test Cases", i, 3);
+            String tripType = excelUtils.readDataFromExcel(dataPath, "Booking Test Cases", i, 4);
+            String origin = excelUtils.readDataFromExcel(dataPath, "Booking Test Cases", i, 5);
+            String destination = excelUtils.readDataFromExcel(dataPath, "Booking Test Cases", i, 6);
+            String departureDate = excelUtils.readDataFromExcel(dataPath, "Booking Test Cases", i, 7);
+            String departureMonth = excelUtils.readDataFromExcel(dataPath, "Booking Test Cases", i, 8);
+            String returnDate = excelUtils.readDataFromExcel(dataPath, "Booking Test Cases", i, 9);
+            String returnMonth = excelUtils.readDataFromExcel(dataPath, "Booking Test Cases", i, 10);
+            String adultCount = excelUtils.readDataFromExcel(dataPath, "Booking Test Cases", i, 11);
+            String youngAdultCount = excelUtils.readDataFromExcel(dataPath, "Booking Test Cases", i, 12);
+            String childCount = excelUtils.readDataFromExcel(dataPath, "Booking Test Cases", i, 13);
+            String infantCount = excelUtils.readDataFromExcel(dataPath, "Booking Test Cases", i, 14);
+            String isBundled = excelUtils.readDataFromExcel(dataPath, "Booking Test Cases", i, 15);
+            String departureAirline = excelUtils.readDataFromExcel(dataPath, "Booking Test Cases", i, 16);
+            String returnAirline = excelUtils.readDataFromExcel(dataPath, "Booking Test Cases", i, 17);
+            String mailID = excelUtils.readDataFromExcel(dataPath, "Booking Test Cases", i, 18);
+            String mobileNumber = (excelUtils.readDataFromExcel(dataPath, "Booking Test Cases", i, 19));
+            String title = excelUtils.readDataFromExcel(dataPath, "Booking Test Cases", i, 20);
+            String firstName = excelUtils.readDataFromExcel(dataPath, "Booking Test Cases", i, 21);
+            String middleName = excelUtils.readDataFromExcel(dataPath, "Booking Test Cases", i, 22);
+            String lastName = excelUtils.readDataFromExcel(dataPath, "Booking Test Cases", i, 23);
+            String dateOfBirth = excelUtils.readDataFromExcel(dataPath, "Booking Test Cases", i, 24);
+            String monthOfBirth = excelUtils.readDataFromExcel(dataPath, "Booking Test Cases", i, 25);
+            String yearOfBirth = excelUtils.readDataFromExcel(dataPath, "Booking Test Cases", i, 26);
+            String passPortNumber = excelUtils.readDataFromExcel(dataPath, "Booking Test Cases", i, 27);
+            String dateOfPassportExpiry = excelUtils.readDataFromExcel(dataPath, "Booking Test Cases", i, 28);
+            String monthOfPassportExpiry = excelUtils.readDataFromExcel(dataPath, "Booking Test Cases", i, 29);
+            String yearOfPassportExpiry = excelUtils.readDataFromExcel(dataPath, "Booking Test Cases", i, 30);
+            String passPortNationality = excelUtils.readDataFromExcel(dataPath, "Booking Test Cases", i, 31);
+            String passPortIssuingCountry = excelUtils.readDataFromExcel(dataPath, "Booking Test Cases", i, 32);
+            String addBaggage = excelUtils.readDataFromExcel(dataPath, "Booking Test Cases", i, 33);
+            String addFlexi = excelUtils.readDataFromExcel(dataPath, "Booking Test Cases", i, 34);
+            String whatsapp = excelUtils.readDataFromExcel(dataPath, "Booking Test Cases", i, 35);
+            String addSeats = excelUtils.readDataFromExcel(dataPath, "Booking Test Cases", i, 36);
+            String paymentMethod = excelUtils.readDataFromExcel(dataPath, "Booking Test Cases", i, 37);
+            String bankNameEFT = excelUtils.readDataFromExcel(dataPath, "Booking Test Cases", i, 38);
+            String isLoggedInUser = excelUtils.readDataFromExcel(dataPath, "Booking Test Cases", i, 39);
+            String isToBeCancelled = excelUtils.readDataFromExcel(dataPath, "Booking Test Cases", i, 40);
 
             testCase.add(new Object[]{testCaseNumber,
                     shouldRun,
@@ -211,52 +213,6 @@ public class BookingFlow {
 
         TSMethods bookingFlowMethods = new TSMethods(driver);
 
-        // Setting up URL for ZA domain
-//        if (domain.equalsIgnoreCase("ZA")){
-//
-//            environment = environment.toUpperCase();
-//
-//        switch (environment) {
-//
-//            case "LIVE" -> baseURL = m.readDataFromExcel(dataPath, "URL's", 4, 1);
-//            case "BETA" -> baseURL = (m.readDataFromExcel(dataPath, "URL's", 6, 1));
-//            case "PREPROD" -> baseURL = (m.readDataFromExcel(dataPath, "URL's", 8, 1));
-//            case "ALPHA" -> baseURL = (m.readDataFromExcel(dataPath, "URL's", 10, 1));
-//
-//            default -> System.out.println("Invalid environment name");
-//
-//
-//        }
-//    }
-//            // Setting up URL for NG domain
-//        else if (domain.equalsIgnoreCase("NG")) {
-//
-//            switch (environment) {
-//
-//                case "LIVE" -> baseURL = (m.readDataFromExcel(dataPath, "URL's", 5, 1));
-//                case "BETA" -> baseURL = (m.readDataFromExcel(dataPath, "URL's", 7, 1));
-//                case "PREPROD" -> baseURL = (m.readDataFromExcel(dataPath, "URL's", 9, 1));
-//                case "ALPHA" -> baseURL = (m.readDataFromExcel(dataPath, "URL's", 11, 1));
-//
-//                default -> System.out.println("Invalid envinorment name");
-//
-//            }
-//        }
-//        // Setting FS META
-//        else if (domain.equalsIgnoreCase("FS")) {
-//
-//            switch (environment) {
-//
-//                case "LIVE" -> baseURL = (m.readDataFromExcel(dataPath, "URL's", 12, 1));
-//                case "BETA" -> baseURL = (m.readDataFromExcel(dataPath, "URL's", 13, 1));
-//                case "PREPROD" -> baseURL = (m.readDataFromExcel(dataPath, "URL's", 14, 1));
-//                case "ALPHA" -> baseURL = (m.readDataFromExcel(dataPath, "URL's", 15, 1));
-//
-//                default -> System.out.println("Invalid envinorment name");
-//
-//            }
-//        }
-
         baseURL = m.getBaseURL(environment, domain, cpy_source);
 
 
@@ -302,9 +258,11 @@ public class BookingFlow {
         PaymentPageMethods paymentPageMethods = new PaymentPageMethods();
         String bookingRef = paymentPageMethods.getBookingReference(driver);
         bookingFlowMethods.paymentAndBooking(environment, testCaseNumber, domain, paymentMethod, bankNameEFT, isToBeCancelled);
+        try {
+            m.cancelBooking(environment, bookingRef);
+        } catch (Exception e){
 
-        m.cancelBooking(environment, bookingRef);
-
+        }
 
     }
 

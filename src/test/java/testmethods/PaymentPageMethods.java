@@ -15,11 +15,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static pageObjects.Paths.dataPath;
+import static configs.dataPaths.dataPath;
 
 public class PaymentPageMethods {
 
     static Method m = new Method();
+    static ExcelUtils excelUtils = new ExcelUtils();
 
     // Asserting payment page loading or not returns "BOOLEAN"
     public boolean assertPaymentPage(WebDriverWait wait){
@@ -278,17 +279,17 @@ public class PaymentPageMethods {
     public void enterCardDetails(WebDriver driver, String domain) throws IOException, InterruptedException {
 
         if (domain.equalsIgnoreCase("ZA")) {
-            String cardNumber = m.readDataFromExcel(dataPath, "Card detals", 2, 1);
-            String cardHolderName = m.readDataFromExcel(dataPath, "Card detals", 2, 2);
-            String cardExpiryMonth = (m.readDataFromExcel(dataPath, "Card detals", 2, 3));
-            String cardExpiryYear = m.readDataFromExcel(dataPath, "Card detals", 2, 4);
-            String CVV = m.doubleToString(m.readDataFromExcel(dataPath, "Card detals", 2, 5));
-            String AddressLine1 = m.readDataFromExcel(dataPath, "Card detals", 2, 6);
-            String AddressLine2 = m.readDataFromExcel(dataPath, "Card detals", 2, 7);
-            String PostalCode = m.doubleToString(m.readDataFromExcel(dataPath, "Card detals", 2, 8));
-            String city = m.readDataFromExcel(dataPath, "Card detals", 2, 9);
-            String country = m.readDataFromExcel(dataPath, "Card detals", 2, 10);
-            String contactNumber = m.readDataFromExcel(dataPath, "Card detals", 2, 11);
+            String cardNumber = excelUtils.readDataFromExcel(dataPath, "Card detals", 2, 1);
+            String cardHolderName = excelUtils.readDataFromExcel(dataPath, "Card detals", 2, 2);
+            String cardExpiryMonth = (excelUtils.readDataFromExcel(dataPath, "Card detals", 2, 3));
+            String cardExpiryYear = excelUtils.readDataFromExcel(dataPath, "Card detals", 2, 4);
+            String CVV = m.doubleToString(excelUtils.readDataFromExcel(dataPath, "Card detals", 2, 5));
+            String AddressLine1 = excelUtils.readDataFromExcel(dataPath, "Card detals", 2, 6);
+            String AddressLine2 = excelUtils.readDataFromExcel(dataPath, "Card detals", 2, 7);
+            String PostalCode = m.doubleToString(excelUtils.readDataFromExcel(dataPath, "Card detals", 2, 8));
+            String city = excelUtils.readDataFromExcel(dataPath, "Card detals", 2, 9);
+            String country = excelUtils.readDataFromExcel(dataPath, "Card detals", 2, 10);
+            String contactNumber = excelUtils.readDataFromExcel(dataPath, "Card detals", 2, 11);
 
 
             driver.findElement(PaymentPage.cardNumber).sendKeys(cardNumber);
@@ -308,11 +309,11 @@ public class PaymentPageMethods {
 
         else if (domain.equalsIgnoreCase("B2B_CT")) {
 
-            String cardNumber = m.readDataFromExcel(dataPath, "Card detals", 2,1);
-            String cardHolderName = m.readDataFromExcel(dataPath, "Card detals", 2,2);
-            String cardExpiryMonth = (m.readDataFromExcel(dataPath, "Card detals", 2,3));
-            String cardExpiryYear = m.readDataFromExcel(dataPath, "Card detals", 2,4);
-            String CVV = m.doubleToString(m.readDataFromExcel(dataPath, "Card detals", 2,5));
+            String cardNumber = excelUtils.readDataFromExcel(dataPath, "Card detals", 2,1);
+            String cardHolderName = excelUtils.readDataFromExcel(dataPath, "Card detals", 2,2);
+            String cardExpiryMonth = (excelUtils.readDataFromExcel(dataPath, "Card detals", 2,3));
+            String cardExpiryYear = excelUtils.readDataFromExcel(dataPath, "Card detals", 2,4);
+            String CVV = m.doubleToString(excelUtils.readDataFromExcel(dataPath, "Card detals", 2,5));
 
             driver.findElement(pageObjects.B2B.PaymentPage.cardNumber).sendKeys(cardNumber);
 

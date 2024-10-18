@@ -35,7 +35,7 @@ public class SendEmail {
     private int dailyEmailCount = 0;
     private int monthlyEmailCount = 0;
 
-    public void sendEmail() {
+    public void sendEmail(String attachmentLocationPath) {
         // Retrieve the SendGrid API key from environment variable
         String apiKey = "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";
 
@@ -64,18 +64,16 @@ public class SendEmail {
             String timestamp = LocalDateTime.now().format(formatter);
             String subject = String.format("Automation Test Results – Travelstart B2C %s", timestamp);
 
-            String[] recipients = {"sreenivas.tsqa@gmail.com"};
+            String[] recipients = {"rezza@travelstart.com", "sreenivas.tsqa@gmail.com"};
             Content content = new Content("text/plain", String.format("""
 
 Dear Stakeholders,
 
-Please find attached the detailed automation test results, executed on %s. The attached HTML report contains a comprehensive breakdown of all tests, including pass/fail statuses and other key metrics.
 
-For complete details, kindly review the attached HTML report.
+Please find attached the detailed automation test results, executed on %s. The attached excel report contains a comprehensive breakdown of all tests, including booking scenarios, test cases and test statuses and other key metrics.
 
+For complete details, kindly review the attached excel report.
 
-
-If you have any questions, feel free to reach out.
 
 Best regards,
 Sreenivas Muthyalapati
@@ -97,7 +95,7 @@ Travelstart
             mail.addPersonalization(personalization);
 
             // Attach the latest report
-            File latestReport = getLatestReport("C:\\Users\\Sreen\\IdeaProjects\\travelStart\\TestResult\\report.html");
+            File latestReport = getLatestReport(attachmentLocationPath);
             Attachments attachments = new Attachments();
             attachments.setContent(Base64.getEncoder().encodeToString(Files.readAllBytes(latestReport.toPath())));
             attachments.setType("text/html");
@@ -110,10 +108,12 @@ Travelstart
 
             // Send the request
             Response response = sg.api(request);
-            System.out.println(String.format("Status Code: %d", response.getStatusCode()));
-            System.out.println("Response Body: " + response.getBody());
-            System.out.println("Response Headers: " + response.getHeaders());
-
+ //           System.out.println(String.format("Status Code: %d", response.getStatusCode()));
+//            System.out.println("Response Body: " + response.getBody());
+//            System.out.println("Response Headers: " + response.getHeaders());
+            if (response.getStatusCode() == 202) {
+                System.out.println("Email report has been sent");
+            }
             // Update email counts
             dailyEmailCount++;
             monthlyEmailCount++;

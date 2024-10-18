@@ -1,7 +1,7 @@
 package test.BookingCancellation;
 
 import org.json.JSONException;
-import pageObjects.Paths;
+import testmethods.ExcelUtils;
 import testmethods.Method;
 
 import java.io.IOException;
@@ -9,9 +9,11 @@ import java.io.IOException;
 public class BookingCancellation {
 
     static Method m = new Method();
+    static ExcelUtils excelUtils = new ExcelUtils();
     public static void main(String[] args) throws IOException {
-
-        int bookingsCount = m.getRowCount(Paths.bookingReferencesForCancellation,"Bookings References")-1;
+        
+        
+        int bookingsCount = m.getRowCount(configs.dataPaths.bookingReferencesForCancellation,"Bookings References")-1;
 
         System.out.println("Total bookings count: "+ bookingsCount);
         System.out.println();
@@ -22,11 +24,11 @@ public class BookingCancellation {
 
             System.out.println();
 
-            String environment = m.readDataFromExcel(Paths.bookingReferencesForCancellation,"Bookings References", i+1, 1);
+            String environment = excelUtils.readDataFromExcel(configs.dataPaths.bookingReferencesForCancellation,"Bookings References", i+1, 1);
 
-            String bookingRefNumber = m.readDataFromExcel(Paths.bookingReferencesForCancellation, "Bookings References", i+1, 0);
+            String bookingRefNumber = excelUtils.readDataFromExcel(configs.dataPaths.bookingReferencesForCancellation, "Bookings References", i+1, 0);
 
-            String firstName = m.readDataFromExcel(Paths.bookingReferencesForCancellation,"Bookings References", i+1, 2);
+            String firstName = excelUtils.readDataFromExcel(configs.dataPaths.bookingReferencesForCancellation,"Bookings References", i+1, 2);
             try {
                 m.cancelBooking(environment, bookingRefNumber);
             } catch (JSONException e){

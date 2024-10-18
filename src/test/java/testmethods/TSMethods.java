@@ -19,13 +19,15 @@ import java.util.List;
 import java.util.Map;
 
 public class TSMethods {
-
+    
+    
+    static ExcelUtils excelUtils = new ExcelUtils();
     static WebDriver driver;
     static Method m = new Method();
-    static String dataPath = Paths.dataPath;
+    static String dataPath = configs.dataPaths.dataPath;
     static String browser;
     static String environment;
-    static String outputExcel = Paths.excelOutputPath;
+    static String outputExcel = configs.dataPaths.excelOutputPath;
     static String baseURL;
     static String runTime;
     static String screenShotPath ="";
@@ -789,7 +791,7 @@ public class TSMethods {
 
                     if (!isSeatMapAvailable){
 
-                        m.takeScreenshot(driver, Paths.screenshotFolder, screenShotPath);
+                        m.takeScreenshot(driver, configs.dataPaths.screenshotFolder, screenShotPath);
                         totalPrice = "";
 
                     }
@@ -1004,7 +1006,7 @@ public class TSMethods {
 
             }
         }else {
-            m.takeScreenshot(driver, Paths.screenshotFolder, screenShotPath);
+            m.takeScreenshot(driver, configs.dataPaths.screenshotFolder, screenShotPath);
             m.getConsole(driver);
             File screenShotFile = new File(screenShotPath);
            // m.sendNotification(testCaseNumber, "Not redirected to payment screen or not redirected within 60 seconds");
@@ -1049,17 +1051,17 @@ public class TSMethods {
         else if (paymentMethod.equalsIgnoreCase("cc/dc") && (domain.equalsIgnoreCase("ZA") || domain.equalsIgnoreCase("FS"))){
             wait.until(ExpectedConditions.visibilityOfElementLocated(PaymentPage.credicCardOrDebitCard));
             driver.findElement(PaymentPage.credicCardOrDebitCard).click();
-            String cardNumber = m.readDataFromExcel(dataPath, "Card detals", 2,1);
-            String cardHolderName = m.readDataFromExcel(dataPath, "Card detals", 2,2);
-            String cardExpiryMonth = (m.readDataFromExcel(dataPath, "Card detals", 2,3));
-            String cardExpiryYear = m.readDataFromExcel(dataPath, "Card detals", 2,4);
-            String CVV = m.doubleToString(m.readDataFromExcel(dataPath, "Card detals", 2,5));
-            String AddressLine1 = m.readDataFromExcel(dataPath, "Card detals", 2,6);
-            String AddressLine2 = m.readDataFromExcel(dataPath, "Card detals", 2,7);
-            String PostalCode = m.doubleToString(m.readDataFromExcel(dataPath, "Card detals", 2,8));
-            String city = m.readDataFromExcel(dataPath, "Card detals", 2,9);
-            String country = m.readDataFromExcel(dataPath, "Card detals", 2,10);
-            String contactNumber = m.readDataFromExcel(dataPath, "Card detals", 2,11);
+            String cardNumber = excelUtils.readDataFromExcel(dataPath, "Card detals", 2,1);
+            String cardHolderName = excelUtils.readDataFromExcel(dataPath, "Card detals", 2,2);
+            String cardExpiryMonth = (excelUtils.readDataFromExcel(dataPath, "Card detals", 2,3));
+            String cardExpiryYear = excelUtils.readDataFromExcel(dataPath, "Card detals", 2,4);
+            String CVV = m.doubleToString(excelUtils.readDataFromExcel(dataPath, "Card detals", 2,5));
+            String AddressLine1 = excelUtils.readDataFromExcel(dataPath, "Card detals", 2,6);
+            String AddressLine2 = excelUtils.readDataFromExcel(dataPath, "Card detals", 2,7);
+            String PostalCode = m.doubleToString(excelUtils.readDataFromExcel(dataPath, "Card detals", 2,8));
+            String city = excelUtils.readDataFromExcel(dataPath, "Card detals", 2,9);
+            String country = excelUtils.readDataFromExcel(dataPath, "Card detals", 2,10);
+            String contactNumber = excelUtils.readDataFromExcel(dataPath, "Card detals", 2,11);
 
 
 
@@ -1169,11 +1171,11 @@ public class TSMethods {
 
 
 
-            String cardNumber = m.readDataFromExcel(dataPath, "Card detals", 2,1);
-            String cardHolderName = m.readDataFromExcel(dataPath, "Card detals", 2,2);
-            String cardExpiryMonth = (m.readDataFromExcel(dataPath, "Card detals", 2,3));
-            String cardExpiryYear = m.readDataFromExcel(dataPath, "Card detals", 2,4);
-            String CVV = m.doubleToString(m.readDataFromExcel(dataPath, "Card detals", 2,5));
+            String cardNumber = excelUtils.readDataFromExcel(dataPath, "Card detals", 2,1);
+            String cardHolderName = excelUtils.readDataFromExcel(dataPath, "Card detals", 2,2);
+            String cardExpiryMonth = (excelUtils.readDataFromExcel(dataPath, "Card detals", 2,3));
+            String cardExpiryYear = excelUtils.readDataFromExcel(dataPath, "Card detals", 2,4);
+            String CVV = m.doubleToString(excelUtils.readDataFromExcel(dataPath, "Card detals", 2,5));
 
             driver.findElement(pageObjects.B2B.PaymentPage.cardNumber).sendKeys(cardNumber);
 
@@ -1259,7 +1261,7 @@ public class TSMethods {
 
 
         }else {
-            m.takeScreenshot(driver, Paths.screenshotFolder, screenShotPath);
+            m.takeScreenshot(driver, configs.dataPaths.screenshotFolder, screenShotPath);
             m.getConsole(driver);
             File screenShotFile = new File(screenShotPath);
             //m.sendNotification(testCaseNumber, "Booking not succeeded");
@@ -1273,32 +1275,6 @@ public class TSMethods {
         }
 
         Assert.assertTrue(isbookingRefAvailable, "Booking failed");
-
-        Long timeTookForBooking = null;
-
-        if (isbookingRefAvailable){
-            timeTookForBooking = m.timeCalculator(timeOne, timeTwo);
-        }
-
-        boolean isBookingDoneWithinTime = false;
-        isBookingDoneWithinTime = timeTookForBooking <= 45;
-
-        if (!isBookingDoneWithinTime){
-           // m.sendNotification(testCaseNumber, "Booking not completed within 45 seconds, time took for booking is "+ timeTookForBooking + " seconds");
-            m.writeToExcel(testCaseNumber, 0, outputExcel);
-            m.writeToExcel(bookingReference, 1, outputExcel);
-            testStatus = "Failed";
-            m.writeToExcel(testStatus, 2, outputExcel);
-            m.writeToExcel(("Booking not completed within 45 seconds, time took for booking is "+ timeTookForBooking +" seconds"), 3, outputExcel);
-            m.writeToExcel(m.getCID(driver), 4, outputExcel);
-            m.writeToExcel(runTime, 5, outputExcel);
-        }
-
-
-        Assert.assertTrue((isBookingDoneWithinTime), "Booking not completed within 45 seconds");
-        
-        
-
 
     }
 

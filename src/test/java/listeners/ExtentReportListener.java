@@ -3,10 +3,10 @@ package listeners;
 import com.aventstack.extentreports.ExtentReports;
 import com.aventstack.extentreports.ExtentTest;
 import com.aventstack.extentreports.reporter.ExtentSparkReporter;
+import configs.dataPaths;
 import org.testng.ITestContext;
 import org.testng.ITestListener;
 import org.testng.ITestResult;
-import pageObjects.Paths;
 
 public class ExtentReportListener implements ITestListener {
     private static ExtentReports extent;
@@ -14,7 +14,7 @@ public class ExtentReportListener implements ITestListener {
 
     @Override
     public void onStart(ITestContext context) {
-        ExtentSparkReporter spark = new ExtentSparkReporter(Paths.dataBasePath+"\\TestResult\\report.html");
+        ExtentSparkReporter spark = new ExtentSparkReporter(dataPaths.dataBasePath+"\\TestResult\\report.html");
         extent = new ExtentReports();
         extent.attachReporter(spark);
     }

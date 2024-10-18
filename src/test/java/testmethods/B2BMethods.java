@@ -2,30 +2,28 @@ package testmethods;
 
 import org.openqa.selenium.*;
 import org.openqa.selenium.support.ui.ExpectedConditions;
-import org.openqa.selenium.support.ui.Wait;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.Assert;
 import pageObjects.B2B.Dashboard;
 import pageObjects.B2B.LoginPage;
 import pageObjects.B2B.MakePaymentConfirmationPage;
 import pageObjects.B2B.SearchPage;
-import pageObjects.Paths;
 
 import java.io.File;
 import java.io.IOException;
-import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import static testmethods.TSMethods.screenShotPath;
 
 public class B2BMethods {
+    
 
+    static ExcelUtils excelUtils = new ExcelUtils();
     private WebDriverWait wait;
     private WebDriver driver;
     private Method m;
-    String dataPath = Paths.b2bTestData;
+    String dataPath = configs.dataPaths.b2bTestData;
 
     // Constructor to initialize WebDriverWait
     public B2BMethods(WebDriver driver) {
@@ -70,7 +68,7 @@ public class B2BMethods {
             System.out.println("Login failed, Dashboard not displayed.");
 
             // Take a screenshot if login fails
-            m.takeScreenshot(driver, Paths.screenshotFolder, screenShotPath);
+            m.takeScreenshot(driver, configs.dataPaths.screenshotFolder, screenShotPath);
 
             // Get console logs if any error exists in the console
             m.getConsole(driver);
@@ -93,18 +91,18 @@ public class B2BMethods {
 
             if (environment.equalsIgnoreCase("LIVE")){
 
-                loginCredentials.add(0, m.readDataFromExcel(dataPath, "Login Creds", 3, 1));
-                loginCredentials.add(1, m.readDataFromExcel(dataPath, "Login Creds", 3, 2));
+                loginCredentials.add(0, excelUtils.readDataFromExcel(dataPath, "Login Creds", 3, 1));
+                loginCredentials.add(1, excelUtils.readDataFromExcel(dataPath, "Login Creds", 3, 2));
 
             } else if (environment.equalsIgnoreCase("BETA")) {
 
-                loginCredentials.add(0, m.readDataFromExcel(dataPath, "Login Creds", 4, 1));
-                loginCredentials.add(1, m.readDataFromExcel(dataPath, "Login Creds", 4, 2));
+                loginCredentials.add(0, excelUtils.readDataFromExcel(dataPath, "Login Creds", 4, 1));
+                loginCredentials.add(1, excelUtils.readDataFromExcel(dataPath, "Login Creds", 4, 2));
 
             } else if (environment.equalsIgnoreCase("PREPROD")) {
 
-                loginCredentials.add(0, m.readDataFromExcel(dataPath, "Login Creds", 5, 1));
-                loginCredentials.add(1, m.readDataFromExcel(dataPath, "Login Creds", 5, 2));
+                loginCredentials.add(0, excelUtils.readDataFromExcel(dataPath, "Login Creds", 5, 1));
+                loginCredentials.add(1, excelUtils.readDataFromExcel(dataPath, "Login Creds", 5, 2));
 
             }
 
@@ -113,18 +111,18 @@ public class B2BMethods {
 
             if (environment.equalsIgnoreCase("LIVE")){
 
-                loginCredentials.add(0, m.readDataFromExcel(dataPath, "Login Creds", 9, 1));
-                loginCredentials.add(1, m.readDataFromExcel(dataPath, "Login Creds", 9, 2));
+                loginCredentials.add(0, excelUtils.readDataFromExcel(dataPath, "Login Creds", 9, 1));
+                loginCredentials.add(1, excelUtils.readDataFromExcel(dataPath, "Login Creds", 9, 2));
 
             } else if (environment.equalsIgnoreCase("BETA")) {
 
-                loginCredentials.add(0, m.readDataFromExcel(dataPath, "Login Creds", 10, 1));
-                loginCredentials.add(1, m.readDataFromExcel(dataPath, "Login Creds", 10, 2));
+                loginCredentials.add(0, excelUtils.readDataFromExcel(dataPath, "Login Creds", 10, 1));
+                loginCredentials.add(1, excelUtils.readDataFromExcel(dataPath, "Login Creds", 10, 2));
 
             } else if (environment.equalsIgnoreCase("PREPROD")) {
 
-                loginCredentials.add(0, m.readDataFromExcel(dataPath, "Login Creds", 11, 1));
-                loginCredentials.add(1, m.readDataFromExcel(dataPath, "Login Creds", 11, 2));
+                loginCredentials.add(0, excelUtils.readDataFromExcel(dataPath, "Login Creds", 11, 1));
+                loginCredentials.add(1, excelUtils.readDataFromExcel(dataPath, "Login Creds", 11, 2));
 
             }
 
@@ -133,18 +131,18 @@ public class B2BMethods {
 
             if (environment.equalsIgnoreCase("LIVE")){
 
-                loginCredentials.add(0, m.readDataFromExcel(dataPath, "Login Creds", 15, 1));
-                loginCredentials.add(1, m.readDataFromExcel(dataPath, "Login Creds", 15, 2));
+                loginCredentials.add(0, excelUtils.readDataFromExcel(dataPath, "Login Creds", 15, 1));
+                loginCredentials.add(1, excelUtils.readDataFromExcel(dataPath, "Login Creds", 15, 2));
 
             } else if (environment.equalsIgnoreCase("BETA")) {
 
-                loginCredentials.add(0, m.readDataFromExcel(dataPath, "Login Creds", 16, 1));
-                loginCredentials.add(1, m.readDataFromExcel(dataPath, "Login Creds", 16, 2));
+                loginCredentials.add(0, excelUtils.readDataFromExcel(dataPath, "Login Creds", 16, 1));
+                loginCredentials.add(1, excelUtils.readDataFromExcel(dataPath, "Login Creds", 16, 2));
 
             } else if (environment.equalsIgnoreCase("PREPROD")) {
 
-                loginCredentials.add(0, m.readDataFromExcel(dataPath, "Login Creds", 17, 1));
-                loginCredentials.add(1, m.readDataFromExcel(dataPath, "Login Creds", 17, 2));
+                loginCredentials.add(0, excelUtils.readDataFromExcel(dataPath, "Login Creds", 17, 1));
+                loginCredentials.add(1, excelUtils.readDataFromExcel(dataPath, "Login Creds", 17, 2));
 
             }
 

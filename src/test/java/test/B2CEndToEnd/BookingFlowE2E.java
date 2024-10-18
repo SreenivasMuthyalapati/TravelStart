@@ -4,10 +4,7 @@ import org.openqa.selenium.WebDriver;
 import org.testng.Assert;
 import org.testng.ITestResult;
 import org.testng.SkipException;
-import org.testng.annotations.AfterMethod;
-import org.testng.annotations.DataProvider;
-import org.testng.annotations.Test;
-import pageObjects.Paths;
+import org.testng.annotations.*;
 import testmethods.*;
 
 import java.io.IOException;
@@ -76,11 +73,13 @@ public class BookingFlowE2E {
     */
 
     // Class variables and instances
+    public static ExcelUtils excelUtils = new ExcelUtils();
+    public static SendEmail sendEmail = new SendEmail();
     public static Method method = new Method();
     public static HomePageMethods homePageMethods = new HomePageMethods();
     public static SRPMethods srpMethods = new SRPMethods();
     public static TravellerDetailsPageMethods travellerDetailsPageMethods = new TravellerDetailsPageMethods();
-    public static String dataPath = Paths.B2CBookingE2ETestData;
+    public static String dataPath = configs.dataPaths.B2CBookingE2ETestData;
     public static String environment;
     public static String browser;
     public static WebDriver driver;
@@ -92,8 +91,8 @@ public class BookingFlowE2E {
     // Extracting environment from test data sheet
     static {
         try {
-            environment = method.readDataFromExcel(dataPath, "URL's", 1, 1);
-            browser = method.readDataFromExcel(dataPath, "URL's", 0, 1);
+            environment = excelUtils.readDataFromExcel(dataPath, "URL's", 1, 1);
+            browser = excelUtils.readDataFromExcel(dataPath, "URL's", 0, 1);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -101,6 +100,12 @@ public class BookingFlowE2E {
 
 
     public BookingFlowE2E() throws IOException {
+    }
+
+    @BeforeTest
+    public void setupTest() throws IOException {
+        // Create a new Excel report for each test run
+        ExcelUtils.createExcelReport();
     }
 
 
@@ -117,6 +122,20 @@ public class BookingFlowE2E {
         }
     }
 
+    static String testReportPath = "";
+
+    @AfterTest
+    public void tearDown() throws IOException, InterruptedException {
+        // Save the Excel report after the test run
+        testReportPath = ExcelUtils.saveExcelReport();
+
+        Thread.sleep(1000);
+
+        // Sends email with test report
+        sendEmail.sendEmail(testReportPath);
+
+        System.out.println(testReportPath);
+    }
 
 
 
@@ -129,42 +148,42 @@ public class BookingFlowE2E {
 
         for (int i = 2; i < totalPaxCount; i++) {
 
-            String testCaseNumber = method.readDataFromExcel(dataPath, "Booking Scenarios", i, 0);
-            String shouldRun = method.readDataFromExcel(dataPath, "Booking Scenarios", i, 1);
-            String domain = method.readDataFromExcel(dataPath, "Booking Scenarios", i, 2);
-            String cpy_source = method.readDataFromExcel(dataPath, "Booking Scenarios", i, 3);
-            String tripType = method.readDataFromExcel(dataPath, "Booking Scenarios", i, 4);
-            String origin = method.readDataFromExcel(dataPath, "Booking Scenarios", i, 5);
-            String destination = method.readDataFromExcel(dataPath, "Booking Scenarios", i, 6);
-            String departureDate = method.readDataFromExcel(dataPath, "Booking Scenarios", i, 7);
-            String departureMonth = method.readDataFromExcel(dataPath, "Booking Scenarios", i, 8);
-            String returnDate = method.readDataFromExcel(dataPath, "Booking Scenarios", i, 9);
-            String returnMonth = method.readDataFromExcel(dataPath, "Booking Scenarios", i, 10);
-            String adultCount = method.readDataFromExcel(dataPath, "Booking Scenarios", i, 11);
-            String youngAdultCount = method.readDataFromExcel(dataPath, "Booking Scenarios", i, 12);
-            String childCount = method.readDataFromExcel(dataPath, "Booking Scenarios", i, 13);
-            String infantCount = method.readDataFromExcel(dataPath, "Booking Scenarios", i, 14);
-            String departureAirline = method.readDataFromExcel(dataPath, "Booking Scenarios", i, 15);
-            String returnAirline = method.readDataFromExcel(dataPath, "Booking Scenarios", i, 16);
-            String mailID = method.readDataFromExcel(dataPath, "Booking Scenarios", i, 17);
-            String mobileNumber = (method.readDataFromExcel(dataPath, "Booking Scenarios", i, 18));
-            String title = method.readDataFromExcel(dataPath, "Booking Scenarios", i, 19);
-            String firstName = method.readDataFromExcel(dataPath, "Booking Scenarios", i, 20);
-            String middleName = method.readDataFromExcel(dataPath, "Booking Scenarios", i, 21);
-            String lastName = method.readDataFromExcel(dataPath, "Booking Scenarios", i, 22);
-            String dateOfBirth = method.readDataFromExcel(dataPath, "Booking Scenarios", i, 23);
-            String monthOfBirth = method.readDataFromExcel(dataPath, "Booking Scenarios", i, 24);
-            String yearOfBirth = method.readDataFromExcel(dataPath, "Booking Scenarios", i, 25);
-            String passPortNumber = method.readDataFromExcel(dataPath, "Booking Scenarios", i, 26);
-            String dateOfPassportExpiry = method.readDataFromExcel(dataPath, "Booking Scenarios", i, 27);
-            String monthOfPassportExpiry = method.readDataFromExcel(dataPath, "Booking Scenarios", i, 28);
-            String yearOfPassportExpiry = method.readDataFromExcel(dataPath, "Booking Scenarios", i, 29);
-            String passPortNationality = method.readDataFromExcel(dataPath, "Booking Scenarios", i, 30);
-            String passPortIssuingCountry = method.readDataFromExcel(dataPath, "Booking Scenarios", i, 31);
-            String paymentMethod = method.readDataFromExcel(dataPath, "Booking Scenarios", i, 32);
-            String bankNameEFT = method.readDataFromExcel(dataPath, "Booking Scenarios", i, 33);
-            String isLoggedInUser = method.readDataFromExcel(dataPath, "Booking Scenarios", i, 34);
-            String isToBeCancelled = method.readDataFromExcel(dataPath, "Booking Scenarios", i, 35);
+            String testCaseNumber = excelUtils.readDataFromExcel(dataPath, "Booking Scenarios", i, 0);
+            String shouldRun = excelUtils.readDataFromExcel(dataPath, "Booking Scenarios", i, 1);
+            String domain = excelUtils.readDataFromExcel(dataPath, "Booking Scenarios", i, 2);
+            String cpy_source = excelUtils.readDataFromExcel(dataPath, "Booking Scenarios", i, 3);
+            String tripType = excelUtils.readDataFromExcel(dataPath, "Booking Scenarios", i, 4);
+            String origin = excelUtils.readDataFromExcel(dataPath, "Booking Scenarios", i, 5);
+            String destination = excelUtils.readDataFromExcel(dataPath, "Booking Scenarios", i, 6);
+            String departureDate = excelUtils.readDataFromExcel(dataPath, "Booking Scenarios", i, 7);
+            String departureMonth = excelUtils.readDataFromExcel(dataPath, "Booking Scenarios", i, 8);
+            String returnDate = excelUtils.readDataFromExcel(dataPath, "Booking Scenarios", i, 9);
+            String returnMonth = excelUtils.readDataFromExcel(dataPath, "Booking Scenarios", i, 10);
+            String adultCount = excelUtils.readDataFromExcel(dataPath, "Booking Scenarios", i, 11);
+            String youngAdultCount = excelUtils.readDataFromExcel(dataPath, "Booking Scenarios", i, 12);
+            String childCount = excelUtils.readDataFromExcel(dataPath, "Booking Scenarios", i, 13);
+            String infantCount = excelUtils.readDataFromExcel(dataPath, "Booking Scenarios", i, 14);
+            String departureAirline = excelUtils.readDataFromExcel(dataPath, "Booking Scenarios", i, 15);
+            String returnAirline = excelUtils.readDataFromExcel(dataPath, "Booking Scenarios", i, 16);
+            String mailID = excelUtils.readDataFromExcel(dataPath, "Booking Scenarios", i, 17);
+            String mobileNumber = (excelUtils.readDataFromExcel(dataPath, "Booking Scenarios", i, 18));
+            String title = excelUtils.readDataFromExcel(dataPath, "Booking Scenarios", i, 19);
+            String firstName = excelUtils.readDataFromExcel(dataPath, "Booking Scenarios", i, 20);
+            String middleName = excelUtils.readDataFromExcel(dataPath, "Booking Scenarios", i, 21);
+            String lastName = excelUtils.readDataFromExcel(dataPath, "Booking Scenarios", i, 22);
+            String dateOfBirth = excelUtils.readDataFromExcel(dataPath, "Booking Scenarios", i, 23);
+            String monthOfBirth = excelUtils.readDataFromExcel(dataPath, "Booking Scenarios", i, 24);
+            String yearOfBirth = excelUtils.readDataFromExcel(dataPath, "Booking Scenarios", i, 25);
+            String passPortNumber = excelUtils.readDataFromExcel(dataPath, "Booking Scenarios", i, 26);
+            String dateOfPassportExpiry = excelUtils.readDataFromExcel(dataPath, "Booking Scenarios", i, 27);
+            String monthOfPassportExpiry = excelUtils.readDataFromExcel(dataPath, "Booking Scenarios", i, 28);
+            String yearOfPassportExpiry = excelUtils.readDataFromExcel(dataPath, "Booking Scenarios", i, 29);
+            String passPortNationality = excelUtils.readDataFromExcel(dataPath, "Booking Scenarios", i, 30);
+            String passPortIssuingCountry = excelUtils.readDataFromExcel(dataPath, "Booking Scenarios", i, 31);
+            String paymentMethod = excelUtils.readDataFromExcel(dataPath, "Booking Scenarios", i, 32);
+            String bankNameEFT = excelUtils.readDataFromExcel(dataPath, "Booking Scenarios", i, 33);
+            String isLoggedInUser = excelUtils.readDataFromExcel(dataPath, "Booking Scenarios", i, 34);
+            String isToBeCancelled = excelUtils.readDataFromExcel(dataPath, "Booking Scenarios", i, 35);
 
             testCase.add(new Object[]{testCaseNumber,
                     shouldRun,
@@ -244,6 +263,8 @@ public class BookingFlowE2E {
 
         isAppLaunched = homePageMethods.assertHomePageRedirection(driver);
 
+        ExcelUtils.writeTestReport(testCaseNumber, testCaseSummary, isAppLaunched ? "Pass" : "Fail");
+
         Assert.assertTrue(isAppLaunched, "Test case failed: "+testCaseSummary);
         if (isAppLaunched){
 
@@ -261,6 +282,8 @@ public class BookingFlowE2E {
         boolean isSearchLoaded = srpMethods.isSRPLoaded(driver);
         CID = method.getCID(driver);
 
+        ExcelUtils.writeTestReport(testCaseNumber, testCaseSummary, isSearchLoaded ? "Pass" : "Fail");
+
         Assert.assertTrue(isSearchLoaded, "Test case failed: "+testCaseSummary+"," +" correlation ID: "+CID);
 
 
@@ -277,6 +300,8 @@ public class BookingFlowE2E {
         testCaseSummary = "Verify currency is valid or not";
 
         boolean isCurrencyValid = srpMethods.isCurrencyValid(driver, domain, isBundled);
+
+        ExcelUtils.writeTestReport(testCaseNumber, testCaseSummary, isCurrencyValid ? "Pass" : "Fail");
 
         Assert.assertTrue(isCurrencyValid, "Test case failed: "+testCaseSummary+"," +" correlation ID: "+CID);
 

@@ -1,18 +1,13 @@
 package testmethods;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonObject;
+import configs.dataPaths;
 import io.github.bonigarcia.wdm.WebDriverManager;
-import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import io.restassured.response.Response;
-import org.apache.commons.compress.archivers.dump.InvalidFormatException;
 import org.apache.commons.io.FileUtils;
 
-import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.*;
 import org.apache.poi.EncryptedDocumentException;
-import org.apache.poi.hssf.record.PageBreakRecord;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -26,36 +21,21 @@ import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.logging.LogEntries;
 import org.openqa.selenium.logging.LogEntry;
 import org.openqa.selenium.logging.LogType;
-import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.Assert;
-import org.testng.SkipException;
-import org.apache.http.HttpHeaders;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
-import org.apache.http.HttpHeaders;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import pageObjects.CloudFlare;
 import pageObjects.FlightPage;
 import pageObjects.HomePage;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.io.*;
-import java.text.BreakIterator;
-import java.time.Duration;
 import java.time.LocalTime;
 import java.time.Month;
 import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
-import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
@@ -63,20 +43,16 @@ import java.util.concurrent.TimeUnit;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.IOException;
 
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
 import org.json.JSONObject;
-import pageObjects.Paths;
 
 
 import static io.restassured.RestAssured.given;
-import static pageObjects.Paths.dataPath;
+import static configs.dataPaths.dataPath;
 import static testmethods.TSMethods.*;
 
 public class Method {
@@ -115,19 +91,6 @@ public class Method {
 	}
 
 
-	public String readDataFromExcel(String filePath, String sheetName, int row, int col) throws IOException {
-		try (FileInputStream file = new FileInputStream(new File(filePath));
-			 Workbook workbook = WorkbookFactory.create(file)) {
-
-			Sheet sheet = workbook.getSheet(sheetName);
-			Row excelRow = sheet.getRow(row);
-			Cell cell = excelRow.getCell(col);
-
-			// Use DataFormatter to get formatted string representation of cell value
-			DataFormatter dataFormatter = new DataFormatter();
-			return dataFormatter.formatCellValue(cell);
-		}
-	}
 
 	public static String readDataFromExcelFile(String filePath, String sheetName, int row, int col) throws IOException {
 		try (FileInputStream file = new FileInputStream(new File(filePath));
@@ -748,17 +711,6 @@ public class Method {
         return currentTimeString;
     }
 
-	private static final String SLACK_WEBHOOK_URL = "https://hooks.slack.com/services/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";
-
-	public long timeCalculator(String time1, String time2){
-		// Define two LocalTime objects representing your times
-		LocalTime timeOne = LocalTime.parse(time1);
-		LocalTime timeTwo = LocalTime.parse(time2);
-
-		// Calculate the difference in seconds
-		long secondsDifference = ChronoUnit.SECONDS.between(timeOne, timeTwo);
-        return secondsDifference;
-    }
 
 	public void selectFromDropDown(WebDriver driver, WebElement dropdownElement, String value) throws InterruptedException {
 
@@ -1287,66 +1239,11 @@ public class Method {
     }
 
 
-	public String getBaseURL (String environment, String domain) throws IOException {
-
-		String baseURL = "";
-
-		// Setting up URL for ZA domain
-		if (domain.equalsIgnoreCase("ZA")){
-
-			environment = environment.toUpperCase();
-
-			switch (environment) {
-
-				case "LIVE" -> baseURL = m.readDataFromExcel(dataPath, "URL's", 4, 1);
-				case "BETA" -> baseURL = (m.readDataFromExcel(dataPath, "URL's", 6, 1));
-				case "PREPROD" -> baseURL = (m.readDataFromExcel(dataPath, "URL's", 8, 1));
-				case "ALPHA" -> baseURL = (m.readDataFromExcel(dataPath, "URL's", 10, 1));
-
-				default -> System.out.println("Invalid environment name");
-
-
-			}
-		}
-		// Setting up URL for NG domain
-		else if (domain.equalsIgnoreCase("NG")) {
-
-			switch (environment) {
-
-				case "LIVE" -> baseURL = (m.readDataFromExcel(dataPath, "URL's", 5, 1));
-				case "BETA" -> baseURL = (m.readDataFromExcel(dataPath, "URL's", 7, 1));
-				case "PREPROD" -> baseURL = (m.readDataFromExcel(dataPath, "URL's", 9, 1));
-				case "ALPHA" -> baseURL = (m.readDataFromExcel(dataPath, "URL's", 11, 1));
-
-				default -> System.out.println("Invalid envinorment name");
-
-			}
-		}
-		// Setting FS META
-		else if (domain.equalsIgnoreCase("FS")) {
-
-			switch (environment) {
-
-				case "LIVE" -> baseURL = (m.readDataFromExcel(dataPath, "URL's", 12, 1));
-				case "BETA" -> baseURL = (m.readDataFromExcel(dataPath, "URL's", 13, 1));
-				case "PREPROD" -> baseURL = (m.readDataFromExcel(dataPath, "URL's", 14, 1));
-				case "ALPHA" -> baseURL = (m.readDataFromExcel(dataPath, "URL's", 15, 1));
-
-				default -> System.out.println("Invalid envinorment name");
-
-			}
-		}
-
-
-
-        return baseURL;
-
-    }
-
-
 	public String getBaseURL (String environment, String domain, String cpy_source) throws IOException {
 
 		String baseURL = "";
+
+		String urlPath = dataPaths.URLs;
 
 		environment = environment.toUpperCase();
 
@@ -1357,10 +1254,10 @@ public class Method {
 
 			switch (environment) {
 
-				case "LIVE" -> baseURL = m.readDataFromExcel(dataPath, "URL's", 4, 1);
-				case "BETA" -> baseURL = (m.readDataFromExcel(dataPath, "URL's", 6, 1));
-				case "PREPROD" -> baseURL = (m.readDataFromExcel(dataPath, "URL's", 8, 1));
-				case "ALPHA" -> baseURL = (m.readDataFromExcel(dataPath, "URL's", 10, 1));
+				case "LIVE" -> baseURL = readDataFromExcelFile(urlPath, "URL's", 4, 1);
+				case "BETA" -> baseURL = (readDataFromExcelFile(urlPath, "URL's", 6, 1));
+				case "PREPROD" -> baseURL = (readDataFromExcelFile(urlPath, "URL's", 8, 1));
+				case "ALPHA" -> baseURL = (readDataFromExcelFile(urlPath, "URL's", 10, 1));
 
 				default -> System.out.println("Invalid environment name");
 
@@ -1372,10 +1269,10 @@ public class Method {
 
 			switch (environment) {
 
-				case "LIVE" -> baseURL = (m.readDataFromExcel(dataPath, "URL's", 5, 1));
-				case "BETA" -> baseURL = (m.readDataFromExcel(dataPath, "URL's", 7, 1));
-				case "PREPROD" -> baseURL = (m.readDataFromExcel(dataPath, "URL's", 9, 1));
-				case "ALPHA" -> baseURL = (m.readDataFromExcel(dataPath, "URL's", 11, 1));
+				case "LIVE" -> baseURL = (readDataFromExcelFile(urlPath, "URL's", 5, 1));
+				case "BETA" -> baseURL = (readDataFromExcelFile(urlPath, "URL's", 7, 1));
+				case "PREPROD" -> baseURL = (readDataFromExcelFile(urlPath, "URL's", 9, 1));
+				case "ALPHA" -> baseURL = (readDataFromExcelFile(urlPath, "URL's", 11, 1));
 
 				default -> System.out.println("Invalid envinorment name");
 
@@ -1386,10 +1283,10 @@ public class Method {
 
 			switch (environment) {
 
-				case "LIVE" -> baseURL = (m.readDataFromExcel(dataPath, "URL's", 12, 1));
-				case "BETA" -> baseURL = (m.readDataFromExcel(dataPath, "URL's", 13, 1));
-				case "PREPROD" -> baseURL = (m.readDataFromExcel(dataPath, "URL's", 14, 1));
-				case "ALPHA" -> baseURL = (m.readDataFromExcel(dataPath, "URL's", 15, 1));
+				case "LIVE" -> baseURL = (readDataFromExcelFile(urlPath, "URL's", 12, 1));
+				case "BETA" -> baseURL = (readDataFromExcelFile(urlPath, "URL's", 13, 1));
+				case "PREPROD" -> baseURL = (readDataFromExcelFile(urlPath, "URL's", 14, 1));
+				case "ALPHA" -> baseURL = (readDataFromExcelFile(urlPath, "URL's", 15, 1));
 
 				default -> System.out.println("Invalid envinorment name");
 
@@ -1888,6 +1785,8 @@ public class Method {
 		statusMap.put("FAILED", 0);
 		statusMap.put("SKIPPED", 0);
 	}
+
+
 
 	// Method to update and return the status map based on the provided status
 	public Map<String, Integer> updateTestStatus(String status) {

@@ -20,6 +20,7 @@ import pageObjects.*;
 import pageObjects.B2B.Dashboard;
 import pageObjects.B2B.SearchPage;
 import testmethods.B2BMethods;
+import testmethods.ExcelUtils;
 import testmethods.Method;
 import testmethods.TSMethods;
 
@@ -34,13 +35,14 @@ import java.util.Scanner;
 
 public class B2B_Booking {
 
+    static ExcelUtils excelUtils = new ExcelUtils();
     static XSSFWorkbook workbook;
     static WebDriver driver;
     static Method m = new Method();
-    static String dataPath = Paths.b2bTestData;
+    static String dataPath = configs.dataPaths.b2bTestData;
     static String environment;
     static String browser;
-    static String outputExcel = Paths.excelOutputPath;
+    static String outputExcel = configs.dataPaths.excelOutputPath;
     static String baseURL;
     static String runTime;
     static String screenShotPath ="";
@@ -48,8 +50,8 @@ public class B2B_Booking {
     // Extracting environment from test data sheet
     static {
         try {
-            environment = m.readDataFromExcel(dataPath, "URL's", 1, 1);
-            browser = m.readDataFromExcel(dataPath, "URL's", 0, 1);
+            environment = excelUtils.readDataFromExcel(dataPath, "URL's", 1, 1);
+            browser = excelUtils.readDataFromExcel(dataPath, "URL's", 0, 1);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -82,44 +84,44 @@ public class B2B_Booking {
 
         for (int i = 2; i < totalPaxCount; i++) {
 
-            String testCaseNumber = m.readDataFromExcel(dataPath, "Booking Test Cases", i, 0);
-            String shouldRun = m.readDataFromExcel(dataPath, "Booking Test Cases", i, 1);
-            String domain = m.readDataFromExcel(dataPath, "Booking Test Cases", i, 2);
-            String tripType = m.readDataFromExcel(dataPath, "Booking Test Cases", i, 3);
-            String origin = m.readDataFromExcel(dataPath, "Booking Test Cases", i, 4);
-            String destination = m.readDataFromExcel(dataPath, "Booking Test Cases", i, 5);
-            String departureDate = m.readDataFromExcel(dataPath, "Booking Test Cases", i, 6);
-            String departureMonth = m.readDataFromExcel(dataPath, "Booking Test Cases", i, 7);
-            String returnDate = m.readDataFromExcel(dataPath, "Booking Test Cases", i, 8);
-            String returnMonth = m.readDataFromExcel(dataPath, "Booking Test Cases", i, 9);
-            String adultCount = m.readDataFromExcel(dataPath, "Booking Test Cases", i, 10);
-            String youngAdultCount = m.readDataFromExcel(dataPath, "Booking Test Cases", i, 11);
-            String childCount = m.readDataFromExcel(dataPath, "Booking Test Cases", i, 12);
-            String infantCount = m.readDataFromExcel(dataPath, "Booking Test Cases", i, 13);
-            String isBundled = m.readDataFromExcel(dataPath, "Booking Test Cases", i, 14);
-            String departureAirline = m.readDataFromExcel(dataPath, "Booking Test Cases", i, 15);
-            String returnAirline = m.readDataFromExcel(dataPath, "Booking Test Cases", i, 16);
-            String mailID = m.readDataFromExcel(dataPath, "Booking Test Cases", i, 17);
-            String mobileNumber = (m.readDataFromExcel(dataPath, "Booking Test Cases", i, 18));
-            String title = m.readDataFromExcel(dataPath, "Booking Test Cases", i, 19);
-            String firstName = m.readDataFromExcel(dataPath, "Booking Test Cases", i, 20);
-            String middleName = m.readDataFromExcel(dataPath, "Booking Test Cases", i, 21);
-            String lastName = m.readDataFromExcel(dataPath, "Booking Test Cases", i, 22);
-            String dateOfBirth = m.readDataFromExcel(dataPath, "Booking Test Cases", i, 23);
-            String monthOfBirth = m.readDataFromExcel(dataPath, "Booking Test Cases", i, 24);
-            String yearOfBirth = m.readDataFromExcel(dataPath, "Booking Test Cases", i, 25);
-            String passPortNumber = m.readDataFromExcel(dataPath, "Booking Test Cases", i, 26);
-            String dateOfPassportExpiry = m.readDataFromExcel(dataPath, "Booking Test Cases", i, 27);
-            String monthOfPassportExpiry = m.readDataFromExcel(dataPath, "Booking Test Cases", i, 28);
-            String yearOfPassportExpiry = m.readDataFromExcel(dataPath, "Booking Test Cases", i, 29);
-            String passPortNationality = m.readDataFromExcel(dataPath, "Booking Test Cases", i, 30);
-            String passPortIssuingCountry = m.readDataFromExcel(dataPath, "Booking Test Cases", i, 31);
-            String addBaggage = m.readDataFromExcel(dataPath, "Booking Test Cases", i, 32);
-            String addFlexi = m.readDataFromExcel(dataPath, "Booking Test Cases", i, 33);
-            String whatsapp = m.readDataFromExcel(dataPath, "Booking Test Cases", i, 34);
-            String paymentMethod = m.readDataFromExcel(dataPath, "Booking Test Cases", i, 35);
-            String bankNameEFT = m.readDataFromExcel(dataPath, "Booking Test Cases", i, 36);
-            String isToBeCancelled = m.readDataFromExcel(dataPath, "Booking Test Cases", i, 37);
+            String testCaseNumber = excelUtils.readDataFromExcel(dataPath, "Booking Test Cases", i, 0);
+            String shouldRun = excelUtils.readDataFromExcel(dataPath, "Booking Test Cases", i, 1);
+            String domain = excelUtils.readDataFromExcel(dataPath, "Booking Test Cases", i, 2);
+            String tripType = excelUtils.readDataFromExcel(dataPath, "Booking Test Cases", i, 3);
+            String origin = excelUtils.readDataFromExcel(dataPath, "Booking Test Cases", i, 4);
+            String destination = excelUtils.readDataFromExcel(dataPath, "Booking Test Cases", i, 5);
+            String departureDate = excelUtils.readDataFromExcel(dataPath, "Booking Test Cases", i, 6);
+            String departureMonth = excelUtils.readDataFromExcel(dataPath, "Booking Test Cases", i, 7);
+            String returnDate = excelUtils.readDataFromExcel(dataPath, "Booking Test Cases", i, 8);
+            String returnMonth = excelUtils.readDataFromExcel(dataPath, "Booking Test Cases", i, 9);
+            String adultCount = excelUtils.readDataFromExcel(dataPath, "Booking Test Cases", i, 10);
+            String youngAdultCount = excelUtils.readDataFromExcel(dataPath, "Booking Test Cases", i, 11);
+            String childCount = excelUtils.readDataFromExcel(dataPath, "Booking Test Cases", i, 12);
+            String infantCount = excelUtils.readDataFromExcel(dataPath, "Booking Test Cases", i, 13);
+            String isBundled = excelUtils.readDataFromExcel(dataPath, "Booking Test Cases", i, 14);
+            String departureAirline = excelUtils.readDataFromExcel(dataPath, "Booking Test Cases", i, 15);
+            String returnAirline = excelUtils.readDataFromExcel(dataPath, "Booking Test Cases", i, 16);
+            String mailID = excelUtils.readDataFromExcel(dataPath, "Booking Test Cases", i, 17);
+            String mobileNumber = (excelUtils.readDataFromExcel(dataPath, "Booking Test Cases", i, 18));
+            String title = excelUtils.readDataFromExcel(dataPath, "Booking Test Cases", i, 19);
+            String firstName = excelUtils.readDataFromExcel(dataPath, "Booking Test Cases", i, 20);
+            String middleName = excelUtils.readDataFromExcel(dataPath, "Booking Test Cases", i, 21);
+            String lastName = excelUtils.readDataFromExcel(dataPath, "Booking Test Cases", i, 22);
+            String dateOfBirth = excelUtils.readDataFromExcel(dataPath, "Booking Test Cases", i, 23);
+            String monthOfBirth = excelUtils.readDataFromExcel(dataPath, "Booking Test Cases", i, 24);
+            String yearOfBirth = excelUtils.readDataFromExcel(dataPath, "Booking Test Cases", i, 25);
+            String passPortNumber = excelUtils.readDataFromExcel(dataPath, "Booking Test Cases", i, 26);
+            String dateOfPassportExpiry = excelUtils.readDataFromExcel(dataPath, "Booking Test Cases", i, 27);
+            String monthOfPassportExpiry = excelUtils.readDataFromExcel(dataPath, "Booking Test Cases", i, 28);
+            String yearOfPassportExpiry = excelUtils.readDataFromExcel(dataPath, "Booking Test Cases", i, 29);
+            String passPortNationality = excelUtils.readDataFromExcel(dataPath, "Booking Test Cases", i, 30);
+            String passPortIssuingCountry = excelUtils.readDataFromExcel(dataPath, "Booking Test Cases", i, 31);
+            String addBaggage = excelUtils.readDataFromExcel(dataPath, "Booking Test Cases", i, 32);
+            String addFlexi = excelUtils.readDataFromExcel(dataPath, "Booking Test Cases", i, 33);
+            String whatsapp = excelUtils.readDataFromExcel(dataPath, "Booking Test Cases", i, 34);
+            String paymentMethod = excelUtils.readDataFromExcel(dataPath, "Booking Test Cases", i, 35);
+            String bankNameEFT = excelUtils.readDataFromExcel(dataPath, "Booking Test Cases", i, 36);
+            String isToBeCancelled = excelUtils.readDataFromExcel(dataPath, "Booking Test Cases", i, 37);
 
             testCase.add(new Object[]{testCaseNumber,
                     shouldRun,
@@ -213,9 +215,9 @@ public class B2B_Booking {
 
             switch (environment) {
 
-                case "LIVE" -> baseURL = m.readDataFromExcel(dataPath, "URL's", 4, 1);
-                case "BETA" -> baseURL = (m.readDataFromExcel(dataPath, "URL's", 5, 1));
-                case "PREPROD" -> baseURL = (m.readDataFromExcel(dataPath, "URL's", 6, 1));
+                case "LIVE" -> baseURL = excelUtils.readDataFromExcel(dataPath, "URL's", 4, 1);
+                case "BETA" -> baseURL = (excelUtils.readDataFromExcel(dataPath, "URL's", 5, 1));
+                case "PREPROD" -> baseURL = (excelUtils.readDataFromExcel(dataPath, "URL's", 6, 1));
 
                 default -> System.out.println("Invalid environment name");
 
@@ -227,9 +229,9 @@ public class B2B_Booking {
 
             switch (environment) {
 
-                case "LIVE" -> baseURL = (m.readDataFromExcel(dataPath, "URL's", 7, 1));
-                case "BETA" -> baseURL = (m.readDataFromExcel(dataPath, "URL's", 8, 1));
-                case "PREPROD" -> baseURL = (m.readDataFromExcel(dataPath, "URL's", 9, 1));
+                case "LIVE" -> baseURL = (excelUtils.readDataFromExcel(dataPath, "URL's", 7, 1));
+                case "BETA" -> baseURL = (excelUtils.readDataFromExcel(dataPath, "URL's", 8, 1));
+                case "PREPROD" -> baseURL = (excelUtils.readDataFromExcel(dataPath, "URL's", 9, 1));
 
                 default -> System.out.println("Invalid envinorment name");
 
@@ -241,9 +243,9 @@ public class B2B_Booking {
 
             switch (environment) {
 
-                case "LIVE" -> baseURL = (m.readDataFromExcel(dataPath, "URL's", 10, 1));
-                case "BETA" -> baseURL = (m.readDataFromExcel(dataPath, "URL's", 11, 1));
-                case "PREPROD" -> baseURL = (m.readDataFromExcel(dataPath, "URL's", 12, 1));
+                case "LIVE" -> baseURL = (excelUtils.readDataFromExcel(dataPath, "URL's", 10, 1));
+                case "BETA" -> baseURL = (excelUtils.readDataFromExcel(dataPath, "URL's", 11, 1));
+                case "PREPROD" -> baseURL = (excelUtils.readDataFromExcel(dataPath, "URL's", 12, 1));
 
                 default -> System.out.println("Invalid envinorment name");
 

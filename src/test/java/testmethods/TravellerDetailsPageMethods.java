@@ -460,7 +460,9 @@ public class TravellerDetailsPageMethods {
             }
 
         }
+
         return totalMealsCost;
+
     }
 
 
