@@ -11,6 +11,8 @@ import com.sendgrid.helpers.mail.objects.Content;
 import com.sendgrid.helpers.mail.objects.Email;
 import com.sendgrid.helpers.mail.objects.Personalization;
 
+import io.github.cdimascio.dotenv.Dotenv;
+
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -37,9 +39,14 @@ public class SendEmail {
 
     public void sendEmail(String attachmentLocationPath) {
         // Retrieve the SendGrid API key from environment variable
-        String apiKey = "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";
+        Dotenv dotenv = Dotenv.configure()
+                .directory("src/test/resources/configFiles")  // Directory containing the .env file
+                .filename("environmentFiles.env")             // Filename of the .env file
+                .load();
 
-        System.out.println(apiKey);
+        // Access the API key
+        String apiKey = dotenv.get("SENDGRID_API_KEY");
+        System.out.println("API KEY IS: "+apiKey);
 
         String username = System.getProperty("user.name").toUpperCase();
 
@@ -64,7 +71,7 @@ public class SendEmail {
             String timestamp = LocalDateTime.now().format(formatter);
             String subject = String.format("Automation Test Results – Travelstart B2C %s", timestamp);
 
-            String[] recipients = {"rezza@travelstart.com", "sreenivas.tsqa@gmail.com"};
+            String[] recipients = {"sreenivas.tsqa@gmail.com"};
             Content content = new Content("text/plain", String.format("""
 
 Dear Stakeholders,
