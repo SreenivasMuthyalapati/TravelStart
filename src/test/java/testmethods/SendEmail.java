@@ -36,10 +36,16 @@ public class SendEmail {
     private int monthlyEmailCount = 0;
 
     public void sendEmail(String attachmentLocationPath) {
-        // Retrieve the SendGrid API key from environment variable
-        String apiKey = "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";
 
-        System.out.println(apiKey);
+        // Retrieve the SendGrid API key from environment variable
+        Dotenv dotenv = Dotenv.configure()
+                .directory("src/test/resources/configFiles")  // Directory containing the .env file
+                .filename("environmentFiles.env")             // Filename of the .env file
+                .load();
+
+        // Access the API key
+        String apiKey = dotenv.get("SENDGRID_API_KEY");
+        
 
         String username = System.getProperty("user.name").toUpperCase();
 
