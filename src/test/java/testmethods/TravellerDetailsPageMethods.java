@@ -6,8 +6,10 @@ import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import pageObjects.FlightPage;
+import pageObjects.SeatsPage;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 public class TravellerDetailsPageMethods {
@@ -273,6 +275,8 @@ public class TravellerDetailsPageMethods {
             }
         }catch (NullPointerException e){
 
+            isBaggageOffered = false;
+
         }
         return isBaggageOffered;
     }
@@ -378,9 +382,9 @@ public class TravellerDetailsPageMethods {
 
             List<WebElement> baggageCostElements = driver.findElements(FlightPage.checkInBaggageCost);
 
-            List<String> baggageCostStrings = new java.util.ArrayList<>(List.of());
+            List<String> baggageCostStrings = new ArrayList<>(List.of());
 
-            List<Double> baggageCostInDouble = new java.util.ArrayList<>(List.of());
+            List<Double> baggageCostInDouble = new ArrayList<>(List.of());
 
             for (int i = 0; i< baggageCostElements.size(); i++){
 
@@ -463,6 +467,53 @@ public class TravellerDetailsPageMethods {
 
         return totalMealsCost;
 
+    }
+
+    public boolean isSeatsOffered(WebDriver driver){
+
+        boolean isSeatsOffered = false;
+        WebElement seatsOfferBlock = null;
+
+        try{
+
+            seatsOfferBlock = driver.findElement(FlightPage.seatsCollapsedCard);
+
+
+        } catch (NoSuchElementException e){
+
+        }
+
+        try {
+
+            if (seatsOfferBlock.isDisplayed()){
+
+                isSeatsOffered = true;
+
+            }else {
+
+                isSeatsOffered = false;
+            }
+
+        }catch (NoSuchElementException e){
+            
+        }
+
+        return isSeatsOffered;
+    }
+
+    public void contiueFromTravellerPage(WebDriver driver){
+
+        try {
+            driver.findElement(FlightPage.contnue).click();
+        } catch (Exception e){
+
+            try {
+                driver.findElement(FlightPage.contnue).click();
+            }catch (Exception f){
+
+            }
+
+        }
     }
 
 

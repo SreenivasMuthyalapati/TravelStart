@@ -205,25 +205,6 @@ public class TSMethods {
             // Ignores test if desired airline is not available in result loaded
             catch (NoSuchElementException e){
 
-                // Returns test skipping information into test result document
-                // Writing test case number into test result document
-                m.writeToExcel(testCaseNumber, 0, outputExcel);
-
-                // Writes booking reference into test result document
-                m.writeToExcel("-", 1, outputExcel);
-
-                // Writes test status into test result document
-                testStatus = "Skipped";
-                m.writeToExcel(testStatus, 2, outputExcel);
-
-                // Writes test skip reason into test result document
-                m.writeToExcel(("Skipped this test because desired airline: "+departureAirline+" was not avaible in result"), 3, outputExcel);
-
-                // Writes correlation ID into test result document
-                m.writeToExcel(m.getCID(driver), 4, outputExcel);
-
-                // Writes test runtime into test result document
-                m.writeToExcel(runTime, 5, outputExcel);
 
                 // Skips the test as desired airline is not available in result
                 throw new SkipException("Test is skipped as the given airline " +departureAirline+ " was not available in search result");
@@ -263,25 +244,6 @@ public class TSMethods {
             // Skipping test if desired airline is not available in result
             catch (NoSuchElementException e){
 
-                // Returning test skip information into test result document
-                // Writes test case number into test result document
-                m.writeToExcel(testCaseNumber, 0, outputExcel);
-
-                // Writes booking reference into test result document
-                m.writeToExcel("-", 1, outputExcel);
-
-                // Writes test status into test result document
-                testStatus = "Skipped";
-                m.writeToExcel(testStatus, 2, outputExcel);
-
-                // Writes skip reason into test result document
-                m.writeToExcel(("Skipped this test because desired airline: "+departureAirline+" was not avaible in result"), 3, outputExcel);
-
-                // Writes session ID into test result document
-                m.writeToExcel(m.getCID(driver), 4, outputExcel);
-
-                // Writes runtime into test result document
-                m.writeToExcel(runTime, 5, outputExcel);
 
                 // Skips test execution as desired airline is not available in result
                 throw new SkipException("Test is skipped as the given airline " +departureAirline+ " was not available in search result");
@@ -323,26 +285,6 @@ public class TSMethods {
             // Skips test if the resired airline is not available in result
             catch (NoSuchElementException e){
 
-                // Returning test skip information into test result document
-                // Writes test case number into test result document
-                m.writeToExcel(testCaseNumber, 0, outputExcel);
-
-                // Writes booking reference into test result document
-                m.writeToExcel("-", 1, outputExcel);
-
-                // Writes test status into test result document
-                testStatus = "Skipped";
-                m.writeToExcel(testStatus, 2, outputExcel);
-
-                // Writes skip reason into test result document
-                m.writeToExcel(("Skipped this test because desired airline: "+departureAirline+" was not avaible in result"), 3, outputExcel);
-
-                // Writes correlation ID into test result document
-                m.writeToExcel(m.getCID(driver), 4, outputExcel);
-
-                // Writes runtime into test result document
-                m.writeToExcel(runTime, 5, outputExcel);
-
                 // Skips test as the desired airline is not available in result
                 throw new SkipException("Test is skipped as the given airline " +departureAirline+ " was not available in search result");
             }
@@ -362,24 +304,6 @@ public class TSMethods {
             // Skips test if the desired airline is not available in result
             catch (NoSuchElementException e){
 
-                // Writes test case ID into test result document
-                m.writeToExcel(testCaseNumber, 0, outputExcel);
-
-                // Writes booking reference into test result document
-                m.writeToExcel("-", 1, outputExcel);
-
-                // Writes test status into test result document
-                testStatus = "Skipped";
-                m.writeToExcel(testStatus, 2, outputExcel);
-
-                // Writes skip reason into test result document
-                m.writeToExcel(("Skipped this test because desired airline: "+returnAirline+" was not avaible in result"), 3, outputExcel);
-
-                // Writes correlation ID into test result document
-                m.writeToExcel(m.getCID(driver), 4, outputExcel);
-
-                // Writes runtime into test result document
-                m.writeToExcel(runTime, 5, outputExcel);
 
                 // Skips test execution as desired airline is not available in result
                 throw new SkipException("Test is skipped as the given airline " +returnAirline+ " was not available in search result");
@@ -757,7 +681,7 @@ public class TSMethods {
                     try {
                         // To wait until result is loaded (Waits for 60 seconds maximum)
                         wait.until(ExpectedConditions.visibilityOfElementLocated(SeatsPage.seatMap));
-                        seatMap = driver.findElement(SeatsPage.availableSeat);
+                        seatMap = driver.findElement(SeatsPage.availableSeats);
 
                     } catch (NoSuchElementException | TimeoutException e) {
 
@@ -811,7 +735,7 @@ public class TSMethods {
                     SeatsPage seats = new SeatsPage(driver);
 
                     Thread.sleep(100);
-                    driver.findElement(SeatsPage.availableSeat).click();
+                    driver.findElement(SeatsPage.availableSeats).click();
 
                     Thread.sleep(2000);
 
@@ -821,7 +745,7 @@ public class TSMethods {
 
                     } catch (NoSuchElementException e){
 
-                        driver.findElement(SeatsPage.availableSeat).click();
+                        driver.findElement(SeatsPage.availableSeats).click();
 
                         Thread.sleep(2000);
 
@@ -1011,13 +935,6 @@ public class TSMethods {
             File screenShotFile = new File(screenShotPath);
            // m.sendNotification(testCaseNumber, "Not redirected to payment screen or not redirected within 60 seconds");
 
-            m.writeToExcel(testCaseNumber, 0, outputExcel);
-            m.writeToExcel("-", 1, outputExcel);
-            testStatus = "Failed";
-            m.writeToExcel(testStatus, 2, outputExcel);
-            m.writeToExcel(("Not redirected to payment page or not redirected within 60 seconds"), 3, outputExcel);
-            m.writeToExcel(m.getCID(driver), 4, outputExcel);
-            m.writeToExcel(runTime, 5, outputExcel);
         }
 
         Assert.assertTrue(ispaymentPageAvailable, "Payment page not loaded");
@@ -1246,14 +1163,6 @@ public class TSMethods {
             bookingReference = bookingReference.trim();
             System.out.println("Booking completed. "+ bookingReference);
 
-            m.writeToExcel(testCaseNumber, 0, outputExcel);
-            m.writeToExcel(bookingReference, 1, outputExcel);
-            testStatus = "Passed";
-            m.writeToExcel(testStatus, 2, outputExcel);
-            m.writeToExcel(("Booking completed"), 3, outputExcel);
-            m.writeToExcel(m.getCID(driver), 4, outputExcel);
-            m.writeToExcel(runTime, 5, outputExcel);
-
             if (isToBeCancelled.equalsIgnoreCase("Yes")){
                 m.cancelBooking(environment, bookingReference);
             }
@@ -1265,13 +1174,6 @@ public class TSMethods {
             m.getConsole(driver);
             File screenShotFile = new File(screenShotPath);
             //m.sendNotification(testCaseNumber, "Booking not succeeded");
-            m.writeToExcel(testCaseNumber, 0, outputExcel);
-            m.writeToExcel(bookingReference, 1, outputExcel);
-            testStatus = "Failed";
-            m.writeToExcel(testStatus, 2, outputExcel);
-            m.writeToExcel(("Booking not succeeded"), 3, outputExcel);
-            m.writeToExcel(m.getCID(driver), 4, outputExcel);
-            m.writeToExcel(runTime, 5, outputExcel);
         }
 
         Assert.assertTrue(isbookingRefAvailable, "Booking failed");

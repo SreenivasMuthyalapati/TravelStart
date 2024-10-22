@@ -1,5 +1,6 @@
 package test.Booking;
 
+import configs.dataPaths;
 import io.github.bonigarcia.wdm.WebDriverManager;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
@@ -48,8 +49,8 @@ public class BookingFlow {
     // Extracting environment from test data sheet
     static {
         try {
-            environment = excelUtils.readDataFromExcel(dataPath, "URL's", 1, 1);
-            browser = excelUtils.readDataFromExcel(dataPath, "URL's", 0, 1);
+            environment = excelUtils.readDataFromExcel(dataPaths.URLs, "URL's", 1, 1);
+            browser = excelUtils.readDataFromExcel(dataPaths.URLs, "URL's", 0, 1);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -81,7 +82,7 @@ public class BookingFlow {
         List<Object[]> testCase = new ArrayList<>();
 
         // Extracting all test data from test cases in test data sheet
-        int totalPaxCount = m.getRowCount(dataPath, "Booking Test Cases");
+        int totalPaxCount = excelUtils.getRowCount(dataPath, "Booking Test Cases");
 
         for (int i = 2; i < totalPaxCount; i++) {
 
@@ -182,13 +183,6 @@ public class BookingFlow {
 
 
         if (!shouldRun.equalsIgnoreCase("Yes")) {
-            m.writeToExcel(testCaseNumber, 0, outputExcel);
-            m.writeToExcel("-", 1, outputExcel);
-            testStatus = "Skipped";
-            m.writeToExcel(testStatus, 2, outputExcel);
-            m.writeToExcel("Skipped this test case as this test case is not approved to run", 3, outputExcel);
-            m.writeToExcel("-", 4, outputExcel);
-            m.writeToExcel(runTime, 5, outputExcel);
             throw new SkipException("Test is skipped as this test case " + testCaseNumber + " is not approved to run");
         }
 

@@ -1,7 +1,9 @@
 package testmethods;
 
+import com.sendgrid.SendGrid;
 import configs.dataPaths;
 import io.github.bonigarcia.wdm.WebDriverManager;
+import io.github.cdimascio.dotenv.Dotenv;
 import io.restassured.http.ContentType;
 import io.restassured.response.Response;
 import org.apache.commons.io.FileUtils;
@@ -60,7 +62,50 @@ public class Method {
 	public static Properties prop = new Properties();
 	public static FileReader fr;
 
-	public static String code = "";
+	public String readEnvironmentVariable(String variableIdentifier){
+
+		String environmentVariableValue = "";
+
+		try {
+			Dotenv dotenv = Dotenv.configure()
+					.directory(dataPaths.dataBasePath + "\\src\\test\\resources\\configFiles\\")
+					.filename("environmentFiles.env")
+					.load();
+			environmentVariableValue = dotenv.get(variableIdentifier);
+
+
+			if (environmentVariableValue == null) {
+				System.out.println(variableIdentifier+" not found.");
+				throw new IllegalArgumentException(variableIdentifier+ " not found.");
+			}
+			return environmentVariableValue;
+
+		} catch (Exception e) {
+			System.out.println("Error loading environment variables: " + e.getMessage());
+			e.printStackTrace();
+			throw new RuntimeException("Failed to retrieve required environment variable "+ variableIdentifier+".");
+		}
+
+	}
+
+	public String getBearerToken (String environment){
+
+		String bearerToken = "";
+
+		if(environment.equalsIgnoreCase("LIVE")) {
+			bearerToken = this.readEnvironmentVariable("LIVE_BEARER_TOKEN");
+		}
+		else if(environment.equalsIgnoreCase("PREPROD")) {
+			bearerToken = this.readEnvironmentVariable("PREPROD_BEARER_TOKEN");
+		}
+		else if(environment.equalsIgnoreCase("BETA")) {
+			bearerToken = this.readEnvironmentVariable("BETA_BEARER_TOKEN");
+		}
+		else if(environment.equalsIgnoreCase("ALPHA")) {
+			bearerToken = this.readEnvironmentVariable("ALPHA_BEARER_TOKEN");
+		}
+        return bearerToken;
+    }
 
 	public static void launch(String URL) {
 		WebDriverManager.chromedriver().setup();
@@ -89,59 +134,6 @@ public class Method {
 		return p.getProperty(key);
 
 	}
-
-
-
-	public static String readDataFromExcelFile(String filePath, String sheetName, int row, int col) throws IOException {
-		try (FileInputStream file = new FileInputStream(new File(filePath));
-			 Workbook workbook = WorkbookFactory.create(file)) {
-
-			Sheet sheet = workbook.getSheet(sheetName);
-			Row excelRow = sheet.getRow(row);
-			Cell cell = excelRow.getCell(col);
-
-			// Use DataFormatter to get formatted string representation of cell value
-			DataFormatter dataFormatter = new DataFormatter();
-			return dataFormatter.formatCellValue(cell);
-		}
-	}
-
-	public String[] readExcelColumn(String filePath, String sheett, int col) {
-		String[] columnValues = null;
-		try (FileInputStream file = new FileInputStream(new File(filePath));
-			 Workbook workbook = WorkbookFactory.create(file)) {
-
-			Sheet sheet = workbook.getSheet(sheett);
-
-			int rows = sheet.getPhysicalNumberOfRows();
-			columnValues = new String[rows];
-
-			for (int i = 0; i < rows; i++) {
-				Row row = sheet.getRow(i);
-				if (row != null) {
-					Cell cell = row.getCell(col);
-					if (cell != null) {
-						switch (cell.getCellType()) {
-							case STRING:
-								columnValues[i] = cell.getStringCellValue();
-								break;
-							case NUMERIC:
-								columnValues[i] = String.valueOf(cell.getNumericCellValue());
-								break;
-							// Handle other cell types as needed
-							default:
-								// Handle other cell types or throw an exception
-								break;
-						}
-					}
-				}
-			}
-		} catch (IOException | EncryptedDocumentException e) {
-			
-		}
-		return columnValues;
-	}
-
 
 	public void takeScreenshot(WebDriver driver, String folderPath, String screenShotPath) {
 		// Generate a random file name
@@ -215,27 +207,6 @@ public class Method {
         return intNumber;
     }
 
-	public int getRowCount(String filePath, String sheetName) {
-		int rowCount = 0;
-		try {
-			FileInputStream fis = new FileInputStream(filePath);
-			Workbook workbook;
-			if (filePath.toLowerCase().endsWith(".xlsx")) {
-				workbook = new XSSFWorkbook(fis); // For XLSX (Excel 2007+) format
-			} else if (filePath.toLowerCase().endsWith(".xls")) {
-				workbook = new HSSFWorkbook(fis); // For XLS (Excel 97-2003) format
-			} else {
-				throw new IllegalArgumentException("Unsupported file format");
-			}
-			Sheet sheet = workbook.getSheet(sheetName);
-			rowCount = sheet.getPhysicalNumberOfRows();
-			workbook.close();
-			fis.close();
-		} catch (IOException e) {
-			
-		}
-		return rowCount;
-	}
 
 	public void invokeBrowser(String browser, WebDriver driver){
 		if (browser.equalsIgnoreCase("Chrome")) {
@@ -253,46 +224,6 @@ public class Method {
 		String correctedValue = String.format("%.0f", value);
         return correctedValue;
     }
-
-	public void writeToExcel(String value, int cellNumber, String outputExcelPath) throws IOException {
-		// Load Excel file
-		FileInputStream inputStream = new FileInputStream(new File(outputExcelPath));
-		Workbook workbook = new XSSFWorkbook(inputStream);
-
-		// Get the first sheet of the workbook
-		Sheet sheet = workbook.getSheetAt(0);
-
-		// Iterate through the rows to find an empty cell in the first column
-		int rowNum = 0;
-		for (Row row : sheet) {
-			Cell cell = row.getCell(cellNumber);
-			if (cell == null || cell.getCellType() == CellType.BLANK) {
-				break; // Found an empty cell, stop iterating
-			}
-			rowNum++; // Move to the next row
-		}
-
-		// Create a new row if necessary
-		Row row = sheet.getRow(rowNum);
-		if (row == null) {
-			row = sheet.createRow(rowNum);
-		}
-
-		// Create or fetch the cell and write the value
-		Cell cell = row.createCell(cellNumber);
-		cell.setCellValue(value);
-
-		// Write data back to the Excel file using a new FileOutputStream
-		FileOutputStream outputStream = new FileOutputStream(outputExcelPath);
-		workbook.write(outputStream);
-
-		// Close streams
-		outputStream.close();
-		workbook.close();
-		inputStream.close();
-	}
-
-
 
 
 
@@ -448,21 +379,21 @@ public class Method {
 
 		//Adding adults to list
 		for (int i = 3; i < adultPaxCount + 3; i++) {
-			String paxType = Method.readDataFromExcelFile(dataPath, "Passenger details", i, 0);
-			String title = Method.readDataFromExcelFile(dataPath, "Passenger details", i, 1);
-			String firstName = Method.readDataFromExcelFile(dataPath, "Passenger details", i, 2);
-			String middleName = Method.readDataFromExcelFile(dataPath, "Passenger details", i, 3);
-			String lastName = Method.readDataFromExcelFile(dataPath, "Passenger details", i, 4);
-			String dateOfBirth = Method.readDataFromExcelFile(dataPath, "Passenger details", i, 5);
-			String monthOfBirth = Method.readDataFromExcelFile(dataPath, "Passenger details", i, 6);
-			String yearOfBirth = Method.readDataFromExcelFile(dataPath, "Passenger details", i, 7);
-			String passportNumber = Method.readDataFromExcelFile(dataPath, "Passenger details", i, 8);
-			String passportExpiryDate = Method.readDataFromExcelFile(dataPath, "Passenger details", i, 9);
-			String passportExpiryMonth = Method.readDataFromExcelFile(dataPath, "Passenger details", i, 10);
-			String passportExpiryYear = Method.readDataFromExcelFile(dataPath, "Passenger details", i, 11);
-			String passportNationality = Method.readDataFromExcelFile(dataPath, "Passenger details", i, 12);
-			String passportIssuingCountry = Method.readDataFromExcelFile(dataPath, "Passenger details", i, 13);
-			String addBaggage = Method.readDataFromExcelFile(dataPath, "Passenger details", i, 14);
+			String paxType = excelUtils.readDataFromExcel(dataPath, "Passenger details", i, 0);
+			String title = excelUtils.readDataFromExcel(dataPath, "Passenger details", i, 1);
+			String firstName = excelUtils.readDataFromExcel(dataPath, "Passenger details", i, 2);
+			String middleName = excelUtils.readDataFromExcel(dataPath, "Passenger details", i, 3);
+			String lastName = excelUtils.readDataFromExcel(dataPath, "Passenger details", i, 4);
+			String dateOfBirth = excelUtils.readDataFromExcel(dataPath, "Passenger details", i, 5);
+			String monthOfBirth = excelUtils.readDataFromExcel(dataPath, "Passenger details", i, 6);
+			String yearOfBirth = excelUtils.readDataFromExcel(dataPath, "Passenger details", i, 7);
+			String passportNumber = excelUtils.readDataFromExcel(dataPath, "Passenger details", i, 8);
+			String passportExpiryDate = excelUtils.readDataFromExcel(dataPath, "Passenger details", i, 9);
+			String passportExpiryMonth = excelUtils.readDataFromExcel(dataPath, "Passenger details", i, 10);
+			String passportExpiryYear = excelUtils.readDataFromExcel(dataPath, "Passenger details", i, 11);
+			String passportNationality = excelUtils.readDataFromExcel(dataPath, "Passenger details", i, 12);
+			String passportIssuingCountry = excelUtils.readDataFromExcel(dataPath, "Passenger details", i, 13);
+			String addBaggage = excelUtils.readDataFromExcel(dataPath, "Passenger details", i, 14);
 
 			pax.add(new Object[]{
 					paxType,
@@ -485,21 +416,21 @@ public class Method {
 
 		//Adding young adults to list
 		for (int i = 12; i < youngAdultPaxCount + 12; i++) {
-			String paxType = Method.readDataFromExcelFile(dataPath, "Passenger details", i, 0);
-			String title = Method.readDataFromExcelFile(dataPath, "Passenger details", i, 1);
-			String firstName = Method.readDataFromExcelFile(dataPath, "Passenger details", i, 2);
-			String middleName = Method.readDataFromExcelFile(dataPath, "Passenger details", i, 3);
-			String lastName = Method.readDataFromExcelFile(dataPath, "Passenger details", i, 4);
-			String dateOfBirth = Method.readDataFromExcelFile(dataPath, "Passenger details", i, 5);
-			String monthOfBirth = Method.readDataFromExcelFile(dataPath, "Passenger details", i, 6);
-			String yearOfBirth = Method.readDataFromExcelFile(dataPath, "Passenger details", i, 7);
-			String passportNumber = Method.readDataFromExcelFile(dataPath, "Passenger details", i, 8);
-			String passportExpiryDate = Method.readDataFromExcelFile(dataPath, "Passenger details", i, 9);
-			String passportExpiryMonth = Method.readDataFromExcelFile(dataPath, "Passenger details", i, 10);
-			String passportExpiryYear = Method.readDataFromExcelFile(dataPath, "Passenger details", i, 11);
-			String passportNationality = Method.readDataFromExcelFile(dataPath, "Passenger details", i, 12);
-			String passportIssuingCountry = Method.readDataFromExcelFile(dataPath, "Passenger details", i, 13);
-			String addBaggage = Method.readDataFromExcelFile(dataPath, "Passenger details", i, 14);
+			String paxType = excelUtils.readDataFromExcel(dataPath, "Passenger details", i, 0);
+			String title = excelUtils.readDataFromExcel(dataPath, "Passenger details", i, 1);
+			String firstName = excelUtils.readDataFromExcel(dataPath, "Passenger details", i, 2);
+			String middleName = excelUtils.readDataFromExcel(dataPath, "Passenger details", i, 3);
+			String lastName = excelUtils.readDataFromExcel(dataPath, "Passenger details", i, 4);
+			String dateOfBirth = excelUtils.readDataFromExcel(dataPath, "Passenger details", i, 5);
+			String monthOfBirth = excelUtils.readDataFromExcel(dataPath, "Passenger details", i, 6);
+			String yearOfBirth = excelUtils.readDataFromExcel(dataPath, "Passenger details", i, 7);
+			String passportNumber = excelUtils.readDataFromExcel(dataPath, "Passenger details", i, 8);
+			String passportExpiryDate = excelUtils.readDataFromExcel(dataPath, "Passenger details", i, 9);
+			String passportExpiryMonth = excelUtils.readDataFromExcel(dataPath, "Passenger details", i, 10);
+			String passportExpiryYear = excelUtils.readDataFromExcel(dataPath, "Passenger details", i, 11);
+			String passportNationality = excelUtils.readDataFromExcel(dataPath, "Passenger details", i, 12);
+			String passportIssuingCountry = excelUtils.readDataFromExcel(dataPath, "Passenger details", i, 13);
+			String addBaggage = excelUtils.readDataFromExcel(dataPath, "Passenger details", i, 14);
 
 			pax.add(new Object[]{
 					paxType,
@@ -522,21 +453,21 @@ public class Method {
 
 		// Adding child to list
 		for (int i = 21; i < childPaxCount + 21; i++) {
-			String paxType = Method.readDataFromExcelFile(dataPath, "Passenger details", i, 0);
-			String title = Method.readDataFromExcelFile(dataPath, "Passenger details", i, 1);
-			String firstName = Method.readDataFromExcelFile(dataPath, "Passenger details", i, 2);
-			String middleName = Method.readDataFromExcelFile(dataPath, "Passenger details", i, 3);
-			String lastName = Method.readDataFromExcelFile(dataPath, "Passenger details", i, 4);
-			String dateOfBirth = Method.readDataFromExcelFile(dataPath, "Passenger details", i, 5);
-			String monthOfBirth = Method.readDataFromExcelFile(dataPath, "Passenger details", i, 6);
-			String yearOfBirth = Method.readDataFromExcelFile(dataPath, "Passenger details", i, 7);
-			String passportNumber = Method.readDataFromExcelFile(dataPath, "Passenger details", i, 8);
-			String passportExpiryDate = Method.readDataFromExcelFile(dataPath, "Passenger details", i, 9);
-			String passportExpiryMonth = Method.readDataFromExcelFile(dataPath, "Passenger details", i, 10);
-			String passportExpiryYear = Method.readDataFromExcelFile(dataPath, "Passenger details", i, 11);
-			String passportNationality = Method.readDataFromExcelFile(dataPath, "Passenger details", i, 12);
-			String passportIssuingCountry = Method.readDataFromExcelFile(dataPath, "Passenger details", i, 13);
-			String addBaggage = Method.readDataFromExcelFile(dataPath, "Passenger details", i, 14);
+			String paxType = excelUtils.readDataFromExcel(dataPath, "Passenger details", i, 0);
+			String title = excelUtils.readDataFromExcel(dataPath, "Passenger details", i, 1);
+			String firstName = excelUtils.readDataFromExcel(dataPath, "Passenger details", i, 2);
+			String middleName = excelUtils.readDataFromExcel(dataPath, "Passenger details", i, 3);
+			String lastName = excelUtils.readDataFromExcel(dataPath, "Passenger details", i, 4);
+			String dateOfBirth = excelUtils.readDataFromExcel(dataPath, "Passenger details", i, 5);
+			String monthOfBirth = excelUtils.readDataFromExcel(dataPath, "Passenger details", i, 6);
+			String yearOfBirth = excelUtils.readDataFromExcel(dataPath, "Passenger details", i, 7);
+			String passportNumber = excelUtils.readDataFromExcel(dataPath, "Passenger details", i, 8);
+			String passportExpiryDate = excelUtils.readDataFromExcel(dataPath, "Passenger details", i, 9);
+			String passportExpiryMonth = excelUtils.readDataFromExcel(dataPath, "Passenger details", i, 10);
+			String passportExpiryYear = excelUtils.readDataFromExcel(dataPath, "Passenger details", i, 11);
+			String passportNationality = excelUtils.readDataFromExcel(dataPath, "Passenger details", i, 12);
+			String passportIssuingCountry = excelUtils.readDataFromExcel(dataPath, "Passenger details", i, 13);
+			String addBaggage = excelUtils.readDataFromExcel(dataPath, "Passenger details", i, 14);
 
 			pax.add(new Object[]{
 					paxType,
@@ -559,21 +490,21 @@ public class Method {
 		//Adding infants to pax
 		// Adding child to list
 		for (int i = 30; i < infantPaxCount + 30; i++) {
-			String paxType = Method.readDataFromExcelFile(dataPath, "Passenger details", i, 0);
-			String title = Method.readDataFromExcelFile(dataPath, "Passenger details", i, 1);
-			String firstName = Method.readDataFromExcelFile(dataPath, "Passenger details", i, 2);
-			String middleName = Method.readDataFromExcelFile(dataPath, "Passenger details", i, 3);
-			String lastName = Method.readDataFromExcelFile(dataPath, "Passenger details", i, 4);
-			String dateOfBirth = Method.readDataFromExcelFile(dataPath, "Passenger details", i, 5);
-			String monthOfBirth = Method.readDataFromExcelFile(dataPath, "Passenger details", i, 6);
-			String yearOfBirth = Method.readDataFromExcelFile(dataPath, "Passenger details", i, 7);
-			String passportNumber = Method.readDataFromExcelFile(dataPath, "Passenger details", i, 8);
-			String passportExpiryDate = Method.readDataFromExcelFile(dataPath, "Passenger details", i, 9);
-			String passportExpiryMonth = Method.readDataFromExcelFile(dataPath, "Passenger details", i, 10);
-			String passportExpiryYear = Method.readDataFromExcelFile(dataPath, "Passenger details", i, 11);
-			String passportNationality = Method.readDataFromExcelFile(dataPath, "Passenger details", i, 12);
-			String passportIssuingCountry = Method.readDataFromExcelFile(dataPath, "Passenger details", i, 13);
-			String addBaggage = Method.readDataFromExcelFile(dataPath, "Passenger details", i, 14);
+			String paxType = excelUtils.readDataFromExcel(dataPath, "Passenger details", i, 0);
+			String title = excelUtils.readDataFromExcel(dataPath, "Passenger details", i, 1);
+			String firstName = excelUtils.readDataFromExcel(dataPath, "Passenger details", i, 2);
+			String middleName = excelUtils.readDataFromExcel(dataPath, "Passenger details", i, 3);
+			String lastName = excelUtils.readDataFromExcel(dataPath, "Passenger details", i, 4);
+			String dateOfBirth = excelUtils.readDataFromExcel(dataPath, "Passenger details", i, 5);
+			String monthOfBirth = excelUtils.readDataFromExcel(dataPath, "Passenger details", i, 6);
+			String yearOfBirth = excelUtils.readDataFromExcel(dataPath, "Passenger details", i, 7);
+			String passportNumber = excelUtils.readDataFromExcel(dataPath, "Passenger details", i, 8);
+			String passportExpiryDate = excelUtils.readDataFromExcel(dataPath, "Passenger details", i, 9);
+			String passportExpiryMonth = excelUtils.readDataFromExcel(dataPath, "Passenger details", i, 10);
+			String passportExpiryYear = excelUtils.readDataFromExcel(dataPath, "Passenger details", i, 11);
+			String passportNationality = excelUtils.readDataFromExcel(dataPath, "Passenger details", i, 12);
+			String passportIssuingCountry = excelUtils.readDataFromExcel(dataPath, "Passenger details", i, 13);
+			String addBaggage = excelUtils.readDataFromExcel(dataPath, "Passenger details", i, 14);
 
 			pax.add(new Object[]{
 					paxType,
@@ -761,15 +692,7 @@ public class Method {
 			}
 			String pnrReference = "";
 			// Bearer token for authorization
-			String bearerToken = "f7904a2f-cb89-46a6-bbc9-158ad96160b2";
-
-			if(environment.equalsIgnoreCase("Preprod")){
-				bearerToken = "f7904a2f-cb89-46a6-bbc9-158ad96160b2";
-			} else if (environment.equalsIgnoreCase("Live")) {
-				bearerToken = "7119e7c4-e507-449c-8cac-d31ca3435f34a8c85694-f8e3-4941-b3ba-f1da94d38ce5";
-			} else if (environment.equalsIgnoreCase("Beta") || environment.equalsIgnoreCase("Alpha")){
-				bearerToken = "f416567b-8837-4704-b597-7937f58ab20c";
-			}
+			String bearerToken = this.getBearerToken(environment);
 
 			// Create an HttpClient instance
 			CloseableHttpClient httpClient = HttpClients.createDefault();
@@ -997,116 +920,6 @@ public class Method {
 
 
 
-	public String deeplinkGeneratorSRP (String environment, String domain, String tripType, String from, String to, String depDay, String depMonth, String depYear, String retDay, String retMonth, String retYear, String adultCount, String teenCount, String childCount, String infantCount){
-
-		String deepLink = "";
-
-		if (environment.equalsIgnoreCase("LIVE")){
-
-			if (domain.equalsIgnoreCase("ZA") && tripType.equalsIgnoreCase("Oneway")){
-
-				deepLink = "https://www.travelstart.co.za/search-on-index?version=3&timestamp=2024-07-15_15-48-06-048&from_0="+from+"&from_type_0=city&to_0="+to+"&to_type_0=airport&depart_date_0="+depYear+"-"+depMonth+"-"+depDay+"&is_flex_dates=false&trip_type=OneWay&adults="+adultCount+"&teens="+teenCount+"&children="+childCount+"&infants="+infantCount+"&currency=ZAR&cpy_source=tszaweb&correlation_id="+Method.generateCID()+"&search=true&show_search_options=false&language=en&class=Economy";
-
-			}
-			else if (domain.equalsIgnoreCase("NG") && tripType.equalsIgnoreCase("Oneway")){
-
-				deepLink = "https://www.travelstart.com.ng/search-on-index?version=3&timestamp=2024-07-15_15-48-06-048&from_0="+from+"&from_type_0=city&to_0="+to+"&to_type_0=airport&depart_date_0="+depYear+"-"+depMonth+"-"+depDay+"&is_flex_dates=false&trip_type=OneWay&adults="+adultCount+"&teens="+teenCount+"&children="+childCount+"&infants="+infantCount+"&currency=ZAR&cpy_source=tszaweb&correlation_id="+Method.generateCID()+"&search=true&show_search_options=false&language=en&class=Economy";
-
-			}
-			else if (domain.equalsIgnoreCase("ZA") && tripType.equalsIgnoreCase("Return")){
-
-				deepLink = "https://www.travelstart.co.za/search-on-index?version=3&timestamp=2024-07-15_15-48-06-048&from_0="+from+"&from_type_0=city&to_0="+to+"&to_type_0=airport&depart_date_0="+depYear+"-"+depMonth+"-"+depDay+"&from_1="+to+"&from_type_1=airport&to_1="+from+"&to_type_1=city&depart_date_1="+retYear+"-"+retMonth+"-"+retDay+"&is_flex_dates=false&trip_type=Roundtrip&adults="+adultCount+"&teens="+teenCount+"&children="+childCount+"&infants="+infantCount+"&currency=ZAR&cpy_source=tszaweb&correlation_id="+Method.generateCID()+"&search=true&show_search_options=false&language=en&class=Economy";
-
-			}
-			else if (domain.equalsIgnoreCase("NG") && tripType.equalsIgnoreCase("Return")){
-
-				deepLink = "https://www.travelstart.com.ng/search-on-index?version=3&timestamp=2024-07-15_15-48-06-048&from_0="+from+"&from_type_0=city&to_0="+to+"&to_type_0=airport&depart_date_0="+depYear+"-"+depMonth+"-"+depDay+"&from_1="+to+"&from_type_1=airport&to_1="+from+"&to_type_1=city&depart_date_1="+retYear+"-"+retMonth+"-"+retDay+"&is_flex_dates=false&trip_type=Roundtrip&adults="+adultCount+"&teens="+teenCount+"&children="+childCount+"&infants="+infantCount+"&currency=ZAR&cpy_source=tszaweb&correlation_id="+Method.generateCID()+"&search=true&show_search_options=false&language=en&class=Economy";
-
-			}
-
-		}
-
-		else if (environment.equalsIgnoreCase("BETA")){
-
-			if (domain.equalsIgnoreCase("ZA") && tripType.equalsIgnoreCase("Oneway")){
-
-				deepLink = "https://beta.travelstart.co.za/search-on-index?version=3&timestamp=2024-07-15_15-48-06-048&from_0="+from+"&from_type_0=city&to_0="+to+"&to_type_0=airport&depart_date_0="+depYear+"-"+depMonth+"-"+depDay+"&is_flex_dates=false&trip_type=OneWay&adults="+adultCount+"&teens="+teenCount+"&children="+childCount+"&infants="+infantCount+"&currency=ZAR&cpy_source=tszaweb&correlation_id="+Method.generateCID()+"&search=true&show_search_options=false&language=en&class=Economy";
-
-			}
-			else if (domain.equalsIgnoreCase("NG") && tripType.equalsIgnoreCase("Oneway")){
-
-				deepLink = "https://beta.travelstart.com.ng/search-on-index?version=3&timestamp=2024-07-15_15-48-06-048&from_0="+from+"&from_type_0=city&to_0="+to+"&to_type_0=airport&depart_date_0="+depYear+"-"+depMonth+"-"+depDay+"&is_flex_dates=false&trip_type=OneWay&adults="+adultCount+"&teens="+teenCount+"&children="+childCount+"&infants="+infantCount+"&currency=ZAR&cpy_source=tszaweb&correlation_id="+Method.generateCID()+"&search=true&show_search_options=false&language=en&class=Economy";
-
-			}
-			else if (domain.equalsIgnoreCase("ZA") && tripType.equalsIgnoreCase("Return")){
-
-				deepLink = "https://beta.travelstart.co.za/search-on-index?version=3&timestamp=2024-07-15_15-48-06-048&from_0="+from+"&from_type_0=city&to_0="+to+"&to_type_0=airport&depart_date_0="+depYear+"-"+depMonth+"-"+depDay+"&from_1="+to+"&from_type_1=airport&to_1="+from+"&to_type_1=city&depart_date_1="+retYear+"-"+retMonth+"-"+retDay+"&is_flex_dates=false&trip_type=Roundtrip&adults="+adultCount+"&teens="+teenCount+"&children="+childCount+"&infants="+infantCount+"&currency=ZAR&cpy_source=tszaweb&correlation_id="+Method.generateCID()+"&search=true&show_search_options=false&language=en&class=Economy";
-
-			}
-			else if (domain.equalsIgnoreCase("NG") && tripType.equalsIgnoreCase("Return")){
-
-				deepLink = "https://beta.travelstart.com.ng/search-on-index?version=3&timestamp=2024-07-15_15-48-06-048&from_0="+from+"&from_type_0=city&to_0="+to+"&to_type_0=airport&depart_date_0="+depYear+"-"+depMonth+"-"+depDay+"&from_1="+to+"&from_type_1=airport&to_1="+from+"&to_type_1=city&depart_date_1="+retYear+"-"+retMonth+"-"+retDay+"&is_flex_dates=false&trip_type=Roundtrip&adults="+adultCount+"&teens="+teenCount+"&children="+childCount+"&infants="+infantCount+"&currency=ZAR&cpy_source=tszaweb&correlation_id="+Method.generateCID()+"&search=true&show_search_options=false&language=en&class=Economy";
-
-			}
-
-		}
-
-		else if (environment.equalsIgnoreCase("preprod")){
-
-			if (domain.equalsIgnoreCase("ZA") && tripType.equalsIgnoreCase("Oneway")){
-
-				deepLink = "https://preprod.travelstart.co.za/search-on-index?version=3&timestamp=2024-07-15_15-48-06-048&from_0="+from+"&from_type_0=city&to_0="+to+"&to_type_0=airport&depart_date_0="+depYear+"-"+depMonth+"-"+depDay+"&is_flex_dates=false&trip_type=OneWay&adults="+adultCount+"&teens="+teenCount+"&children="+childCount+"&infants="+infantCount+"&currency=ZAR&cpy_source=tszaweb&correlation_id="+Method.generateCID()+"&search=true&show_search_options=false&language=en&class=Economy";
-
-			}
-			else if (domain.equalsIgnoreCase("NG") && tripType.equalsIgnoreCase("Oneway")){
-
-				deepLink = "https://preprod.travelstart.com.ng/search-on-index?version=3&timestamp=2024-07-15_15-48-06-048&from_0="+from+"&from_type_0=city&to_0="+to+"&to_type_0=airport&depart_date_0="+depYear+"-"+depMonth+"-"+depDay+"&is_flex_dates=false&trip_type=OneWay&adults="+adultCount+"&teens="+teenCount+"&children="+childCount+"&infants="+infantCount+"&currency=ZAR&cpy_source=tszaweb&correlation_id="+Method.generateCID()+"&search=true&show_search_options=false&language=en&class=Economy";
-
-			}
-			else if (domain.equalsIgnoreCase("ZA") && tripType.equalsIgnoreCase("Return")){
-
-				deepLink = "https://preprod.travelstart.co.za/search-on-index?version=3&timestamp=2024-07-15_15-48-06-048&from_0="+from+"&from_type_0=city&to_0="+to+"&to_type_0=airport&depart_date_0="+depYear+"-"+depMonth+"-"+depDay+"&from_1="+to+"&from_type_1=airport&to_1="+from+"&to_type_1=city&depart_date_1="+retYear+"-"+retMonth+"-"+retDay+"&is_flex_dates=false&trip_type=Roundtrip&adults="+adultCount+"&teens="+teenCount+"&children="+childCount+"&infants="+infantCount+"&currency=ZAR&cpy_source=tszaweb&correlation_id="+Method.generateCID()+"&search=true&show_search_options=false&language=en&class=Economy";
-
-			}
-			else if (domain.equalsIgnoreCase("NG") && tripType.equalsIgnoreCase("Return")){
-
-				deepLink = "https://preprod.travelstart.com.ng/search-on-index?version=3&timestamp=2024-07-15_15-48-06-048&from_0="+from+"&from_type_0=city&to_0="+to+"&to_type_0=airport&depart_date_0="+depYear+"-"+depMonth+"-"+depDay+"&from_1="+to+"&from_type_1=airport&to_1="+from+"&to_type_1=city&depart_date_1="+retYear+"-"+retMonth+"-"+retDay+"&is_flex_dates=false&trip_type=Roundtrip&adults="+adultCount+"&teens="+teenCount+"&children="+childCount+"&infants="+infantCount+"&currency=ZAR&cpy_source=tszaweb&correlation_id="+Method.generateCID()+"&search=true&show_search_options=false&language=en&class=Economy";
-
-			}
-
-		}
-
-		else if (environment.equalsIgnoreCase("alpha")){
-
-			if (domain.equalsIgnoreCase("ZA") && tripType.equalsIgnoreCase("Oneway")){
-
-				deepLink = "https://alpha.travelstart.co.za/search-on-index?version=3&timestamp=2024-07-15_15-48-06-048&from_0="+from+"&from_type_0=city&to_0="+to+"&to_type_0=airport&depart_date_0="+depYear+"-"+depMonth+"-"+depDay+"&is_flex_dates=false&trip_type=OneWay&adults="+adultCount+"&teens="+teenCount+"&children="+childCount+"&infants="+infantCount+"&currency=ZAR&cpy_source=tszaweb&correlation_id="+Method.generateCID()+"&search=true&show_search_options=false&language=en&class=Economy";
-
-			}
-			else if (domain.equalsIgnoreCase("NG") && tripType.equalsIgnoreCase("Oneway")){
-
-				deepLink = "https://alpha.travelstart.com.ng/search-on-index?version=3&timestamp=2024-07-15_15-48-06-048&from_0="+from+"&from_type_0=city&to_0="+to+"&to_type_0=airport&depart_date_0="+depYear+"-"+depMonth+"-"+depDay+"&is_flex_dates=false&trip_type=OneWay&adults="+adultCount+"&teens="+teenCount+"&children="+childCount+"&infants="+infantCount+"&currency=ZAR&cpy_source=tszaweb&correlation_id="+Method.generateCID()+"&search=true&show_search_options=false&language=en&class=Economy";
-
-			}
-			else if (domain.equalsIgnoreCase("ZA") && tripType.equalsIgnoreCase("Return")){
-
-				deepLink = "https://alpha.travelstart.co.za/search-on-index?version=3&timestamp=2024-07-15_15-48-06-048&from_0="+from+"&from_type_0=city&to_0="+to+"&to_type_0=airport&depart_date_0="+depYear+"-"+depMonth+"-"+depDay+"&from_1="+to+"&from_type_1=airport&to_1="+from+"&to_type_1=city&depart_date_1="+retYear+"-"+retMonth+"-"+retDay+"&is_flex_dates=false&trip_type=Roundtrip&adults="+adultCount+"&teens="+teenCount+"&children="+childCount+"&infants="+infantCount+"&currency=ZAR&cpy_source=tszaweb&correlation_id="+Method.generateCID()+"&search=true&show_search_options=false&language=en&class=Economy";
-
-			}
-			else if (domain.equalsIgnoreCase("NG") && tripType.equalsIgnoreCase("Return")){
-
-				deepLink = "https://alpha.travelstart.com.ng/search-on-index?version=3&timestamp=2024-07-15_15-48-06-048&from_0="+from+"&from_type_0=city&to_0="+to+"&to_type_0=airport&depart_date_0="+depYear+"-"+depMonth+"-"+depDay+"&from_1="+to+"&from_type_1=airport&to_1="+from+"&to_type_1=city&depart_date_1="+retYear+"-"+retMonth+"-"+retDay+"&is_flex_dates=false&trip_type=Roundtrip&adults="+adultCount+"&teens="+teenCount+"&children="+childCount+"&infants="+infantCount+"&currency=ZAR&cpy_source=tszaweb&correlation_id="+Method.generateCID()+"&search=true&show_search_options=false&language=en&class=Economy";
-
-			}
-
-
-		}
-
-        return deepLink;
-    }
-
-
-
 	public static String generateCID(){
 
 		String CID = Method.generateRandomFileName();
@@ -1254,10 +1067,10 @@ public class Method {
 
 			switch (environment) {
 
-				case "LIVE" -> baseURL = readDataFromExcelFile(urlPath, "URL's", 4, 1);
-				case "BETA" -> baseURL = (readDataFromExcelFile(urlPath, "URL's", 6, 1));
-				case "PREPROD" -> baseURL = (readDataFromExcelFile(urlPath, "URL's", 8, 1));
-				case "ALPHA" -> baseURL = (readDataFromExcelFile(urlPath, "URL's", 10, 1));
+				case "LIVE" -> baseURL = excelUtils.readDataFromExcel(urlPath, "URL's", 4, 1);
+				case "BETA" -> baseURL = (excelUtils.readDataFromExcel(urlPath, "URL's", 6, 1));
+				case "PREPROD" -> baseURL = (excelUtils.readDataFromExcel(urlPath, "URL's", 8, 1));
+				case "ALPHA" -> baseURL = (excelUtils.readDataFromExcel(urlPath, "URL's", 10, 1));
 
 				default -> System.out.println("Invalid environment name");
 
@@ -1269,10 +1082,10 @@ public class Method {
 
 			switch (environment) {
 
-				case "LIVE" -> baseURL = (readDataFromExcelFile(urlPath, "URL's", 5, 1));
-				case "BETA" -> baseURL = (readDataFromExcelFile(urlPath, "URL's", 7, 1));
-				case "PREPROD" -> baseURL = (readDataFromExcelFile(urlPath, "URL's", 9, 1));
-				case "ALPHA" -> baseURL = (readDataFromExcelFile(urlPath, "URL's", 11, 1));
+				case "LIVE" -> baseURL = (excelUtils.readDataFromExcel(urlPath, "URL's", 5, 1));
+				case "BETA" -> baseURL = (excelUtils.readDataFromExcel(urlPath, "URL's", 7, 1));
+				case "PREPROD" -> baseURL = (excelUtils.readDataFromExcel(urlPath, "URL's", 9, 1));
+				case "ALPHA" -> baseURL = (excelUtils.readDataFromExcel(urlPath, "URL's", 11, 1));
 
 				default -> System.out.println("Invalid envinorment name");
 
@@ -1283,10 +1096,10 @@ public class Method {
 
 			switch (environment) {
 
-				case "LIVE" -> baseURL = (readDataFromExcelFile(urlPath, "URL's", 12, 1));
-				case "BETA" -> baseURL = (readDataFromExcelFile(urlPath, "URL's", 13, 1));
-				case "PREPROD" -> baseURL = (readDataFromExcelFile(urlPath, "URL's", 14, 1));
-				case "ALPHA" -> baseURL = (readDataFromExcelFile(urlPath, "URL's", 15, 1));
+				case "LIVE" -> baseURL = (excelUtils.readDataFromExcel(urlPath, "URL's", 12, 1));
+				case "BETA" -> baseURL = (excelUtils.readDataFromExcel(urlPath, "URL's", 13, 1));
+				case "PREPROD" -> baseURL = (excelUtils.readDataFromExcel(urlPath, "URL's", 14, 1));
+				case "ALPHA" -> baseURL = (excelUtils.readDataFromExcel(urlPath, "URL's", 15, 1));
 
 				default -> System.out.println("Invalid envinorment name");
 
@@ -1480,15 +1293,7 @@ public class Method {
 		}
 
 		// Bearer token for authorization
-		String bearerToken = "f7904a2f-cb89-46a6-bbc9-158ad96160b2";
-
-		if(environment.equalsIgnoreCase("Preprod")){
-			bearerToken = "f7904a2f-cb89-46a6-bbc9-158ad96160b2";
-		} else if (environment.equalsIgnoreCase("Live")) {
-			bearerToken = "7119e7c4-e507-449c-8cac-d31ca3435f34a8c85694-f8e3-4941-b3ba-f1da94d38ce5";
-		} else if (environment.equalsIgnoreCase("Beta") || environment.equalsIgnoreCase("Alpha")){
-			bearerToken = "f416567b-8837-4704-b597-7937f58ab20c";
-		}
+		String bearerToken = this.getBearerToken(environment);
 
 		// Create an HttpClient instance
 		CloseableHttpClient httpClient = HttpClients.createDefault();
@@ -1555,15 +1360,7 @@ public class Method {
 			}
 
 			// Bearer token for authorization
-			String bearerToken = "f7904a2f-cb89-46a6-bbc9-158ad96160b2";
-
-			if(environment.equalsIgnoreCase("Preprod")){
-				bearerToken = "f7904a2f-cb89-46a6-bbc9-158ad96160b2";
-			} else if (environment.equalsIgnoreCase("Live")) {
-				bearerToken = "7119e7c4-e507-449c-8cac-d31ca3435f34a8c85694-f8e3-4941-b3ba-f1da94d38ce5";
-			} else if (environment.equalsIgnoreCase("Beta") || environment.equalsIgnoreCase("Alpha")){
-				bearerToken = "f416567b-8837-4704-b597-7937f58ab20c";
-			}
+		String bearerToken = this.getBearerToken(environment);
 
 			// Create an HttpClient instance
 			CloseableHttpClient httpClient = HttpClients.createDefault();
@@ -1617,15 +1414,7 @@ public class Method {
 		}
 
 		// Bearer token for authorization
-		String bearerToken = "f7904a2f-cb89-46a6-bbc9-158ad96160b2";
-
-		if(environment.equalsIgnoreCase("Preprod")){
-			bearerToken = "f7904a2f-cb89-46a6-bbc9-158ad96160b2";
-		} else if (environment.equalsIgnoreCase("Live")) {
-			bearerToken = "7119e7c4-e507-449c-8cac-d31ca3435f34a8c85694-f8e3-4941-b3ba-f1da94d38ce5";
-		} else if (environment.equalsIgnoreCase("Beta") || environment.equalsIgnoreCase("Alpha")){
-			bearerToken = "f416567b-8837-4704-b597-7937f58ab20c";
-		}
+		String bearerToken = this.getBearerToken(environment);
 
 		// Create an HttpClient instance
 		CloseableHttpClient httpClient = HttpClients.createDefault();
@@ -1669,49 +1458,6 @@ public class Method {
         return invID;
     }
 
-	public String generatePaymentLink(String environment, String domain, String bookingReference) throws IOException {
-
-		String paymentLink = "";
-
-		String UUID = m.getUUID(environment, bookingReference);
-		String invID = m.getInvID(environment, bookingReference);
-		String cpySource = m.getCpySource(environment, bookingReference);
-		String CID = Method.generateCID();
-
-		String baseURL = "https://www.travelstart.co.za/find-itinerary?";
-
-
-		if (domain.equalsIgnoreCase("ZA")) {
-
-			if (environment.equalsIgnoreCase("Live")) {
-				baseURL = "https://www.travelstart.co.za/find-itinerary?";
-			} else if (environment.equalsIgnoreCase("Preprod")) {
-				baseURL = "https://preprod.travelstart.co.za/find-itinerary?";
-			} else if (environment.equalsIgnoreCase("Beta")) {
-				baseURL = "https://beta.travelstart.co.za/find-itinerary?";
-			} else if (environment.equalsIgnoreCase("Alpha")) {
-				baseURL = "https://alpha.travelstart.co.za/find-itinerary?";
-			}
-
-		} else if (domain.equalsIgnoreCase("NG")) {
-
-			if (environment.equalsIgnoreCase("Live")) {
-				baseURL = "https://www.travelstart.com.ng/find-itinerary?";
-			} else if (environment.equalsIgnoreCase("Preprod")) {
-				baseURL = "https://preprod.travelstart.com.ng/find-itinerary?";
-			} else if (environment.equalsIgnoreCase("Beta")) {
-				baseURL = "https://beta.travelstart.com.ng/find-itinerary?";
-			} else if (environment.equalsIgnoreCase("Alpha")) {
-				baseURL = "https://alpha.travelstart.com.ng/find-itinerary?";
-			}
-
-		}
-
-		paymentLink = baseURL+"uuid="+UUID+"&invid="+invID+"&cpysource="+cpySource+"&utm_source=transactional&utm_medium=email&utm_campaign=booking-confirmation&utm_content=payment-link"+"&correlation_id="+CID;
-
-
-		return paymentLink;
-    }
 
 
 	public double amountToDouble(String value){
@@ -1787,7 +1533,6 @@ public class Method {
 	}
 
 
-
 	// Method to update and return the status map based on the provided status
 	public Map<String, Integer> updateTestStatus(String status) {
 		if (statusMap.containsKey(status)) {
@@ -1796,6 +1541,12 @@ public class Method {
 			System.out.println("Invalid status: " + status);
 		}
 		return statusMap;
+	}
+
+
+	public String removeSpecialCharacters(String input) {
+		// Use regular expression to replace non-alphanumeric characters
+		return input.replaceAll("[^a-zA-Z0-9]", "");
 	}
 
 }

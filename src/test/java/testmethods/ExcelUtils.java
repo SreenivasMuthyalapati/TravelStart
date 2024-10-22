@@ -1,5 +1,6 @@
 package testmethods;
 import org.apache.poi.EncryptedDocumentException;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
@@ -71,6 +72,28 @@ public class ExcelUtils {
         return fileName;
     }
 
+    public int getRowCount(String filePath, String sheetName) {
+        int rowCount = 0;
+        try {
+            FileInputStream fis = new FileInputStream(filePath);
+            Workbook workbook;
+            if (filePath.toLowerCase().endsWith(".xlsx")) {
+                workbook = new XSSFWorkbook(fis); // For XLSX (Excel 2007+) format
+            } else if (filePath.toLowerCase().endsWith(".xls")) {
+                workbook = new HSSFWorkbook(fis); // For XLS (Excel 97-2003) format
+            } else {
+                throw new IllegalArgumentException("Unsupported file format");
+            }
+            Sheet sheet = workbook.getSheet(sheetName);
+            rowCount = sheet.getPhysicalNumberOfRows();
+            workbook.close();
+            fis.close();
+        } catch (IOException e) {
+
+        }
+        return rowCount;
+    }
+
     public String readDataFromExcel(String filePath, String sheetName, int row, int col) throws IOException {
         try (FileInputStream file = new FileInputStream(new File(filePath));
              Workbook workbook = WorkbookFactory.create(file)) {
@@ -116,7 +139,7 @@ public class ExcelUtils {
                 }
             }
         } catch (IOException | EncryptedDocumentException e) {
-
+            e.printStackTrace();
         }
         return columnValues;
     }

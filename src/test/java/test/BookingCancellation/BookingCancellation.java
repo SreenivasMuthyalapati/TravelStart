@@ -13,7 +13,7 @@ public class BookingCancellation {
     public static void main(String[] args) throws IOException {
         
         
-        int bookingsCount = m.getRowCount(configs.dataPaths.bookingReferencesForCancellation,"Bookings References")-1;
+        int bookingsCount = excelUtils.getRowCount(configs.dataPaths.bookingReferencesForCancellation,"Bookings References")-1;
 
         System.out.println("Total bookings count: "+ bookingsCount);
         System.out.println();

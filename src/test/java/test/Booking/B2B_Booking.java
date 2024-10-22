@@ -80,7 +80,7 @@ public class B2B_Booking {
         List<Object[]> testCase = new ArrayList<>();
 
         // Extracting all test data from test cases in test data sheet
-        int totalPaxCount = m.getRowCount(dataPath, "Booking Test Cases");
+        int totalPaxCount = excelUtils.getRowCount(dataPath, "Booking Test Cases");
 
         for (int i = 2; i < totalPaxCount; i++) {
 
@@ -175,13 +175,7 @@ public class B2B_Booking {
 
 
         if (!shouldRun.equalsIgnoreCase("Yes")) {
-            m.writeToExcel(testCaseNumber, 0, outputExcel);
-            m.writeToExcel("-", 1, outputExcel);
-            testStatus = "Skipped";
-            m.writeToExcel(testStatus, 2, outputExcel);
-            m.writeToExcel("Skipped this test case as this test case is not approved to run", 3, outputExcel);
-            m.writeToExcel("-", 4, outputExcel);
-            m.writeToExcel(runTime, 5, outputExcel);
+
             throw new SkipException("Test is skipped as this test case " + testCaseNumber + " is not approved to run");
         }
 

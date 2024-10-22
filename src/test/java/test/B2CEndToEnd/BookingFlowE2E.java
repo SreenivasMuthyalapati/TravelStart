@@ -1,5 +1,6 @@
 package test.B2CEndToEnd;
 
+import configs.dataPaths;
 import org.openqa.selenium.WebDriver;
 import org.testng.Assert;
 import org.testng.ITestResult;
@@ -91,8 +92,8 @@ public class BookingFlowE2E {
     // Extracting environment from test data sheet
     static {
         try {
-            environment = excelUtils.readDataFromExcel(dataPath, "URL's", 1, 1);
-            browser = excelUtils.readDataFromExcel(dataPath, "URL's", 0, 1);
+            environment = excelUtils.readDataFromExcel(dataPaths.URLs, "URL's", 1, 1);
+            browser = excelUtils.readDataFromExcel(dataPaths.URLs, "URL's", 0, 1);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -106,6 +107,7 @@ public class BookingFlowE2E {
     public void setupTest() throws IOException {
         // Create a new Excel report for each test run
         ExcelUtils.createExcelReport();
+
     }
 
 
@@ -132,9 +134,8 @@ public class BookingFlowE2E {
         Thread.sleep(1000);
 
         // Sends email with test report
-        sendEmail.sendEmail(testReportPath);
+        //sendEmail.sendEmailWithTemplateAndJson(testReportPath, "B2C Booking Flow End to End Automation Test", 2, 6, 6, 0, 0);
 
-        System.out.println(testReportPath);
     }
 
 
@@ -144,9 +145,11 @@ public class BookingFlowE2E {
         List<Object[]> testCase = new ArrayList<>();
 
         // Extracting all test data from test cases in test data sheet
-        int totalPaxCount = method.getRowCount(dataPath, "Booking Scenarios");
+        int totalPaxCount = excelUtils.getRowCount(dataPath, "Booking Scenarios");
 
         for (int i = 2; i < totalPaxCount; i++) {
+
+            System.out.println("Yes");
 
             String testCaseNumber = excelUtils.readDataFromExcel(dataPath, "Booking Scenarios", i, 0);
             String shouldRun = excelUtils.readDataFromExcel(dataPath, "Booking Scenarios", i, 1);
@@ -230,12 +233,15 @@ public class BookingFlowE2E {
     @Test(dataProvider = "TestCase")
     public void bookingFlow(String testCaseNumber, String shouldRun, String domain, String cpy_source, String tripType, String origin, String destination, String departureDate, String departureMonth, String returnDate, String returnMonth, String adultCount, String youngAdultCount, String childCount, String infantCount, String departureAirline, String returnAirline, String mailID, String mobileNumber, String title, String firstName, String middleName, String lastName, String dateOfBirth, String monthOfBirth, String yearOfBirth, String passPortNumber, String dateOfPassportExpiry, String monthOfPassportExpiry, String yearOfPassportExpiry, String passPortNationality, String passPortIssuingCountry, String paymentMethod, String bankNameEFT, String isLoggedInUser, String isToBeCancelled) throws IOException, InterruptedException {
 
+        System.out.println(testCaseNumber+" executed");
 
         if (!shouldRun.equalsIgnoreCase("Yes")) {
-
+            System.out.println("Skipped");
             throw new SkipException("Test is skipped as this test case " + testCaseNumber + " is not approved to run");
 
         }
+
+
 
         driver = method.launchBrowser(driver, browser);
         // Maximize window

@@ -72,7 +72,7 @@ public class MetaLinks {
         List<Object[]> testCase = new ArrayList<>();
 
         // Extracting all test data from test cases in test data sheet
-        int totalPaxCount = m.getRowCount(dataPath, "Booking Scenarios");
+        int totalPaxCount = excelUtils.getRowCount(dataPath, "Booking Scenarios");
 
         for (int i = 2; i < totalPaxCount; i++) {
 

@@ -269,7 +269,7 @@ public class FlightPage {
 
     public static By mealOption = By.xpath("(//div[@class='mat_option_names'])[2]");
 
-    public static By contnue = By.xpath("//button[@class='btn addons_continueBtn primary_btn onHover mt-3']");
+    public static By contnue = By.xpath("(//button[@class='btn addons_continueBtn primary_btn onHover mt-3'])[1]");
 
 
     public static By fareIncreaseContinue = By.xpath("//button[@aria-label='Continue']");
@@ -328,5 +328,6 @@ public class FlightPage {
 
     public static By selectedMealCost = By.xpath("(//span[@class='pull-right ng-star-inserted'])[1]");
 
+    public static By seatsCollapsedCard = By.xpath("(//div[@class='cat_colpse_three collapse_card mb-2 seatCard_Expanded ng-star-inserted'])[1]");
 
 }
