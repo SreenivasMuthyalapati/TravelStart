@@ -1,8 +1,5 @@
-package test.B2CEndToEnd;
+package testClasses.B2CEndToEnd;
 
-import configs.dataPaths;
-import org.json.JSONObject;
-import pageObjects.PaymentPage;
 import testmethods.DeeplinksMethods;
 import testmethods.Method;
 import testmethods.SendEmail;

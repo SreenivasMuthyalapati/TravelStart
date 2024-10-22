@@ -1,11 +1,13 @@
 <!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd">
-<suite name="Meta User Booking Flow Test" verbose="1" >
+<suite name="MySuite" verbose="1">
     <listeners>
         <listener class-name="listeners.ExtentReportListener"/>
     </listeners>
-    <test name="Meta User Booking Flow Test">
+    <test name="Test">
         <classes>
-            <class name="test.Booking.MetaLinks" />
+
+            <class name="testClasses.B2CEndToEnd.Signup"/>
+
         </classes>
     </test>
 </suite>

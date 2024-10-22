@@ -5,7 +5,7 @@
     </listeners>
     <test name="Booking Flow Test">
         <classes>
-            <class name="test.Booking.BookingFlow" />
+            <class name="testClasses.Booking.BookingFlow" />
         </classes>
     </test>
 </suite>

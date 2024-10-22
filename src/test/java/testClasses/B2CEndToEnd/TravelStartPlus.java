@@ -1,4 +1,4 @@
-package test.B2CEndToEnd;
+package testClasses.B2CEndToEnd;
 
 public class TravelStartPlus {
 

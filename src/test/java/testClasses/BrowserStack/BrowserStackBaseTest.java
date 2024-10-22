@@ -1,4 +1,4 @@
-package test.BrowserStack;
+package testClasses.BrowserStack;
 
 import io.github.bonigarcia.wdm.WebDriverManager;
 import org.openqa.selenium.WebDriver;

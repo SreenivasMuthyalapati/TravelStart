@@ -1,4 +1,4 @@
-package test.BookingCancellation;
+package testClasses.BookingCancellation;
 
 import org.json.JSONException;
 import testmethods.ExcelUtils;

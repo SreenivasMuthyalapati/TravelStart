@@ -1,4 +1,4 @@
-package test.Booking;
+package testClasses.Booking;
 
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.openqa.selenium.WebDriver;

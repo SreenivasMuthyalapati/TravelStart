@@ -11,7 +11,6 @@
         <parameter name="browser_version" value="80.0" />
         <classes>
 
-            <class name="test.B2CEndToEnd.Login1"/>
 
         </classes>
 
@@ -24,7 +23,6 @@
         <parameter name="browser_version" value="85.0" />
         <classes>
 
-            <class name="test.B2CEndToEnd.Login1"/>
 
         </classes>
     </test>
