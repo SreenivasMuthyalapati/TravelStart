@@ -27,8 +27,8 @@ A robust, scalable test automation framework built with Selenium, Java, and Test
 
 ## 🛠️ Technology Stack
 
-| Component        | Technology           |
-|-----------------|---------------------|
+| Component       | Technology         |
+|-----------------|--------------------|
 | Build Tool      | Maven              |
 | Test Framework  | TestNG             |
 | UI Automation   | Selenium WebDriver |
