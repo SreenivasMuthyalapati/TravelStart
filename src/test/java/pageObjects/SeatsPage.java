@@ -61,8 +61,8 @@ public class SeatsPage {
         return locator;
     }
 
-    public static By continueToAddons = By.xpath("(//button[@class='btn ml-auto st_btn addons_continueBtn float-right onHover'])[1]");
-    public static By totalCostOfSeats = By.xpath("//span[@class='mr-3 seat_price ng-star-inserted']");
+    public static By continueToAddons = By.xpath("//button[@id='continueBtnFromSeats']");
+    public static By totalCostOfSeats = By.xpath("//span[@class='mr-3 ng-star-inserted']");
 
 
     public static By seatsAlertPopUp = By.xpath("(//h5[contains(text(),'Are you sure?')])[1]");

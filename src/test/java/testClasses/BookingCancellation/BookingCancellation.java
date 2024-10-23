@@ -1,8 +1,8 @@
 package testClasses.BookingCancellation;
 
 import org.json.JSONException;
-import testmethods.ExcelUtils;
-import testmethods.Method;
+import testMethods.ExcelUtils;
+import testMethods.Method;
 
 import java.io.IOException;
 

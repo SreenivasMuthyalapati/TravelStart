@@ -11,10 +11,10 @@ import org.testng.ITestResult;
 import org.testng.SkipException;
 import org.testng.annotations.*;
 import pageObjects.*;
-import testmethods.ExcelUtils;
-import testmethods.Method;
-import testmethods.PaymentPageMethods;
-import testmethods.TSMethods;
+import testMethods.ExcelUtils;
+import testMethods.Method;
+import testMethods.PaymentPageMethods;
+import testMethods.TSMethods;
 
 import java.io.IOException;
 import java.util.ArrayList;

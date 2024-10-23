@@ -42,6 +42,13 @@ public class HomePage {
     public static By passengerSelector = By.xpath("//a[@data-target='#pax']");
     public static By applyPax = By.xpath("//button[@aria-label='Apply']");
 
+    public static By cabinClassDropDown = By.xpath("//button[@class='mat-focus-indicator mat-menu-trigger mat-button mat-button-base']");
+    public static By economyClass = By.xpath("(//a[@class='mat-focus-indicator mat-menu-item'])[1]");
+    public static By premiumClass = By.xpath("(//a[@class='mat-focus-indicator mat-menu-item'])[1]");
+    public static By businessClass = By.xpath("(//a[@class='mat-focus-indicator mat-menu-item'])[2]");
+    public static By firstClass = By.xpath("(//a[@class='mat-focus-indicator mat-menu-item'])[3]");
+
+
     public WebElement dateSelector(String value) {
           String date = String.format("(//*[@class='ngb-dp-day ng-star-inserted'])[%s]", value);
         return driver.findElement(By.xpath(date));

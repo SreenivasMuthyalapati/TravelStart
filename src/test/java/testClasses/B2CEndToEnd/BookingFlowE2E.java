@@ -6,7 +6,7 @@ import org.testng.Assert;
 import org.testng.ITestResult;
 import org.testng.SkipException;
 import org.testng.annotations.*;
-import testmethods.*;
+import testMethods.*;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -283,7 +283,7 @@ public class BookingFlowE2E {
         // Test case 2:
         testCaseSummary = "Verify search result is loading after search attempt";
 
-        homePageMethods.makeFlightSearch(driver, tripType, origin, destination, departureMonth, departureDate, returnMonth, returnDate, adultCount, youngAdultCount, childCount, infantCount);
+        homePageMethods.makeFlightSearch(driver, tripType, origin, destination, departureMonth, departureDate, returnMonth, returnDate, adultCount, youngAdultCount, childCount, infantCount, "Economy");
 
         boolean isSearchLoaded = srpMethods.isSRPLoaded(driver);
         CID = method.getCID(driver);

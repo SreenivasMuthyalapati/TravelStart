@@ -9,10 +9,10 @@ import org.openqa.selenium.firefox.FirefoxDriver;
 import org.testng.ITestResult;
 import org.testng.SkipException;
 import org.testng.annotations.*;
-import testmethods.B2BMethods;
-import testmethods.ExcelUtils;
-import testmethods.Method;
-import testmethods.TSMethods;
+import testMethods.B2BMethods;
+import testMethods.ExcelUtils;
+import testMethods.Method;
+import testMethods.TSMethods;
 
 import java.io.IOException;
 import java.util.ArrayList;

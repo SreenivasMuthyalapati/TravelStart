@@ -1,7 +1,7 @@
 package pageObjects;
 
 import org.openqa.selenium.By;
-import testmethods.Method;
+import testMethods.Method;
 
 public class SRP {
 
@@ -10,7 +10,7 @@ public class SRP {
     public static By filters = By.xpath("//*[text()='Show Filters']");
     public static By unBundledFilter = By.xpath("(//button[@class='btn showFilter_btn'])[1]");
     public static By results = By.xpath("(//div[@class='row flightsViewSection ng-star-inserted'])[1]");
-    public static By book = By.xpath("(//button[@aria-label='Book Now'])[2]");
+    public static By book = By.xpath("(//button[@aria-label='Book Now'])[1]");
     public static By domBook = By.xpath("(//button[@aria-label='Book this flight'])[1]");
     public static By airPortChange = By.xpath("//button[@class='btn ok-btn onHover refreshBtn primary_btn ng-star-inserted']");
     public static By flightPrice = By.xpath("(//div[@class='price_labl'])[1]");

@@ -15,9 +15,9 @@ public interface dataPaths {
         public static String excelOutputPath = dataBasePath+"\\TestResult\\BookingOutput.xlsx";
         public static String bookingReferencesForCancellation = dataBasePath+"\\TestData\\BookingReferences.xls";
         public static String TSPlusDataPath = dataBasePath+"\\TestData\\TS+ Subscription Data.xls";
-
         public static String deepLinks = dataBasePath+"\\TestData\\Deeplinks.xls";
         public static String testOutput = dataBasePath+"\\TestResult\\TestOutPut.xlsx";
+        public static String seatsTest = dataBasePath+"\\TestData/SeatsTest.xls";
         public static String b2bTestData = dataBasePath+"\\TestData\\B2BBookingData.xls";
 
 

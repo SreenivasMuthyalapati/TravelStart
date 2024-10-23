@@ -1,4 +1,4 @@
-package testClasses.Booking;
+package testClasses.UnitFunctionalTest;
 
 import configs.dataPaths;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -6,10 +6,10 @@ import org.openqa.selenium.*;
 import org.testng.Assert;
 import org.testng.ITestResult;
 import org.testng.SkipException;
-import org.testng.annotations.AfterMethod;
-import org.testng.annotations.DataProvider;
-import org.testng.annotations.Test;
+import org.testng.annotations.*;
+import org.testng.asserts.SoftAssert;
 import pageObjects.AddOnsPage;
+import pageObjects.PaymentPage;
 import testMethods.*;
 
 import java.io.IOException;
@@ -18,12 +18,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class BookingFlowTest {
+public class SeatsTest {
 
     static XSSFWorkbook workbook;
     static WebDriver driver;
     static Method m = new Method();
-    static String dataPath = dataPaths.B2CBookingE2ETestData;
+    static String dataPath = dataPaths.seatsTest;
     static String environment;
     static String browser;
     static String outputExcel = configs.dataPaths.excelOutputPath;
@@ -33,6 +33,8 @@ public class BookingFlowTest {
     static ExcelUtils excelUtils = new ExcelUtils();
     static SeatsPageMethods seatsPageMethods = new SeatsPageMethods();
     static AddOnsPageMethods addOnsPageMethods = new AddOnsPageMethods();
+
+    static SoftAssert softAssert = new SoftAssert();
 
     // Extracting environment from test data sheet
     static {
@@ -47,7 +49,7 @@ public class BookingFlowTest {
     }
 
 
-    public BookingFlowTest() throws IOException {
+    public SeatsTest() throws IOException {
     }
 
 
@@ -91,27 +93,38 @@ public class BookingFlowTest {
             String youngAdultCount = excelUtils.readDataFromExcel(dataPath, "Booking Scenarios", i, 12);
             String childCount = excelUtils.readDataFromExcel(dataPath, "Booking Scenarios", i, 13);
             String infantCount = excelUtils.readDataFromExcel(dataPath, "Booking Scenarios", i, 14);
-            String departureAirline = excelUtils.readDataFromExcel(dataPath, "Booking Scenarios", i, 15);
-            String returnAirline = excelUtils.readDataFromExcel(dataPath, "Booking Scenarios", i, 16);
-            String mailID = excelUtils.readDataFromExcel(dataPath, "Booking Scenarios", i, 17);
-            String mobileNumber = (excelUtils.readDataFromExcel(dataPath, "Booking Scenarios", i, 18));
-            String title = excelUtils.readDataFromExcel(dataPath, "Booking Scenarios", i, 19);
-            String firstName = excelUtils.readDataFromExcel(dataPath, "Booking Scenarios", i, 20);
-            String middleName = excelUtils.readDataFromExcel(dataPath, "Booking Scenarios", i, 21);
-            String lastName = excelUtils.readDataFromExcel(dataPath, "Booking Scenarios", i, 22);
-            String dateOfBirth = excelUtils.readDataFromExcel(dataPath, "Booking Scenarios", i, 23);
-            String monthOfBirth = excelUtils.readDataFromExcel(dataPath, "Booking Scenarios", i, 24);
-            String yearOfBirth = excelUtils.readDataFromExcel(dataPath, "Booking Scenarios", i, 25);
-            String passPortNumber = excelUtils.readDataFromExcel(dataPath, "Booking Scenarios", i, 26);
-            String dateOfPassportExpiry = excelUtils.readDataFromExcel(dataPath, "Booking Scenarios", i, 27);
-            String monthOfPassportExpiry = excelUtils.readDataFromExcel(dataPath, "Booking Scenarios", i, 28);
-            String yearOfPassportExpiry = excelUtils.readDataFromExcel(dataPath, "Booking Scenarios", i, 29);
-            String passPortNationality = excelUtils.readDataFromExcel(dataPath, "Booking Scenarios", i, 30);
-            String passPortIssuingCountry = excelUtils.readDataFromExcel(dataPath, "Booking Scenarios", i, 31);
-            String paymentMethod = excelUtils.readDataFromExcel(dataPath, "Booking Scenarios", i, 32);
-            String bankNameEFT = excelUtils.readDataFromExcel(dataPath, "Booking Scenarios", i, 33);
-            String isLoggedInUser = excelUtils.readDataFromExcel(dataPath, "Booking Scenarios", i, 34);
-            String isToBeCancelled = excelUtils.readDataFromExcel(dataPath, "Booking Scenarios", i, 35);
+            String cabinClass = excelUtils.readDataFromExcel(dataPath, "Booking Scenarios", i, 15);
+            String departureAirline = excelUtils.readDataFromExcel(dataPath, "Booking Scenarios", i, 16);
+            String returnAirline = excelUtils.readDataFromExcel(dataPath, "Booking Scenarios", i, 17);
+            String mailID = excelUtils.readDataFromExcel(dataPath, "Booking Scenarios", i, 18);
+            String mobileNumber = (excelUtils.readDataFromExcel(dataPath, "Booking Scenarios", i, 19));
+            String title = excelUtils.readDataFromExcel(dataPath, "Booking Scenarios", i, 20);
+            String firstName = excelUtils.readDataFromExcel(dataPath, "Booking Scenarios", i, 21);
+            String middleName = excelUtils.readDataFromExcel(dataPath, "Booking Scenarios", i, 22);
+            String lastName = excelUtils.readDataFromExcel(dataPath, "Booking Scenarios", i, 23);
+            String dateOfBirth = excelUtils.readDataFromExcel(dataPath, "Booking Scenarios", i, 24);
+            String monthOfBirth = excelUtils.readDataFromExcel(dataPath, "Booking Scenarios", i, 25);
+            String yearOfBirth = excelUtils.readDataFromExcel(dataPath, "Booking Scenarios", i, 26);
+            String passPortNumber = excelUtils.readDataFromExcel(dataPath, "Booking Scenarios", i, 27);
+            String dateOfPassportExpiry = excelUtils.readDataFromExcel(dataPath, "Booking Scenarios", i, 28);
+            String monthOfPassportExpiry = excelUtils.readDataFromExcel(dataPath, "Booking Scenarios", i, 29);
+            String yearOfPassportExpiry = excelUtils.readDataFromExcel(dataPath, "Booking Scenarios", i, 30);
+            String passPortNationality = excelUtils.readDataFromExcel(dataPath, "Booking Scenarios", i, 31);
+            String passPortIssuingCountry = excelUtils.readDataFromExcel(dataPath, "Booking Scenarios", i, 32);
+            String addBaggage = excelUtils.readDataFromExcel(dataPath, "Booking Scenarios", i, 33);
+            String seatsForPax1 = excelUtils.readDataFromExcel(dataPath, "Booking Scenarios", i, 34);
+            String seatsForPax2 = excelUtils.readDataFromExcel(dataPath, "Booking Scenarios", i, 35);
+            String seatsForPax3 = excelUtils.readDataFromExcel(dataPath, "Booking Scenarios", i, 36);
+            String seatsForPax4 = excelUtils.readDataFromExcel(dataPath, "Booking Scenarios", i, 37);
+            String seatsForPax5 = excelUtils.readDataFromExcel(dataPath, "Booking Scenarios", i, 38);
+            String seatsForPax6 = excelUtils.readDataFromExcel(dataPath, "Booking Scenarios", i, 39);
+            String seatsForPax7 = excelUtils.readDataFromExcel(dataPath, "Booking Scenarios", i, 40);
+            String seatsForPax8 = excelUtils.readDataFromExcel(dataPath, "Booking Scenarios", i, 41);
+            String seatsForPax9 = excelUtils.readDataFromExcel(dataPath, "Booking Scenarios", i, 42);
+            String paymentMethod = excelUtils.readDataFromExcel(dataPath, "Booking Scenarios", i, 43);
+            String bankNameEFT = excelUtils.readDataFromExcel(dataPath, "Booking Scenarios", i, 44);
+            String isLoggedInUser = excelUtils.readDataFromExcel(dataPath, "Booking Scenarios", i, 45);
+            String isToBeCancelled = excelUtils.readDataFromExcel(dataPath, "Booking Scenarios", i, 46);
 
             testCase.add(new Object[]{testCaseNumber,
                     shouldRun,
@@ -128,6 +141,7 @@ public class BookingFlowTest {
                     youngAdultCount,
                     childCount,
                     infantCount,
+                    cabinClass,
                     departureAirline,
                     returnAirline,
                     mailID,
@@ -145,6 +159,16 @@ public class BookingFlowTest {
                     yearOfPassportExpiry,
                     passPortNationality,
                     passPortIssuingCountry,
+                    addBaggage,
+                    seatsForPax1,
+                    seatsForPax2,
+                    seatsForPax3,
+                    seatsForPax4,
+                    seatsForPax5,
+                    seatsForPax6,
+                    seatsForPax7,
+                    seatsForPax8,
+                    seatsForPax9,
                     paymentMethod,
                     bankNameEFT,
                     isLoggedInUser,
@@ -154,9 +178,10 @@ public class BookingFlowTest {
     }
 
 
-
     @Test(dataProvider = "TestCase")
-    public void bookingFlow(String testCaseNumber, String shouldRun, String domain, String cpy_source, String tripType, String origin, String destination, String departureDate, String departureMonth, String returnDate, String returnMonth, String adultCount, String youngAdultCount, String childCount, String infantCount, String departureAirline, String returnAirline, String mailID, String mobileNumber, String title, String firstName, String middleName, String lastName, String dateOfBirth, String monthOfBirth, String yearOfBirth, String passPortNumber, String dateOfPassportExpiry, String monthOfPassportExpiry, String yearOfPassportExpiry, String passPortNationality, String passPortIssuingCountry, String paymentMethod, String bankNameEFT, String isLoggedInUser, String isToBeCancelled) throws IOException, InterruptedException {
+    public void bookingFlow(String testCaseNumber, String shouldRun, String domain, String cpy_source, String tripType, String origin, String destination, String departureDate, String departureMonth, String returnDate, String returnMonth, String adultCount, String youngAdultCount, String childCount, String infantCount, String cabinClass, String departureAirline, String returnAirline, String mailID, String mobileNumber, String title, String firstName, String middleName, String lastName, String dateOfBirth, String monthOfBirth, String yearOfBirth, String passPortNumber, String dateOfPassportExpiry, String monthOfPassportExpiry, String yearOfPassportExpiry, String passPortNationality, String passPortIssuingCountry, String addBaggage, String seatsForPax1, String seatsForPax2, String seatsForPax3, String seatsForPax4, String seatsForPax5, String seatsForPax6, String seatsForPax7, String seatsForPax8, String seatsForPax9, String paymentMethod, String bankNameEFT, String isLoggedInUser, String isToBeCancelled) throws IOException, InterruptedException {
+
+        System.out.println("CAbin class: "+ cabinClass);
 
         runTime = m.getCurrentTime();
 
@@ -213,7 +238,7 @@ public class BookingFlowTest {
         }
 
 
-        homePageMethods.makeFlightSearch(driver,tripType, origin, destination, departureMonth, departureDate, returnMonth, returnDate, adultCount, youngAdultCount, childCount, infantCount, "Economy");
+        homePageMethods.makeFlightSearch(driver,tripType, origin, destination, departureMonth, departureDate, returnMonth, returnDate, adultCount, youngAdultCount, childCount, infantCount, cabinClass);
 
         CID = m.getCID(driver);
 
@@ -227,26 +252,17 @@ public class BookingFlowTest {
 
         srpMethods.selectUnbundledFlights(driver, isBundled);
 
-
-
         srpMethods.proceedToTravellerPage(driver, isBundled);
-
 
         TravellerDetailsPageMethods travellerDetailsPageMethods = new TravellerDetailsPageMethods();
 
         boolean isTravellerPageLoaded = travellerDetailsPageMethods.isTravellerPageLoaded(driver);
 
-        boolean isFareIncreased = false;
+        boolean isFareIncreased = travellerDetailsPageMethods.isFareIncreased(driver);
 
-        double increasedFare = 0;
-
-        isFareIncreased = travellerDetailsPageMethods.isFareIncreased(driver);
+        Assert.assertTrue(isTravellerPageLoaded, "Traveller details page wasn't loaded");
 
         double flightCost = travellerDetailsPageMethods.getFlightCost(driver);
-
-        System.out.println(flightCost);
-
-        double whatsappPrice = travellerDetailsPageMethods.selectWhatsapp(driver, true);
 
         travellerDetailsPageMethods.enterContactDetails(driver, mobileNumber, mailID);
 
@@ -255,22 +271,26 @@ public class BookingFlowTest {
         boolean isBaggageOffered = travellerDetailsPageMethods.isBaggageSelectionOffered(driver);
         String baggageType = "";
 
-        if (isBaggageOffered){
+        boolean addBaggage1 = Boolean.parseBoolean(addBaggage);
+
+        if (isBaggageOffered && addBaggage1){
 
             baggageType = travellerDetailsPageMethods.getBaggageType(driver, isBaggageOffered);
+
             travellerDetailsPageMethods.addBaggage(driver, baggageType, adultCount, youngAdultCount, childCount);
             Thread.sleep(5000);
+
         }
 
         boolean isMealsOffered = travellerDetailsPageMethods.isMealsOffered(driver);
 
-        if(isMealsOffered){
+//        if(isMealsOffered){
+//
+//            System.out.println(travellerDetailsPageMethods.selectMeal(driver, adultCount, youngAdultCount, childCount, infantCount));
+//
+//        }
 
-            System.out.println(travellerDetailsPageMethods.selectMeal(driver, adultCount, youngAdultCount, childCount, infantCount));
-
-            }
-
-        Thread.sleep(5000);
+        Thread.sleep(500);
 
         boolean isSeatsOffered = travellerDetailsPageMethods.isSeatsOffered(driver);
         boolean isAddOnsOffered = travellerDetailsPageMethods.isAddOnsOffered(driver);
@@ -290,18 +310,27 @@ public class BookingFlowTest {
 
         }
 
+        if (!isSeatsOffered){
+
+            throw new SkipException("Test has is skipped because this itnerary hasn't offered seat selection");
+
+        }
+
+        List<String> selectedSeats = new ArrayList<>();
+        double totalCostOfSeats = 0;
+
 
         if (isSeatsOffered && isSeatsMapLoaded){
 
             if (selectSeats){
 
-                seatsPageMethods.selectSeats(driver, true);
+                seatsPageMethods.selectSeats(driver, selectSeats);
 
-                Thread.sleep(5000);
+                Thread.sleep(2000);
 
                 // Get all selected seats
-                System.out.println(seatsPageMethods.getSelectedSeatNumbers(driver));
-                System.out.println(seatsPageMethods.getTotalSeatsCost(driver));
+                selectedSeats = seatsPageMethods.getSelectedSeatNumbers(driver);
+                totalCostOfSeats = seatsPageMethods.getTotalSeatsCost(driver);
 
                 seatsPageMethods.continueToNextStep(driver);
 
@@ -311,21 +340,17 @@ public class BookingFlowTest {
 
             }
 
-
-
         }
 
-
-
-
         boolean isAddOnsAvailable = false;
+
         isAddOnsAvailable = addOnsPageMethods.isAddOnsLoaded(driver, isAddOnsOffered);
 
         if (isAddOnsAvailable){
 
             addOnsPageMethods.unselectAllAddOns(driver);
 
-            addOnsPageMethods.selectMedicalCancellationProduct(driver, true);
+            addOnsPageMethods.selectFlexiProduct(driver, true);
 
         }
 
@@ -335,12 +360,60 @@ public class BookingFlowTest {
 
         addOnsPageMethods.continueToNextStep(driver);
 
+        boolean isPaymentPageLoaded = false;
+
+        PaymentPageMethods paymentPageMethods = new PaymentPageMethods();
+
+        isPaymentPageLoaded = paymentPageMethods.assertPaymentPage(driver);
+
+        Assert.assertTrue(isPaymentPageLoaded, "Payment page failed to load");
+
+        String bookingReference = paymentPageMethods.getBookingReference(driver);
+
+        Map<String, String> breakDownInPaymentPage = new HashMap<>();
+
+        breakDownInPaymentPage = paymentPageMethods.getPriceBreakdown(driver, PaymentPage.fareBreakdownTables);
+
+        String totalPriceDisplayedOnPaymentPage = paymentPageMethods.getTotalPrice(driver);
+
+        paymentPageMethods.selectPaymentMethod(driver, domain, paymentMethod);
+
+        if (paymentMethod.equalsIgnoreCase("EFT")){
+
+            paymentPageMethods.selectEFTBank(driver, domain, bankNameEFT);
+
+            paymentPageMethods.clickPay(driver, domain, paymentMethod);
+
         }
 
+        boolean isBookingSuccess = false;
+
+        BookingConfirmationPageMethods bookingConfirmationPageMethods = new BookingConfirmationPageMethods();
+
+        isBookingSuccess = bookingConfirmationPageMethods.verifyBookingConfirmationRedirect(driver);
+
+        Assert.assertTrue(isBookingSuccess, "Booking got failed. Correlation ID: "+CID);
+
+        List<String> seatsNumbersOnBookingConfirmationPage = new ArrayList<>();
+
+        seatsNumbersOnBookingConfirmationPage = bookingConfirmationPageMethods.getAllSelectedSeats(driver);
+
+        boolean selectedSeatNumbersMatchingWithBookingConfirmation = bookingConfirmationPageMethods.validateSelectedSeatsInBookingConfirmationPage(selectedSeats, seatsNumbersOnBookingConfirmationPage);
+
+        softAssert.assertTrue(selectedSeatNumbersMatchingWithBookingConfirmation, "Seats selected are not matching with seats displayed on booking confirmation");
 
 
 
+
+
+        //Cancel flight
+        if(isToBeCancelled.equalsIgnoreCase("Yes")) {
+            m.cancelBooking(environment, bookingReference);
+        }
     }
+
+
+}
 
 
 

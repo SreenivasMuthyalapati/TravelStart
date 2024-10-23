@@ -1,10 +1,13 @@
 package testClasses.B2CEndToEnd;
 
-import testmethods.DeeplinksMethods;
-import testmethods.Method;
-import testmethods.SendEmail;
+import testMethods.BookingConfirmationPageMethods;
+import testMethods.DeeplinksMethods;
+import testMethods.Method;
+import testMethods.SendEmail;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class CodeTestClass {
 
@@ -16,10 +19,6 @@ public class CodeTestClass {
         
         //sendEmail.sendEmail(dataPaths.URLs);
         //System.out.println(m.generatePaymentLink("preprod", "ZA", "ZA00109497"));
-
-      sendEmail.sendEmailWithTemplateAndJson("C:\\Users\\Sreen\\IdeaProjects\\travelStart\\TestData\\B2CBookingFlowEndToEnd.xls", "B2C", 2, 6, 4,1,1);
-
-        System.out.println(m.getBearerToken("Preprod"));
 
 
        }

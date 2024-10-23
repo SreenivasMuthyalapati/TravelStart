@@ -14,4 +14,16 @@ public class AddOnsPage {
     public static By addOnName = By.xpath("//div[@class='card-title mb-0']");
     public static By selectAddon = By.xpath("//span[@class='select_btns']");
 
+    // Fare breakdown elements
+    public static By fareBreakdownTables = By.xpath("//table[@aria-describedby='fares']");
+
+    public static By priceTable(String value){
+
+        String locator = "(//table[@aria-describedby='fares'])["+value+"]";
+
+        By tableElement = By.xpath(locator);
+
+        return tableElement;
+    }
+
 }

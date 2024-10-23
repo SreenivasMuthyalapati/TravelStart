@@ -3,8 +3,7 @@ package pageObjects;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.support.ui.Select;
-import testmethods.Method;
+import testMethods.Method;
 
 public class FlightPage {
 
@@ -329,5 +328,9 @@ public class FlightPage {
     public static By selectedMealCost = By.xpath("(//span[@class='pull-right ng-star-inserted'])[1]");
 
     public static By seatsCollapsedCard = By.xpath("(//div[@class='cat_colpse_three collapse_card mb-2 seatCard_Expanded ng-star-inserted'])[1]");
+
+    public static By addOnsCollapsedCard = By.xpath("//div[@class='cat_colpse_four collapse_card add_onsCard_Expanded mb_100 ng-star-inserted']");
+
+
 
 }

@@ -6,7 +6,7 @@ import org.testng.ITestResult;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
-import testmethods.*;
+import testMethods.*;
 
 import java.io.IOException;
 import java.util.ArrayList;
