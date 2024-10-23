@@ -1,91 +1,203 @@
-Hybrid Test Framework
+# Hybrid Test Automation Framework
 
-This project is a Maven-based hybrid test automation framework built using Selenium, Java, and TestNG. It employs Page Object Model (POM) and Data-Driven Testing (DDT) using Apache POI for reading data from Excel files.
+A robust, scalable test automation framework built with Selenium, Java, and TestNG, implementing Page Object Model (POM) and Data-Driven Testing (DDT) approaches.
 
-Table of Contents
+## 🚀 Key Features
 
-Getting Started
-Project Structure
-Prerequisites
-Running Tests
-Adding New Tests
-Additional Notes
-Getting Started
+- **Page Object Model (POM)**: Maintainable and reusable page-specific classes
+- **Data-Driven Testing**: Excel-based test data management using Apache POI
+- **Cross-Browser Testing**: Support for Chrome, Firefox, and Edge
+- **Parallel Execution**: TestNG-powered concurrent test execution
+- **Detailed Reporting**: Automated test execution reports with screenshots
+- **Configurable**: Environment-specific settings management
+- **CI/CD Ready**: Jenkins pipeline integration support
 
-Clone the repository:
-Run the following commands in your terminal:
+## 📋 Prerequisites
 
-bash
-git clone <your-repo-url>
-cd <project-directory>
-Maven Commands:
+### Required Software
+- Java JDK 11 or higher
+- Maven 3.6+
+- Chrome/Firefox/Edge browser
+- Git
 
-To clean and build the project:
-mvn clean install
-To execute test suites:
-bash
-mvn test -DsuiteXmlFile=<suite-file-name>.xml
+### IDE Setup (Recommended)
+- IntelliJ IDEA or Eclipse with TestNG plugin
+- Cucumber plugin (for BDD features)
+- Maven Integration
 
+## 🛠️ Technology Stack
 
-Project Structure
+| Component        | Technology           |
+|-----------------|---------------------|
+| Build Tool      | Maven              |
+| Test Framework  | TestNG             |
+| UI Automation   | Selenium WebDriver |
+| Language        | Java               |
+| Reporting       | ExtentReports      |
+| Data Handling   | Apache POI         |
+| Version Control | Git                |
 
-Project Root Directory contains the following important folders and files:
+## 📁 Project Structure
 
-pom.xml: Maven configuration file
-src/test/java/testRunners: Contains TestNG suites for running tests
-src/test/java/testMethods: Contains test methods
-src/test/java/pageObjects: Contains Page Object classes for web interactions
-src/test/java/testClasses: Contains test case classes that use page objects
-src/test/java/listeners: Contains custom TestNG listeners for logging or reporting
-src/test/java/configs: Contains paths for Excel data files
-TestData: Folder for storing test data and test cases
-Components Description
+```
+project-root/
+├── src/
+│   ├── main/
+│   │   └── java/
+│   │       ├── base/
+│   │       │   ├── BaseTest.java
+│   │       │   └── BrowserFactory.java
+│   │       ├── utils/
+│   │       │   ├── ExcelUtils.java
+│   │       │   ├── ConfigReader.java
+│   │       │   └── ScreenshotUtils.java
+│   │       └── constants/
+│   └── test/
+│       ├── java/
+│       │   ├── pageObjects/
+│       │   ├── testCases/
+│       │   └── testData/
+│       └── resources/
+│           ├── config/
+│           │   └── config.properties
+│           └── testData/
+│               └── TestData.xlsx
+├── test-output/
+├── logs/
+├── screenshots/
+└── pom.xml
+```
 
-TestNG Suites: Entry points for running tests.
-Test Methods: Defined using TestNG annotations (@Test).
-Page Objects: Represent web page elements and actions using POM.
-Test Classes: Test cases using page objects and performing operations.
-Listeners: Custom listeners for logging or reporting during test execution.
-Test Data: Excel files for data-driven testing, managed by Apache POI.
-Prerequisites
+## 🚀 Getting Started
 
-Make sure the following are installed on your system:
+1. **Clone the Repository**
+   ```bash
+   git clone <repository-url>
+   cd <project-directory>
+   ```
 
-Java JDK 8+
-Maven 3.6+
-TestNG
-Selenium WebDriver
-External Dependencies
-All required dependencies are managed through Maven. Make sure you configure pom.xml appropriately.
+2. **Install Dependencies**
+   ```bash
+   mvn clean install
+   ```
 
-Running Tests
+3. **Update Configuration**
+    - Navigate to `src/test/resources/config/config.properties`
+    - Update browser, environment, and other settings
 
-Test Suites:
-Tests are grouped into TestNG suites.
-To run a suite, use the following command:
+4. **Run Tests**
+   ```bash
+   # Run all tests
+   mvn test
 
-bash
-mvn test -DsuiteXmlFile=src/test/java/testRunners/<suite-file-name>.xml
-Individual Tests:
-You can also run individual test classes or methods using this command:
+   # Run specific test suite
+   mvn test -DsuiteXmlFile=testng.xml
 
-php
-mvn -Dtest=<ClassName>#<methodName> test
-Adding New Tests
+   # Run specific test class
+   mvn test -Dtest=LoginTest
+   ```
 
-Page Objects:
-Add new page object classes in src/test/java/pageObjects to represent new web pages or components.
+## 📝 Writing Tests
 
-Test Cases:
-Add new test cases in src/test/java/testClasses and ensure they use reusable methods from the page objects.
+### Creating a New Test Case
 
-Test Data:
-Update or add new Excel sheets in the TestData folder to manage test data for data-driven testing.
+1. **Create Page Object**
+   ```java
+   public class LoginPage extends BasePage {
+       @FindBy(id = "username")
+       private WebElement usernameField;
 
-Additional Notes
+       public LoginPage(WebDriver driver) {
+           super(driver);
+           PageFactory.initElements(driver, this);
+       }
 
-Dynamic Paths:
-Replace <project-directory> with the actual project path on your machine when using file paths.
+       public void login(String username, String password) {
+           // Implementation
+       }
+   }
+   ```
 
-Environment Config:
-Store environment-specific variables in .env files, such as src/test/resources/configFiles/environmentFiles.env.
+2. **Create Test Class**
+   ```java
+   @Test(groups = {"regression"})
+   public class LoginTest extends BaseTest {
+       @Test(dataProvider = "loginData")
+       public void validLogin(String username, String password) {
+           LoginPage loginPage = new LoginPage(driver);
+           loginPage.login(username, password);
+           Assert.assertTrue(loginPage.isLoggedIn());
+       }
+   }
+   ```
+
+### Data-Driven Testing
+
+1. Create test data in `src/test/resources/testData/TestData.xlsx`
+2. Use `@DataProvider` to feed data to tests:
+   ```java
+   @DataProvider(name = "loginData")
+   public Object[][] getLoginData() {
+       return ExcelUtils.getTestData("LoginTest");
+   }
+   ```
+
+## 📊 Reporting
+
+- **HTML Reports**: Located in `test-output/html/`
+- **Screenshots**: Captured automatically on test failure
+- **Logs**: Detailed execution logs in `logs/`
+
+## 🔧 Configuration
+
+### Environment Variables
+```properties
+browser=chrome
+headless=false
+implicitWait=10
+baseUrl=https://example.com
+```
+
+### Cross-Browser Testing
+Supported Browsers:
+- Chrome (default)
+- Firefox
+- Edge
+- Chrome-headless
+
+## 🤝 Contributing
+
+1. Create a feature branch
+2. Commit changes
+3. Push to the branch
+4. Create Pull Request
+
+## 📚 Best Practices
+
+- Follow Page Object Model
+- Maintain test independence
+- Use meaningful naming conventions
+- Add comments for complex logic
+- Regular code reviews
+- Keep tests atomic and focused
+
+## 🔍 Troubleshooting
+
+Common Issues:
+- **Test Failure Screenshots**: Check `screenshots/` directory
+- **Driver Issues**: Update webdriver in `pom.xml`
+- **Timing Issues**: Adjust waits in config
+- **Data Issues**: Verify Excel data format
+
+## 📫 Support
+
+For issues and support:
+1. Check existing issues
+2. Create detailed bug reports
+3. Contact framework maintainers
+
+---
+
+## 📝 License
+
+This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details.
