@@ -13,9 +13,9 @@ public class BookingConfirmationPage {
     public static By flightNumbers = By.xpath("//span[@class='airl_numb d-lg-block']");
 
 
-    public static By allSelectedSeats = By.xpath("//div[@class='seat_info']");
+    public static By allSelectedSeats = By.xpath("//div[contains(@class, 'seat_info')]//div[2]");
     public static By seatsSelected (String paxCount) {
-        By seat = By.xpath("(//div[@class='seat_info'])["+paxCount+"]");
+        By seat = By.xpath("(//div[contains(@class, 'seat_info')]//div[2])["+paxCount+"]");
 
         return seat;
     }
@@ -41,8 +41,7 @@ public class BookingConfirmationPage {
     }
 
     // Invoice
-    public static By flightFareAndTaxTable = By.xpath("(//table[@aria-describedby='fares'])[1]");
-    public static By productsBreakdownTable = By.xpath("(//table[@class='table ng-star-inserted'])[2]");
+    public static By priceBreakDownTable = By.xpath("//div[contains(@class, 'fares')]//table");
     public static By totalAmount = By.xpath("(//label[@class='amt'])[1]");
 
 }

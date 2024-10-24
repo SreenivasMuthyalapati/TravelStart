@@ -15,11 +15,11 @@ import java.util.Date;
 public class ExcelUtils {
 
     private static Workbook workbook;
-    private static Sheet sheet;
+    protected static Sheet sheet;
     private static int rowNum = 0;
 
     // Method to create a new Excel file with a unique name
-    public static void createExcelReport() {
+    public void createExcelReport() {
         workbook = new XSSFWorkbook();
         sheet = workbook.createSheet("Test Results");
 
@@ -41,7 +41,7 @@ public class ExcelUtils {
     }
 
     // Method to write a new row with the test case details
-    public static void writeTestReport(String testScenarioID, String testCaseSummary, String testStatus) {
+    public void writeTestReport(String testScenarioID, String testCaseSummary, String testStatus) {
         Row row = sheet.createRow(++rowNum);
 
         Cell cell1 = row.createCell(0);
@@ -55,7 +55,7 @@ public class ExcelUtils {
     }
 
     // Method to save the Excel file with a unique name (based on timestamp)
-    public static String saveExcelReport() throws IOException {
+    public String saveExcelReport() throws IOException {
         SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMdd_HHmmss");
         Date date = new Date();
         String timestamp = formatter.format(date);

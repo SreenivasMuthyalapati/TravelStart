@@ -23,6 +23,7 @@ import java.util.Base64;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Comparator;
+import java.util.List;
 import java.util.stream.Stream;
 
 public class SendEmail {
@@ -56,7 +57,7 @@ public class SendEmail {
     }
 
     public void sendEmailWithTemplateAndJson(
-            String attachmentLocationPath,
+            List<String> attachmentLocationPath,
             String testAutomationGroup,
             int scenarioCount,
             int testCasesCount,
@@ -80,7 +81,7 @@ public class SendEmail {
 
             // Create email details
             Email from = new Email("sreenivasulu@travelstart.com");
-            String[] recipients = {"sreenivas.tsqa@gmail.com", "naveen@travelstart.com"};
+            String[] recipients = {"sreenivas.tsqa@gmail.com"};
 
             Mail mail = new Mail();
             mail.setFrom(from);
@@ -110,14 +111,20 @@ public class SendEmail {
 
             mail.addPersonalization(personalization);
 
-            // Attach the latest report
-            File latestReport = getLatestReport(attachmentLocationPath);
-            Attachments attachments = new Attachments();
-            attachments.setContent(Base64.getEncoder().encodeToString(Files.readAllBytes(latestReport.toPath())));
-            attachments.setType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
-            attachments.setFilename(latestReport.getName());
-            attachments.setDisposition("attachment");
-            mail.addAttachments(attachments);
+            // Attach all files in attachmentLocationPath
+            for (String filePath : attachmentLocationPath) {
+                File file = new File(filePath);
+                if (file.exists()) {
+                    Attachments attachments = new Attachments();
+                    attachments.setContent(Base64.getEncoder().encodeToString(Files.readAllBytes(file.toPath())));
+                    attachments.setType(Files.probeContentType(file.toPath()));
+                    attachments.setFilename(file.getName());
+                    attachments.setDisposition("attachment");
+                    mail.addAttachments(attachments);
+                } else {
+                    System.out.println("File not found: " + filePath);
+                }
+            }
 
             // Add the mail object to the request body
             request.setBody(mail.build());
@@ -131,7 +138,6 @@ public class SendEmail {
                 System.out.println(String.format("Status Code: %d", response.getStatusCode()));
                 System.out.println("Response Body: " + response.getBody());
                 System.out.println("Response Headers: " + response.getHeaders());
-
             }
 
             // Update email counts
@@ -142,6 +148,7 @@ public class SendEmail {
             ex.printStackTrace();
         }
     }
+
 
     public void sendEmail(String attachmentLocationPath) {
         SendGrid sg = createSendGridClient();

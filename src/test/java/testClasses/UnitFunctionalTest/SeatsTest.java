@@ -61,7 +61,7 @@ public class SeatsTest {
         }
         if (driver != null) {
 
-            driver.quit();
+           // driver.quit();
 
         }
     }
@@ -179,8 +179,8 @@ public class SeatsTest {
 
 
     @Test(dataProvider = "TestCase")
-    public void bookingFlow(String testCaseNumber, String shouldRun, String domain, String cpy_source, String tripType, String origin, String destination, String departureDate, String departureMonth, String returnDate, String returnMonth, String adultCount, String youngAdultCount, String childCount, String infantCount, String cabinClass, String departureAirline, String returnAirline, String mailID, String mobileNumber, String title, String firstName, String middleName, String lastName, String dateOfBirth, String monthOfBirth, String yearOfBirth, String passPortNumber, String dateOfPassportExpiry, String monthOfPassportExpiry, String yearOfPassportExpiry, String passPortNationality, String passPortIssuingCountry, String addBaggage, String seatsForPax1, String seatsForPax2, String seatsForPax3, String seatsForPax4, String seatsForPax5, String seatsForPax6, String seatsForPax7, String seatsForPax8, String seatsForPax9, String paymentMethod, String bankNameEFT, String isLoggedInUser, String isToBeCancelled) throws IOException, InterruptedException {
-        
+    public void seatsTest(String testCaseNumber, String shouldRun, String domain, String cpy_source, String tripType, String origin, String destination, String departureDate, String departureMonth, String returnDate, String returnMonth, String adultCount, String youngAdultCount, String childCount, String infantCount, String cabinClass, String departureAirline, String returnAirline, String mailID, String mobileNumber, String title, String firstName, String middleName, String lastName, String dateOfBirth, String monthOfBirth, String yearOfBirth, String passPortNumber, String dateOfPassportExpiry, String monthOfPassportExpiry, String yearOfPassportExpiry, String passPortNationality, String passPortIssuingCountry, String addBaggage, String seatsForPax1, String seatsForPax2, String seatsForPax3, String seatsForPax4, String seatsForPax5, String seatsForPax6, String seatsForPax7, String seatsForPax8, String seatsForPax9, String paymentMethod, String bankNameEFT, String isLoggedInUser, String isToBeCancelled) throws IOException, InterruptedException {
+
 
         runTime = m.getCurrentTime();
 
@@ -305,7 +305,7 @@ public class SeatsTest {
         if (isSeatsOffered){
 
             isSeatsMapLoaded = seatsPageMethods.verifySeatsDisplayed(driver);
-            Assert.assertTrue(isSeatsMapLoaded, "Seats failed");
+            Assert.assertTrue(isSeatsMapLoaded, "Seats map was failed to load");
 
         }
 
@@ -402,8 +402,8 @@ public class SeatsTest {
         softAssert.assertTrue(selectedSeatNumbersMatchingWithBookingConfirmation, "Seats selected are not matching with seats displayed on booking confirmation");
 
 
-
-
+        // Check all assertions
+        softAssert.assertAll();
 
         //Cancel flight
         if(isToBeCancelled.equalsIgnoreCase("Yes")) {

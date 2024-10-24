@@ -7,9 +7,13 @@ import org.testng.ITestResult;
 import org.testng.SkipException;
 import org.testng.annotations.*;
 import testMethods.*;
+import utils.ExcelTestReport;
+import utils.HtmlTestReport;
+import utils.TestReport;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 public class BookingFlowE2E {
@@ -85,6 +89,11 @@ public class BookingFlowE2E {
     public static String browser;
     public static WebDriver driver;
     public static boolean isBundled = false;
+    public static TestReport testReport = new TestReport();
+    public static List<String[]> testReportData = new ArrayList<>();
+    public static ExcelTestReport excelTestReport = new ExcelTestReport();
+    public static HtmlTestReport htmlTestReport = new HtmlTestReport();
+    List<String> attachmentPaths = new ArrayList<>();
     // Validation and Assertion variables
 
     private String testCaseSummary = "";
@@ -106,13 +115,29 @@ public class BookingFlowE2E {
     @BeforeTest
     public void setupTest() throws IOException {
         // Create a new Excel report for each test run
-        ExcelUtils.createExcelReport();
+        excelTestReport.createExcelReport();
+        htmlTestReport.createHTMLReport();
+
+
 
     }
 
 
     @AfterMethod
     public void close(ITestResult result) {
+
+        for (int i =0; i< testReportData.size(); i++){
+
+            try{
+                String[] arr = testReportData.get(i);
+                attachmentPaths.add(arr[5]);
+            }catch (Exception e){
+
+            }
+
+        }
+        testReport.updateToReport(testReportData);
+
         if (driver != null && result.getStatus() == ITestResult.FAILURE) {
             // If test fails and driver is not null, print the correlation ID
             System.out.println("Test Failed! Correlation ID: " + method.getCID(driver));
@@ -124,17 +149,30 @@ public class BookingFlowE2E {
         }
     }
 
-    static String testReportPath = "";
+    static String testExcelReportPath = "";
+    static String testHtmlReportPath = "";
 
     @AfterTest
     public void tearDown() throws IOException, InterruptedException {
         // Save the Excel report after the test run
-        testReportPath = ExcelUtils.saveExcelReport();
+        testExcelReportPath = excelTestReport.saveExcelReport();
+        testHtmlReportPath = htmlTestReport.saveHTMLReport();
 
         Thread.sleep(1000);
 
+        attachmentPaths.add(testExcelReportPath);
+        attachmentPaths.add(testHtmlReportPath);
+
+        // Remove null values using an iterator
+        Iterator<String> iterator = attachmentPaths.iterator();
+        while (iterator.hasNext()) {
+            if (iterator.next() == null) {
+                iterator.remove(); // Remove the null value
+            }
+        }
+
         // Sends email with test report
-        //sendEmail.sendEmailWithTemplateAndJson(testReportPath, "B2C Booking Flow End to End Automation Test", 2, 6, 6, 0, 0);
+        sendEmail.sendEmailWithTemplateAndJson(attachmentPaths, "B2C Booking Flow End to End Automation Test", 2, 6, 6, 0, 0);
 
     }
 
@@ -235,6 +273,7 @@ public class BookingFlowE2E {
 
         System.out.println(testCaseNumber+" executed");
 
+
         if (!shouldRun.equalsIgnoreCase("Yes")) {
             System.out.println("Skipped");
             throw new SkipException("Test is skipped as this test case " + testCaseNumber + " is not approved to run");
@@ -268,16 +307,9 @@ public class BookingFlowE2E {
         boolean isAppLaunched = false;
 
         isAppLaunched = homePageMethods.assertHomePageRedirection(driver);
-
-        ExcelUtils.writeTestReport(testCaseNumber, testCaseSummary, isAppLaunched ? "Pass" : "Fail");
+        testReport.updateTestResult(testReportData, driver, "TS_01", "TC_01", "Verify app launch", "123456789", true);
 
         Assert.assertTrue(isAppLaunched, "Test case failed: "+testCaseSummary);
-        if (isAppLaunched){
-
-            System.out.println("Test Case Summary: "+testCaseSummary);
-            System.out.println("Test Status: Pass");
-            System.out.println("===========================================================================");
-        }
 
         //-------------------------------------------------------------------------------------------------------------//
         // Test case 2:
@@ -287,19 +319,9 @@ public class BookingFlowE2E {
 
         boolean isSearchLoaded = srpMethods.isSRPLoaded(driver);
         CID = method.getCID(driver);
-
-        ExcelUtils.writeTestReport(testCaseNumber, testCaseSummary, isSearchLoaded ? "Pass" : "Fail");
-
-        Assert.assertTrue(isSearchLoaded, "Test case failed: "+testCaseSummary+"," +" correlation ID: "+CID);
+        testReport.updateTestResult(testReportData, driver, "TS_01", "TC_02", "Verify result loading", "223456789", false);
 
 
-        if (isSearchLoaded){
-
-            System.out.println("Test Case Summary: "+testCaseSummary);
-            System.out.println("Test Status: Pass");
-            System.out.println("===========================================================================");
-
-        }
 
         //-------------------------------------------------------------------------------------------------------------//
         //Test case 3:
@@ -307,23 +329,16 @@ public class BookingFlowE2E {
 
         boolean isCurrencyValid = srpMethods.isCurrencyValid(driver, domain, isBundled);
 
-        ExcelUtils.writeTestReport(testCaseNumber, testCaseSummary, isCurrencyValid ? "Pass" : "Fail");
+        testReport.updateTestResult(testReportData, driver, "TS_01", "TC_03", "Verify currency", "323456789", true);
 
         Assert.assertTrue(isCurrencyValid, "Test case failed: "+testCaseSummary+"," +" correlation ID: "+CID);
-
-
-        if (isCurrencyValid){
-
-            System.out.println("Test Case Summary: "+testCaseSummary);
-            System.out.println("Test Status: Pass");
-            System.out.println("===========================================================================");
-
-        }
 
         //Test case 4
         testCaseNumber = "Verify functionality of stops filter";
 
-        
+
+
+
 
 }
 

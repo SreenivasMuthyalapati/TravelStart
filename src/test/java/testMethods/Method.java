@@ -29,6 +29,7 @@ import pageObjects.HomePage;
 
 import java.io.IOException;
 import java.io.*;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.Month;
 import java.time.YearMonth;
@@ -47,6 +48,7 @@ import org.apache.http.util.EntityUtils;
 import org.json.JSONObject;
 
 
+import static configs.dataPaths.screenshotFolder;
 import static io.restassured.RestAssured.given;
 import static configs.dataPaths.dataPath;
 import static testMethods.TSMethods.*;
@@ -129,15 +131,16 @@ public class Method {
 
 	}
 
-	public void takeScreenshot(WebDriver driver, String folderPath, String screenShotPath) {
+	public void takeScreenshot(WebDriver driver) {
 		// Generate a random file name
 		String fileName = generateRandomFileName() + ".png";
+		String screenShotPath;
 
 		// Take screenshot
 		File screenshotFile = ((TakesScreenshot)driver).getScreenshotAs(OutputType.FILE);
 
 		// Set the destination file
-		File destinationFile = new File(folderPath + File.separator + fileName);
+		File destinationFile = new File(screenshotFolder + File.separator + fileName);
 
 		try {
 			// Copy the screenshot to the destination file
@@ -171,9 +174,10 @@ public class Method {
 		String correlationId = "";
 
 		String URL = driver.getCurrentUrl();
-		String [] brokenURL = URL.split("correlation_id=");
+		String [] brokenURL = URL.split("&");
+		brokenURL = URL.split("correlation_id=");
 		try {
-			correlationId = brokenURL[1];
+			correlationId = brokenURL[0];
 		} catch (ArrayIndexOutOfBoundsException e){
 			correlationId = "NA";
 		}
@@ -1504,5 +1508,24 @@ public class Method {
 		// Use regular expression to replace non-alphanumeric characters
 		return input.replaceAll("[^a-zA-Z0-9]", "");
 	}
+
+	public String retriveValueFromMap(Map<String, String> map, String searchKey) {
+		for (Map.Entry<String, String> entry : map.entrySet()) {
+			if (entry.getKey().contains(searchKey)) {
+				return entry.getValue();
+			}
+		}
+		return null; // return null or a default value if no match is found
+	}
+
+	public String getTimeStamp(){
+
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+		String timestamp = LocalDateTime.now().format(formatter);
+
+        return timestamp;
+    }
+
+
 
 }

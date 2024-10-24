@@ -711,7 +711,7 @@ public class TSMethods {
 
                     if (!isSeatMapAvailable){
 
-                        m.takeScreenshot(driver, configs.dataPaths.screenshotFolder, screenShotPath);
+                        m.takeScreenshot(driver);
                         totalPrice = "";
 
                     }
@@ -926,7 +926,7 @@ public class TSMethods {
 
             }
         }else {
-            m.takeScreenshot(driver, configs.dataPaths.screenshotFolder, screenShotPath);
+            m.takeScreenshot(driver);
             m.getConsole(driver);
             File screenShotFile = new File(screenShotPath);
            // m.sendNotification(testCaseNumber, "Not redirected to payment screen or not redirected within 60 seconds");
@@ -1166,7 +1166,7 @@ public class TSMethods {
 
 
         }else {
-            m.takeScreenshot(driver, configs.dataPaths.screenshotFolder, screenShotPath);
+            m.takeScreenshot(driver);
             m.getConsole(driver);
             File screenShotFile = new File(screenShotPath);
             //m.sendNotification(testCaseNumber, "Booking not succeeded");

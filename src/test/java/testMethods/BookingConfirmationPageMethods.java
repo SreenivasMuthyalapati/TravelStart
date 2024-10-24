@@ -40,61 +40,22 @@ public class BookingConfirmationPageMethods {
         return bookingRef;
     }
 
-    public boolean validateSelectedSeatsInBookingConfirmationPage(List<String> seatsSelectedWhileSeatSelection, List<String> seatsDisplayedOnBookingConfirmation){
+    public boolean validateSelectedSeatsInBookingConfirmationPage(List<String> seatsSelectedWhileSeatSelection, List<String> seatsDisplayedOnBookingConfirmation) {
 
-        List<String> seatsInSeatMap = new ArrayList<>();
-        List<String> seatsInBookingConfirmation = new ArrayList<>();
-
-        seatsInSeatMap = seatsSelectedWhileSeatSelection;
-        seatsInBookingConfirmation = seatsDisplayedOnBookingConfirmation;
-
-        boolean isSeatsMatching = false;
-
-        boolean isCountMatching = false;
-
-        if (seatsInSeatMap.size() == seatsInBookingConfirmation.size()){
-
-            isCountMatching = true;
-
-        } else {
-
-            isCountMatching = false;
+        // If the size of the two lists is different, return false immediately
+        if (seatsSelectedWhileSeatSelection.size() != seatsDisplayedOnBookingConfirmation.size()) {
+            return false;
         }
 
-        if (isCountMatching){
-
-
-            for (int i = 0; i< seatsInSeatMap.size(); i++){
-
-                String seatSelectedWhileInSeatMap = seatsInSeatMap.get(i);
-                int seatsCountOnBookingConfirmation = seatsInBookingConfirmation.size();
-
-                for (int j = 0; j< seatsCountOnBookingConfirmation; j++){
-
-                    String seatOnBookingConfirmation = seatsInBookingConfirmation.get(j);
-
-                    if (seatSelectedWhileInSeatMap == seatOnBookingConfirmation){
-
-                        isSeatsMatching = true;
-                        seatsInBookingConfirmation.remove(j);
-                        break;
-
-                    }else {
-
-                        isSeatsMatching = false;
-
-                    }
-
-                }
-
+        // Check if all seats in both lists are the same
+        for (String seatSelected : seatsSelectedWhileSeatSelection) {
+            if (!seatsDisplayedOnBookingConfirmation.contains(seatSelected)) {
+                return false;  // Return false if any seat is not found in the booking confirmation list
             }
-
-
         }
 
-
-
-        return isSeatsMatching;
+        // If all seats match, return true
+        return true;
     }
 
     public List<String> getAllSelectedSeats(WebDriver driver){
@@ -104,7 +65,7 @@ public class BookingConfirmationPageMethods {
 
         try{
 
-            displayedSeatsElements = driver.findElements(SeatsPage.selectedSeatNumbers);
+            displayedSeatsElements = driver.findElements(BookingConfirmationPage.allSelectedSeats);
 
         } catch (NoSuchElementException | ElementNotInteractableException e){
 
@@ -126,9 +87,39 @@ public class BookingConfirmationPageMethods {
         return displayedSeatsNumbers;
     }
 
-    public Map<String, String> getBaseFareAndTaxesbreakDown (WebDriver driver){
+    public void expandInvoiceDetails(WebDriver driver) throws InterruptedException {
 
-        List<WebElement> tables = driver.findElements(BookingConfirmationPage.flightFareAndTaxTable);
+        WebElement expandInvoiceDetails = null;
+        boolean isInvoiceCollapsed = false;
+
+        try{
+            expandInvoiceDetails = driver.findElement(BookingConfirmationPage.expandInvoice);
+        }catch (Exception e){
+
+        }
+
+        try{
+
+            isInvoiceCollapsed = expandInvoiceDetails.isDisplayed();
+
+        }catch (NullPointerException e){
+
+        }
+
+        if (isInvoiceCollapsed){
+
+            expandInvoiceDetails.click();
+            Thread.sleep(200);
+
+        }
+
+    }
+
+    public Map<String, String> getPricebreakDown (WebDriver driver) throws InterruptedException {
+
+        this.expandInvoiceDetails(driver);
+
+        List<WebElement> tables = driver.findElements(BookingConfirmationPage.priceBreakDownTable);
 
         int priceBreakdownCategoriesCount = tables.size();
 
@@ -165,43 +156,37 @@ public class BookingConfirmationPageMethods {
         return dataMap;
     }
 
-    public Map<String, String> getProductsCost (WebDriver driver){
+    public Map<String, String> getPriceBreakdown (WebDriver driver) throws InterruptedException {
 
-        List<WebElement> tables = driver.findElements(BookingConfirmationPage.productsBreakdownTable);
+        this.expandInvoiceDetails(driver);
 
-        int priceBreakdownCategoriesCount = tables.size();
+        // Initialize a map to store the table data
+        Map<String, String> tableData = new HashMap<>();
 
-        Map<String, String> dataMap = new HashMap<>();
+        // Find the table using XPath
+        WebElement table = driver.findElement(BookingConfirmationPage.priceBreakDownTable);
 
-        for (int i =0; i < priceBreakdownCategoriesCount; i++){
-            // Find all rows within the table
+        // Get all rows in the table
+        List<WebElement> rows = table.findElements(By.tagName("tr"));
 
-            WebElement table = driver.findElement(FlightPage.priceTable(String.valueOf(i+1)));
+        // Loop through each row
+        for (WebElement row : rows) {
+            // Get the columns (td) for each row
+            List<WebElement> columns = row.findElements(By.tagName("td"));
 
-            List<WebElement> rows = table.findElements(By.tagName("tr"));
+            // Ensure there are at least 2 columns (key and value)
+            if (columns.size() >= 2) {
+                // Get the text from the first column (key) and second column (value)
+                String key = columns.get(0).getText().trim();
+                String value = columns.get(1).getText().trim();
 
-            // Iterate through each row
-            for (WebElement row : rows) {
-                // Find th and td elements within the row
-
-                List<WebElement> cells = row.findElements(By.tagName("th"));
-                cells.addAll(row.findElements(By.tagName("td")));
-
-                // Extract text from th and td elements
-                if (cells.size() == 2) {
-                    // Assuming each row has exactly one th and one td
-                    String key = cells.get(0).getText().trim();
-                    String value = cells.get(1).getText().trim();
-
-                    // Store in the map (if both key and value are not empty)
-                    if (!key.isEmpty() && !value.isEmpty()) {
-                        dataMap.put(key, value);
-                    }
-                }
+                // Put the key-value pair into the map
+                tableData.put(key, value);
             }
         }
 
-        return dataMap;
+        // Return the map containing the table data
+        return tableData;
     }
 
     public String getTotalAmount(WebDriver driver){
@@ -210,6 +195,143 @@ public class BookingConfirmationPageMethods {
         totalCost = m.removeSpecialCharacters(totalCost);
 
         return totalCost;
+    }
+
+    public boolean isSeatsPresentInInvoice(Map<String, String> map){
+
+        String searchKey = "Seat";
+        boolean isSeatsPresent = false;
+
+        String value = m.retriveValueFromMap(map, searchKey);
+
+        if (!(value == null)){
+
+            isSeatsPresent = true;
+
+        } else {
+
+            isSeatsPresent = false;
+
+        }
+
+
+        return isSeatsPresent;
+    }
+
+    public int getSeatsPriceFromInvoiceBreakdown(Map<String, String> map){
+
+        boolean isSeatsPresentInInvoice = this.isSeatsPresentInInvoice(map);
+        String value;
+        int seatsCost = 0;
+
+        if (isSeatsPresentInInvoice) {
+
+            String searchKey = "Seat";
+
+            value = m.retriveValueFromMap(map, searchKey);
+
+            seatsCost = m.stringToInt(value);
+
+        }
+
+        return seatsCost;
+    }
+
+    public boolean isWhatsappPresentInInvoice(Map<String, String> map){
+
+        String searchKey = "WhatsApp";
+        boolean isWhatsappPresentInInvoice = false;
+
+        String value = m.retriveValueFromMap(map, searchKey);
+
+        if (!(value == null)){
+
+            isWhatsappPresentInInvoice = true;
+
+        } else {
+
+            isWhatsappPresentInInvoice = false;
+
+        }
+
+
+        return isWhatsappPresentInInvoice;
+    }
+
+    public int getWhatsappPrice(Map<String, String> map){
+
+        boolean isWhatsappPresentInInvoice = this.isWhatsappPresentInInvoice(map);
+        String value;
+        int whatsApp = 0;
+
+        if (isWhatsappPresentInInvoice) {
+
+            String searchKey = "WhatsApp";
+
+            value = m.retriveValueFromMap(map, searchKey);
+            whatsApp = m.stringToInt(value);
+
+        }
+
+        return whatsApp;
+    }
+
+
+
+    public int getAdultPrice(Map<String, String> map){
+
+        String value;
+        int adultCost = 0;
+
+
+            String searchKey = "Adult";
+
+            value = m.retriveValueFromMap(map, searchKey);
+
+
+        adultCost = m.stringToInt(value);
+
+        return adultCost;
+    }
+
+
+    public boolean isMealsPresentInInvoice(Map<String, String> map){
+
+        String searchKey = "WhatsApp";
+        boolean isMealsPresentInInvoice = false;
+
+        String value = m.retriveValueFromMap(map, searchKey);
+
+        if (!(value == null)){
+
+            isMealsPresentInInvoice = true;
+
+        } else {
+
+            isMealsPresentInInvoice = false;
+
+        }
+
+
+        return isMealsPresentInInvoice;
+    }
+
+    public int geMealsPrice(Map<String, String> map){
+
+        boolean isMealsPresentInInvoice = this.isMealsPresentInInvoice(map);
+        String value;
+        int mealsPrice = 0;
+
+        if (isMealsPresentInInvoice) {
+
+            String searchKey = "Meal";
+
+            value = m.retriveValueFromMap(map, searchKey);
+            mealsPrice = m.stringToInt(value);
+
+        }
+
+        return mealsPrice;
     }
 
 }

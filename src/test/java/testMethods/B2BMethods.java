@@ -68,7 +68,7 @@ public class B2BMethods {
             System.out.println("Login failed, Dashboard not displayed.");
 
             // Take a screenshot if login fails
-            m.takeScreenshot(driver, configs.dataPaths.screenshotFolder, screenShotPath);
+            m.takeScreenshot(driver);
 
             // Get console logs if any error exists in the console
             m.getConsole(driver);

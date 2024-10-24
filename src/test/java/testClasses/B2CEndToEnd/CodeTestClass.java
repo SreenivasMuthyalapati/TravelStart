@@ -4,10 +4,10 @@ import testMethods.BookingConfirmationPageMethods;
 import testMethods.DeeplinksMethods;
 import testMethods.Method;
 import testMethods.SendEmail;
+import utils.TestReport;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 public class CodeTestClass {
 
@@ -21,6 +21,10 @@ public class CodeTestClass {
         //System.out.println(m.generatePaymentLink("preprod", "ZA", "ZA00109497"));
 
 
-       }
 
-}
+    }
+
+
+    }
+
+
