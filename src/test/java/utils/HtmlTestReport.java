@@ -16,7 +16,7 @@ public class HtmlTestReport {
     public void createHTMLReport() {
         htmlContent = new StringBuilder();
 
-        // Starting HTML structure
+        // Starting HTML structure with CSS and JavaScript for collapsible rows
         htmlContent.append("<html><head><title>Test Report</title>")
                 .append("<style>")
                 .append("table {width: 100%; border-collapse: collapse;}")
@@ -26,7 +26,18 @@ public class HtmlTestReport {
                 .append("tr:nth-child(odd) {background-color: #fff;}")
                 .append(".pass {color: green;}")
                 .append(".fail {color: red;}")
-                .append("</style></head><body>");
+                .append(".scenario-row {cursor: pointer; background-color: #e9f7fd;}")
+                .append(".details-row {display: none;}")
+                .append("</style>")
+                .append("<script>")
+                .append("function toggleDetails(scenarioId) {")
+                .append("  var rows = document.getElementsByClassName(scenarioId);")
+                .append("  for (var i = 0; i < rows.length; i++) {")
+                .append("    rows[i].style.display = rows[i].style.display === 'none' ? 'table-row' : 'none';")
+                .append("  }")
+                .append("}")
+                .append("</script>")
+                .append("</head><body>");
 
         // Adding a header
         htmlContent.append("<h1>Test Report</h1>");
@@ -41,14 +52,21 @@ public class HtmlTestReport {
 
     // Method to write a new test case result into the HTML report
     public void writeTestReport(String testScenarioID, String testCaseID, String testCaseSummary, String testStatus, String bookingRefOrCID) {
-        htmlContent.append("<tr>")
+        // Scenario row (clickable to toggle details)
+        htmlContent.append("<tr class='scenario-row' onclick=\"toggleDetails('scenario-").append(testScenarioID).append("')\">")
                 .append("<td>").append(testScenarioID).append("</td>")
+                .append("<td colspan='4'>Click to expand</td>")
+                .append("</tr>");
+
+        // Detail row (initially hidden)
+        htmlContent.append("<tr class='details-row scenario-").append(testScenarioID).append("'>")
+                .append("<td></td>")  // Empty cell under scenario column
                 .append("<td>").append(testCaseID).append("</td>")
                 .append("<td>").append(testCaseSummary).append("</td>")
-                .append("<td class='").append(testStatus.toLowerCase()).append("'>")
-                .append(testStatus).append("</td>")
+                .append("<td class='").append(testStatus.toLowerCase()).append("'>").append(testStatus).append("</td>")
                 .append("<td>").append(bookingRefOrCID).append("</td>")
                 .append("</tr>");
+
         testCount++;
     }
 

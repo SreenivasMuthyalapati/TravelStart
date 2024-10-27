@@ -149,11 +149,14 @@ public class BookingFlowE2E {
         }
     }
 
-    static String testExcelReportPath = "";
-    static String testHtmlReportPath = "";
+
 
     @AfterTest
     public void tearDown() throws IOException, InterruptedException {
+
+        String testExcelReportPath = "";
+        String testHtmlReportPath = "";
+
         // Save the Excel report after the test run
         testExcelReportPath = excelTestReport.saveExcelReport();
         testHtmlReportPath = htmlTestReport.saveHTMLReport();

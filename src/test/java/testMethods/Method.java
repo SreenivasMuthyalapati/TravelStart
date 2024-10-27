@@ -1526,6 +1526,26 @@ public class Method {
         return timestamp;
     }
 
+	public List<String[]> getTestCasesFromTestCasesDocument(String testCasesDocumentPath, String testCaseSheetName) throws IOException {
+		List<String[]> testCase = new ArrayList<>();
+
+		// Extracting all test data from the specified test case sheet
+		int testCasesCount = excelUtils.getRowCount(testCasesDocumentPath, testCaseSheetName);
+
+		for (int i = 2; i < testCasesCount; i++) {
+			String testCaseId = excelUtils.readDataFromExcel(testCasesDocumentPath, testCaseSheetName, i, 0);
+			String testCaseSummary = excelUtils.readDataFromExcel(testCasesDocumentPath, testCaseSheetName, i, 1);
+			String runTest = excelUtils.readDataFromExcel(testCasesDocumentPath, testCaseSheetName, i, 2);
+			String[] testDetails = {testCaseId, testCaseSummary, runTest};
+			testCase.add(testDetails);
+		}
+
+		return testCase;
+	}
+
+
+
+
 
 
 }

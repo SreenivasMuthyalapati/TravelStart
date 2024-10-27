@@ -10,6 +10,7 @@ import testMethods.Method;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 public class TestReport {
@@ -41,6 +42,30 @@ public class TestReport {
 
         }
         testReportList.clear();
+    }
+
+    public void saveReportsAfterTest(List<String> attachmentsPath) throws IOException, InterruptedException {
+
+        String testExcelReportPath = "";
+        String testHtmlReportPath = "";
+
+        // Save the Excel report after the test run
+        testExcelReportPath = excelTestReport.saveExcelReport();
+        testHtmlReportPath = htmlTestReport.saveHTMLReport();
+
+        Thread.sleep(1000);
+
+        attachmentsPath.add(testExcelReportPath);
+        attachmentsPath.add(testHtmlReportPath);
+
+        // Remove null values using an iterator
+        Iterator<String> iterator = attachmentsPath.iterator();
+        while (iterator.hasNext()) {
+            if (iterator.next() == null) {
+                iterator.remove(); // Remove the null value
+            }
+        }
+
     }
 
     private String takeScreenshotIfFailed(WebDriver driver, String testScenarioID, String testCaseID, boolean testValidationBoolValue) {
