@@ -161,6 +161,14 @@
 			<artifactId>sendgrid-java</artifactId>
 			<version>4.9.3</version>
 		</dependency>
+
+		<dependency>
+			<groupId>org.projectlombok</groupId>
+			<artifactId>lombok</artifactId>
+			<version>1.18.28</version> <!-- or the latest version -->
+			<scope>provided</scope>
+		</dependency>
+
 	</dependencies>
 
 	<repositories>
@@ -181,10 +189,13 @@
 					<target>22</target>
 					<compilerArgs>
 						<arg>--enable-preview</arg>
+						<arg>--add-opens</arg>
+						<arg>jdk.compiler/com.sun.tools.javac.processing=ALL-UNNAMED</arg> <!-- Added line -->
 					</compilerArgs>
 				</configuration>
 			</plugin>
 		</plugins>
+
 
 	</build>
 </project>
