@@ -4,12 +4,11 @@ on:
   schedule:
     # Runs every day at 3:30 AM UTC (9:00 AM IST)
     - cron: "30 3 * * *"
+  workflow_dispatch:  # Allows manual triggering
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
-
     steps:
       - uses: actions/checkout@v4
       - name: Set up JDK 22
