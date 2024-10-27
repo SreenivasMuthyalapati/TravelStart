@@ -1,10 +1,6 @@
 name: Java CI with Maven
 
 on:
-  push:
-    branches: [ "master" ]
-  pull_request:
-    branches: [ "master" ]
   schedule:
     # Runs every day at 3:30 AM UTC (9:00 AM IST)
     - cron: "30 3 * * *"
