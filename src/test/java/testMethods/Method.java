@@ -13,8 +13,10 @@ import org.json.JSONException;
 import org.openqa.selenium.*;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.edge.EdgeDriver;
 import org.openqa.selenium.firefox.FirefoxDriver;
+import org.openqa.selenium.firefox.FirefoxOptions;
 import org.openqa.selenium.logging.LogEntries;
 import org.openqa.selenium.logging.LogEntry;
 import org.openqa.selenium.logging.LogType;
@@ -934,20 +936,32 @@ public class Method {
 
 
 
-	public WebDriver launchBrowser( WebDriver driver, String browser){
+	public WebDriver launchBrowser(WebDriver driver, String browser) {
 
 		if (browser.equalsIgnoreCase("Chrome")) {
 			WebDriverManager.chromedriver().setup();
-			driver = new ChromeDriver();
+			ChromeOptions options = new ChromeOptions();
+			options.addArguments("--headless"); // Enable headless mode
+			options.addArguments("--no-sandbox"); // Required for CI environments
+			options.addArguments("--disable-dev-shm-usage"); // Overcomes limited resource problems
+			driver = new ChromeDriver(options);
+
 		} else if (browser.equalsIgnoreCase("Firefox")) {
 			WebDriverManager.firefoxdriver().setup();
-			driver = new FirefoxDriver();
+			FirefoxOptions options = new FirefoxOptions();
+			options.setHeadless(true); // Enable headless mode for Firefox
+			driver = new FirefoxDriver(options);
+
 		} else if (browser.equalsIgnoreCase("Edge")) {
+			WebDriverManager.edgedriver().setup();
 			driver = new EdgeDriver();
+		} else {
+			throw new IllegalArgumentException("Browser " + browser + " is not supported.");
 		}
 
-        return driver;
-    }
+		return driver;
+	}
+
 
 	public boolean isBundled(String domain, String tripType, String origin, String destination){
 
