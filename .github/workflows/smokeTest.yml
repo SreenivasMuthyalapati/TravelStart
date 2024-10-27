@@ -6,8 +6,8 @@ on:
   pull_request:
     branches: [ "master" ]
   schedule:
-    # Runs every day at 2 AM (UTC). Adjust as needed.
-    - cron: "0 2 * * *"
+    # Runs every day at 3:30 AM UTC (9:00 AM IST)
+    - cron: "30 3 * * *"
 
 jobs:
   build:
