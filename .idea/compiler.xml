@@ -12,7 +12,7 @@
   </component>
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
-      <module name="travelStart" options="--enable-preview" />
+      <module name="travelStart" options="--enable-preview --add-opens jdk.compiler/com.sun.tools.javac.processing=ALL-UNNAMED" />
     </option>
   </component>
 </project>
