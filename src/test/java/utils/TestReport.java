@@ -68,7 +68,7 @@ public class TestReport {
 
     }
 
-    private String takeScreenshotIfFailed(WebDriver driver, String testScenarioID, String testCaseID, boolean testValidationBoolValue) {
+    public String takeScreenshotIfFailed(WebDriver driver, String testScenarioID, String testCaseID, boolean testValidationBoolValue) {
         if (!testValidationBoolValue) {
             return takeScreenshot(driver, testScenarioID, testCaseID);
         }

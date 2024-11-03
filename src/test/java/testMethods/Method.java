@@ -13,10 +13,8 @@ import org.json.JSONException;
 import org.openqa.selenium.*;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.chrome.ChromeDriver;
-import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.edge.EdgeDriver;
 import org.openqa.selenium.firefox.FirefoxDriver;
-import org.openqa.selenium.firefox.FirefoxOptions;
 import org.openqa.selenium.logging.LogEntries;
 import org.openqa.selenium.logging.LogEntry;
 import org.openqa.selenium.logging.LogType;
@@ -31,13 +29,10 @@ import pageObjects.HomePage;
 
 import java.io.IOException;
 import java.io.*;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.time.Month;
-import java.time.YearMonth;
+import java.time.*;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
-import java.util.concurrent.TimeUnit;
 
 //import jxl.read.biff.BiffException;
 
@@ -57,12 +52,10 @@ import static testMethods.TSMethods.*;
 
 public class Method {
 	public static WebDriver driver;
-	public static Properties prop = new Properties();
-	public static FileReader fr;
 
 	public String readEnvironmentVariable(String variableIdentifier){
 
-		String environmentVariableValue = "";
+		String environmentVariableValue;
 
 		try {
 			Dotenv dotenv = Dotenv.configure()
@@ -105,24 +98,6 @@ public class Method {
         return bearerToken;
     }
 
-	public static void launch(String URL) {
-		WebDriverManager.chromedriver().setup();
-		driver = new ChromeDriver();
-		driver.manage().window().maximize();
-		driver.get(URL);
-	}
-
-	public static void close() {
-		driver.quit();
-	}
-	
-	public static void maximize() {
-		driver.manage().window().maximize();
-	}
-	
-	public static void wait(int seconds) {
-		driver.manage().timeouts().implicitlyWait(seconds, TimeUnit.SECONDS);
-	}
 
 	public static String ReadPropertyFile(String path, String key) throws Exception {
 
@@ -136,9 +111,8 @@ public class Method {
 	public void takeScreenshot(WebDriver driver) {
 		// Generate a random file name
 		String fileName = generateRandomFileName() + ".png";
-		String screenShotPath;
 
-		// Take screenshot
+        // Take screenshot
 		File screenshotFile = ((TakesScreenshot)driver).getScreenshotAs(OutputType.FILE);
 
 		// Set the destination file
@@ -148,8 +122,7 @@ public class Method {
 			// Copy the screenshot to the destination file
 			FileUtils.copyFile(screenshotFile, destinationFile);
 			System.out.println("Screenshot saved as: " + destinationFile.getAbsolutePath());
-			screenShotPath = destinationFile.getAbsolutePath();
-		} catch (IOException e) {
+        } catch (IOException e) {
 			System.out.println("Failed to save screenshot: " + e.getMessage());
 		}
 	}
@@ -179,7 +152,7 @@ public class Method {
 		String [] brokenURL = URL.split("&");
 		brokenURL = URL.split("correlation_id=");
 		try {
-			correlationId = brokenURL[0];
+			correlationId = brokenURL[1];
 		} catch (ArrayIndexOutOfBoundsException e){
 			correlationId = "NA";
 		}
@@ -200,54 +173,29 @@ public class Method {
         return logs;
     }
 
-	public int stringToInt(String str){
+	public int stringToInt(String str) {
+		try {
+			if (str == null) {
+				return 0; // Return default value for null input
+			}
 
-		double doubleNumber = Double.parseDouble(str); // Convert string to double
-		int intNumber = (int) doubleNumber; // Convert double to int
-        return intNumber;
-    }
+			// Remove any non-numeric characters except digits and decimal point
+			str = str.replaceAll("[^\\d.]", "");
 
+			// Parse the string as a float, round it, and cast it to an int
+			float doubleNumber = Float.parseFloat(str);
+			return Math.round(doubleNumber);
 
-	public void invokeBrowser(String browser, WebDriver driver){
-		if (browser.equalsIgnoreCase("Chrome")) {
-			WebDriverManager.chromedriver().setup();
-			driver = new ChromeDriver();
-		} else if (browser.equalsIgnoreCase("Firefox")) {
-			WebDriverManager.firefoxdriver().setup();
-			driver = new FirefoxDriver();
-		} else if (browser.equalsIgnoreCase("Edge")) {
-			driver = new EdgeDriver();
+		} catch (NumberFormatException e) {
+			throw new IllegalArgumentException("Input does not contain a valid number: " + str, e);
 		}
 	}
+
 
 	public String scientificNotationToString(String value){
 		String correctedValue = String.format("%.0f", value);
         return correctedValue;
     }
-
-
-
-
-	public void cloudFlareAuthenticate(String mailID) throws InterruptedException {
-		Scanner getOTP = new Scanner(System.in);
-		WebElement cloudflareicon = null;
-
-		try{
-			cloudflareicon = driver.findElement(CloudFlare.cloudFlareLogo);
-		}catch (NoSuchElementException e){
-			System.out.println("Cloud flare authentication not required");
-		}
-
-		if (cloudflareicon.isDisplayed()){
-			driver.findElement(CloudFlare.email).sendKeys(mailID);
-			driver.findElement(CloudFlare.sendCode).click();
-			Thread.sleep(2000);
-			String OTPCode = getOTP.next();
-			driver.findElement(CloudFlare.codeInput).sendKeys(OTPCode);
-			driver.findElement(CloudFlare.submitCode).click();
-		}
-
-	}
 
 	public void departureMonthSelector (WebDriver driver, String departureMonth) throws InterruptedException {
 
@@ -645,7 +593,7 @@ public class Method {
 
 	public void selectFromDropDown(WebDriver driver, WebElement dropdownElement, String value) throws InterruptedException {
 
-		WebDriverWait wait = new WebDriverWait(driver, 5);
+		WebDriverWait wait = new WebDriverWait(driver, Duration.of(5, ChronoUnit.SECONDS));
 
 		try{
 
@@ -772,16 +720,7 @@ public class Method {
 		String BASE_URL_BETA = "https://beta-wapi.travelstart.com/website-services/api/itinerary/cancel";
 		String BASE_URL_LIVE = "https://wapi.travelstart.com/website-services/api/itinerary/cancel";
 
-		String BEARER_TOKEN = "f7904a2f-cb89-46a6-bbc9-158ad96160b2";
-
-		if(environment.equalsIgnoreCase("Preprod")){
-			BEARER_TOKEN = "f7904a2f-cb89-46a6-bbc9-158ad96160b2";
-		} else if (environment.equalsIgnoreCase("Live")) {
-			BEARER_TOKEN = "7119e7c4-e507-449c-8cac-d31ca3435f34a8c85694-f8e3-4941-b3ba-f1da94d38ce5";
-		} else if (environment.equalsIgnoreCase("Beta") || environment.equalsIgnoreCase("Alpha")){
-			BEARER_TOKEN = "f416567b-8837-4704-b597-7937f58ab20c";
-		}
-
+		String BEARER_TOKEN = getBearerToken(environment);
 
 		// Construct the URL for cancellation based on environment
 		String apiUrl = "";
@@ -936,27 +875,16 @@ public class Method {
 
 
 
-	public WebDriver launchBrowser(WebDriver driver, String browser) {
+	public WebDriver launchBrowser( WebDriver driver, String browser){
 
 		if (browser.equalsIgnoreCase("Chrome")) {
 			WebDriverManager.chromedriver().setup();
-			ChromeOptions options = new ChromeOptions();
-			options.addArguments("--headless"); // Enable headless mode
-			options.addArguments("--no-sandbox"); // Required for CI environments
-			options.addArguments("--disable-dev-shm-usage"); // Overcomes limited resource problems
-			driver = new ChromeDriver(options);
-
+			driver = new ChromeDriver();
 		} else if (browser.equalsIgnoreCase("Firefox")) {
 			WebDriverManager.firefoxdriver().setup();
-			FirefoxOptions options = new FirefoxOptions();
-			options.setHeadless(true); // Enable headless mode for Firefox
-			driver = new FirefoxDriver(options);
-
+			driver = new FirefoxDriver();
 		} else if (browser.equalsIgnoreCase("Edge")) {
-			WebDriverManager.edgedriver().setup();
 			driver = new EdgeDriver();
-		} else {
-			throw new IllegalArgumentException("Browser " + browser + " is not supported.");
 		}
 
 		return driver;
@@ -1138,9 +1066,8 @@ public class Method {
 		// Asserting Traveller Page
 		WebElement targetElement = null;
 
-		long duration = 5;
+		WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(5));
 
-		WebDriverWait wait = new WebDriverWait(driver, duration);
 
 		try {
 
@@ -1176,9 +1103,9 @@ public class Method {
 		// Asserting Traveller Page
 		WebElement targetElement = null;
 
-		long duration = 60;
+		long duration = 75;
+		WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(duration));
 
-		WebDriverWait wait = new WebDriverWait(driver, duration);
 
 		try {
 
@@ -1222,7 +1149,7 @@ public class Method {
 
 		int wait = 3000;
 
-		for (int i = 0; i < 20; i++){
+		for (int i = 0; i < 25; i++){
 
 			Thread.sleep(wait);
 
@@ -1265,28 +1192,6 @@ public class Method {
 
 
         return isFlowWorking;
-    }
-
-
-	public boolean assertAppLaunch(WebDriver driver, String domain, String environment){
-
-		boolean isAppLaunched = false;
-
-		String URL =driver.getCurrentUrl();
-
-		String expected = "";
-
-		if (domain.equalsIgnoreCase("ZA") && environment.equalsIgnoreCase("Live")){
-
-			expected = "https://www.travelstart.co.za";
-
-		}
-
-		if (URL.equalsIgnoreCase(expected)){
-			isAppLaunched = true;
-		}
-
-        return false;
     }
 
 
@@ -1555,6 +1460,51 @@ public class Method {
 		}
 
 		return testCase;
+	}
+
+	public String getFlightNumbersFromDeeplink(String deepLink) {
+		String flightNumbers = "";
+		try {
+			// Extract the part after "outbound_flight_number="
+			flightNumbers = deepLink.split("outbound_flight_number=")[1];
+			// Get the substring until the next '&' character, if present
+			flightNumbers = flightNumbers.split("&")[0];
+		} catch (Exception e) {
+			// Return an informative error message instead of an empty string
+			return "Flight number not found in the provided deeplink.";
+		}
+		return flightNumbers;
+	}
+
+	public List<Integer> pickRandomNumbers(int max, int count) {
+		List<Integer> randomNumbers = new ArrayList<>();
+		Random random = new Random();
+
+		for (int i = 0; i < count; i++) {
+			int randomNum = random.nextInt(max + 1); // Generates a number between 0 and max (inclusive)
+			randomNumbers.add(randomNum);
+		}
+
+		return randomNumbers;
+	}
+
+
+	public boolean validateTwoListsMatching(List<String> listOne, List<String> listTwo) {
+
+		// If the size of the two lists is different, return false immediately
+		if (listOne.size() != listTwo.size()) {
+			return false;
+		}
+
+		// Check if all seats in both lists are the same
+		for (String seatSelected : listOne) {
+			if (!listTwo.contains(seatSelected)) {
+				return false;  // Return false if any seat is not found in the booking confirmation list
+			}
+		}
+
+		// If all seats match, return true
+		return true;
 	}
 
 

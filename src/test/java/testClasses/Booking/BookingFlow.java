@@ -240,11 +240,7 @@ public class BookingFlow {
         PaymentPageMethods paymentPageMethods = new PaymentPageMethods();
         String bookingRef = paymentPageMethods.getBookingReference(driver);
         bookingFlowMethods.paymentAndBooking(environment, testCaseNumber, domain, paymentMethod, bankNameEFT, isToBeCancelled);
-        try {
-            m.cancelBooking(environment, bookingRef);
-        } catch (Exception e){
 
-        }
 
     }
 

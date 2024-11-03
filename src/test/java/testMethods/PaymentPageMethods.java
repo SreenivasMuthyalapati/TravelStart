@@ -61,7 +61,7 @@ public class PaymentPageMethods {
 
         bookingFee = bookingFee.substring(1);
 
-        double bookingFeeNew = m.stringToInteger(bookingFee);
+        int bookingFeeNew = m.stringToInt(bookingFee);
 
         return bookingFeeNew;
 
@@ -102,7 +102,7 @@ public class PaymentPageMethods {
 
         String totalPrice = driver.findElement(PaymentPage.totoalPrice).getText();
 
-        double totalPriceNew = m.stringToInteger(totalPrice);
+        int totalPriceNew = m.stringToInt(totalPrice);
 
         return totalPrice;
 
@@ -312,6 +312,10 @@ public class PaymentPageMethods {
                     System.out.println("Required payment method ("+paymentMethod+") was not available, so skipping this test");
                     throw new SkipException("Test skipped as required payment method - "+ paymentMethod + " was not available");
                 }
+            }else {
+
+                System.out.println("Given payment method is not valid");
+                throw new SkipException("Skipping this test as payment method ("+paymentMethod+") is invalid");
             }
 
         }
@@ -324,7 +328,9 @@ public class PaymentPageMethods {
 
         }catch (NoSuchElementException | TimeoutException | NullPointerException e){
 
-            System.out.println("Desired payment method not loaded");
+            System.out.println("Desired payment method ("+paymentMethod+") not loaded");
+            e.printStackTrace();
+            throw new SkipException("Skipping this test as desired payment method ("+paymentMethod+") not loaded");
 
         }
 

@@ -150,7 +150,7 @@ public class SendEmail {
     }
 
 
-    public void sendEmail(String attachmentLocationPath) {
+    public void sendEmail(String subject, List<String> attachmentLocationPath) {
         SendGrid sg = createSendGridClient();
         Request request = new Request();
 
@@ -169,13 +169,13 @@ public class SendEmail {
             Email from = new Email("sreenivasulu@travelstart.com");
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
             String timestamp = LocalDateTime.now().format(formatter);
-            String subject = String.format("Automation Test Results – Travelstart B2C %s", timestamp);
+            subject = String.format(subject+" %s", timestamp);
 
             String[] recipients = {"sreenivas.tsqa@gmail.com"};
             Content content = new Content("text/plain", String.format("""
                 Dear Stakeholders,
 
-                Please find attached the detailed automation test results, executed on %s. The attached excel report contains a comprehensive breakdown of all tests, including booking scenarios, test cases and test statuses and other key metrics.
+                Please find attached the detailed automation test result, executed on %s. The attached excel report contains a comprehensive breakdown of all tests, including booking scenarios, test cases and test statuses and other key metrics.
 
                 For complete details, kindly review the attached excel report.
 
@@ -198,14 +198,20 @@ public class SendEmail {
             }
             mail.addPersonalization(personalization);
 
-            // Attach the latest report
-            File latestReport = getLatestReport(attachmentLocationPath);
-            Attachments attachments = new Attachments();
-            attachments.setContent(Base64.getEncoder().encodeToString(Files.readAllBytes(latestReport.toPath())));
-            attachments.setType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
-            attachments.setFilename(latestReport.getName());
-            attachments.setDisposition("attachment");
-            mail.addAttachments(attachments);
+            // Attach all files in attachmentLocationPath
+            for (String filePath : attachmentLocationPath) {
+                File file = new File(filePath);
+                if (file.exists()) {
+                    Attachments attachments = new Attachments();
+                    attachments.setContent(Base64.getEncoder().encodeToString(Files.readAllBytes(file.toPath())));
+                    attachments.setType(Files.probeContentType(file.toPath()));
+                    attachments.setFilename(file.getName());
+                    attachments.setDisposition("attachment");
+                    mail.addAttachments(attachments);
+                } else {
+                    System.out.println("File not found: " + filePath);
+                }
+            }
 
             // Add the mail object to the request body
             request.setBody(mail.build());

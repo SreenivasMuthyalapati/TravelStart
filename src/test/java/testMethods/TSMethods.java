@@ -10,6 +10,7 @@ import pageObjects.B2B.WebPush;
 
 import java.io.File;
 import java.io.IOException;
+import java.time.Duration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -37,7 +38,7 @@ public class TSMethods {
         try {
 
             TSMethods.driver = driver;
-            wait = new WebDriverWait(driver, 90);
+            wait = new WebDriverWait(driver, Duration.ofSeconds(75));
         }catch (NullPointerException e){
 
         }
@@ -333,7 +334,7 @@ public class TSMethods {
             driver.findElement(SRP.book).click();
 
         } else if (triptype.equalsIgnoreCase("Return") && isBundled.equalsIgnoreCase("No")) {
-            driver.findElement(SRP.domBook).click();
+            driver.findElement(SRP.bookUnbundled).click();
 
             Thread.sleep(500);
                 try {

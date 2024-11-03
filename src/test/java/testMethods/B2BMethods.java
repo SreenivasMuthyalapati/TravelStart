@@ -11,6 +11,7 @@ import pageObjects.B2B.SearchPage;
 
 import java.io.File;
 import java.io.IOException;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -31,7 +32,7 @@ public class B2BMethods {
             throw new IllegalArgumentException("WebDriver cannot be null");
         }
         this.driver = driver;
-        this.wait = new WebDriverWait(driver, 60);
+        this.wait = new WebDriverWait(driver, Duration.ofSeconds(60));
         this.m = new Method(); // assuming Method is initialized like this
     }
 

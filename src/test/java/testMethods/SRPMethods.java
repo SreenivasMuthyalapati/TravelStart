@@ -63,9 +63,7 @@ public class SRPMethods {
 
             }
 
-
     }
-
 
 
     public void selectAirlineFilter(WebDriver driver, String tripType, boolean isBundled, String departAirline, String returnAirline){
@@ -123,11 +121,64 @@ public class SRPMethods {
 
     }
 
+    public void selectUnbundledFlights(WebDriver driver, boolean isBundled, String supplierCode){
+
+        if (!isBundled){
+
+            // Selects outbound flight in result
+            driver.findElement(SRP.outboundFlightUnbundled).click();
+
+            // Selects inbound flight in result
+            driver.findElement(SRP.inboundFlightUnbundled).click();
+
+        } else if (isBundled) {
+
+        }
+
+    }
+
     public void proceedToTravellerPage(WebDriver driver, boolean isBundled) throws InterruptedException {
 
         if (!isBundled) {
 
-            driver.findElement(SRP.domBook).click();
+            driver.findElement(SRP.bookUnbundled).click();
+
+            Thread.sleep(500);
+
+            try {
+
+                // Clicks on proceed on airport change pop up
+                driver.findElement(SRP.airPortChange).click();
+
+            }catch (NoSuchElementException ne){
+
+            }
+
+        } else if (isBundled) {
+            Thread.sleep(500);
+            driver.findElement(SRP.book).click();
+            Thread.sleep(500);
+
+            try {
+
+                // Clicks on proceed on airport change pop up
+                driver.findElement(SRP.airPortChange).click();
+
+            }catch (NoSuchElementException ne){
+
+            }
+        }
+
+        // Waits for 1 second for DOM to get refreshed
+        Thread.sleep(1000);
+
+    }
+
+    public void proceedToTravellerPage(WebDriver driver, boolean isBundled, String supplierCode) throws InterruptedException {
+
+        if (!isBundled) {
+
+            driver.findElement(SRP.bookUnbundled).click();
 
             Thread.sleep(500);
 

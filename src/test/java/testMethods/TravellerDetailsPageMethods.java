@@ -9,6 +9,8 @@ import pageObjects.FlightPage;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class TravellerDetailsPageMethods {
 
@@ -47,9 +49,36 @@ public class TravellerDetailsPageMethods {
         return isFareIncreased;
     }
 
-    public double getFlightCost(WebDriver driver){
+    public List<String> getFlightNumbers(WebDriver driver) {
 
-        double flightPrice = 0;
+        List<String> flightNumbers = new ArrayList<>();
+
+        List<WebElement> flightNumberElements = driver.findElements(FlightPage.flightNumber);
+
+        for (WebElement element : flightNumberElements) {
+
+            String flightNumber = element.getText();
+
+            // Regular expression to find content between parentheses
+            Pattern pattern = Pattern.compile("\\((.*?)\\)");
+            Matcher matcher = pattern.matcher(flightNumber);
+
+            if (matcher.find()) {
+                String extractedFlightNumber = matcher.group(1); // Get the group inside the parentheses
+                System.out.println("Flight Number: " + extractedFlightNumber);
+                flightNumbers.add(extractedFlightNumber); // Add the extracted flight number
+            } else {
+                System.out.println("No flight number found.");
+            }
+        }
+
+        return flightNumbers;
+    }
+
+
+    public int getFlightCost(WebDriver driver){
+
+        int flightPrice = 0;
         String flightPriceInString = "";
 
         // Get Fare displayed
@@ -61,7 +90,7 @@ public class TravellerDetailsPageMethods {
 
         }
 
-        flightPrice = m.stringToInteger(flightPriceInString);
+        flightPrice = m.stringToInt(flightPriceInString);
 
         return flightPrice;
     }

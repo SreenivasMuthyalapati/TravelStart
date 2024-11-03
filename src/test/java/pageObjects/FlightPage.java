@@ -22,9 +22,6 @@ public class FlightPage {
     public static By mobileNo = By.id("mobileNumber");
     public static By email = By.id("email");
     public static By whatsApp = By.xpath("//*[@class='slider_switch']");
-    public static By flightNumberOneway = By.xpath("//span[@class='flt_num d-lg-block']");
-    public static By depCityOneway = By.xpath("(//label[@class='dept_city'])[2]");
-    public static By arrCityOneway = By.xpath("(//label[@class='arr_city'])[2]");
     public static By fare = By.xpath("(//label[@class='amt'])[1]");
 
     //Traveller details inputs
@@ -245,16 +242,13 @@ public class FlightPage {
     public static By ppInsuingCountryIndia = By.xpath("(//*[text()='India'])[2]");
 
 
-
-    public static By flightNumber1 = By.xpath("(//span[@class='flt_num d-lg-block'])[1]");
-    public static By flightNumber2 = By.xpath("(//span[@class='flt_num d-lg-block'])[2]");
-
     public static By departureDate = By.xpath("(//label[@class='dept_city'])[1]");
     public static By returnDate = By.xpath("(//label[@class='dept_city'])[3]");
 
     public static By departureCity = By.xpath("(//label[@class='dept_city'])[2]");
     public static By arrivalCity = By.xpath("(//label[@class='arr_city'])[2]");
 
+    public static By flightNumber = By.xpath("//span[@class='airl_numb d-lg-block']");
 
 
     // Meals

@@ -52,7 +52,7 @@ public class SeatsPage {
     }
 
     public static By availableSeats = By.xpath("//td[@class='seatmap-table-cell seat ng-star-inserted']/button[contains(@class, 'AVAILABLE')]");
-    public static By selectedSeatNumbers = By.xpath("(//span[@class='seatNumber ng-star-inserted'])");
+    public static By selectedSeatNumbers = By.xpath("(//span[@class='seatNumber mr-1 ng-star-inserted'])");
 
     public static By selectedSeatNumbersPaxWise(String paxNumber) {
 

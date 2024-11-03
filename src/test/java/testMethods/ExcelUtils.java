@@ -29,29 +29,57 @@ public class ExcelUtils {
         cell1.setCellValue("Test Scenario ID");
 
         Cell cell2 = headerRow.createCell(1);
-        cell2.setCellValue("Test Case Summary");
+        cell2.setCellValue("Itinerary ID");
 
         Cell cell3 = headerRow.createCell(2);
-        cell3.setCellValue("Test Status");
+        cell3.setCellValue("Deeplink");
+
+        Cell cell4 = headerRow.createCell(3);
+        cell4.setCellValue("Amount");
+
+        Cell cell5 = headerRow.createCell(4);
+        cell5.setCellValue("FlightNumbers");
+
+        Cell cell6 = headerRow.createCell(5);
+        cell6.setCellValue("Amount Matched?");
+
+        Cell cell7 = headerRow.createCell(6);
+        cell7.setCellValue("Flight Numbers Matched?");
 
         // Formatting: auto-size columns
         sheet.autoSizeColumn(0);
         sheet.autoSizeColumn(1);
         sheet.autoSizeColumn(2);
+        sheet.autoSizeColumn(3);
+        sheet.autoSizeColumn(4);
+        sheet.autoSizeColumn(5);
+        sheet.autoSizeColumn(6);
     }
 
     // Method to write a new row with the test case details
-    public void writeTestReport(String testScenarioID, String testCaseSummary, String testStatus) {
+    public void writeToExcelReport(String testScenarioID, String itineraryID, String deeplink, String amount, String flightNumbers, boolean isAMountMatched, boolean isFlightNumbersMatched) {
         Row row = sheet.createRow(++rowNum);
 
         Cell cell1 = row.createCell(0);
         cell1.setCellValue(testScenarioID);
 
         Cell cell2 = row.createCell(1);
-        cell2.setCellValue(testCaseSummary);
+        cell2.setCellValue(itineraryID);
 
         Cell cell3 = row.createCell(2);
-        cell3.setCellValue(testStatus);
+        cell3.setCellValue(deeplink);
+
+        Cell cell4 = row.createCell(3);
+        cell4.setCellValue(amount);
+
+        Cell cell5 = row.createCell(4);
+        cell5.setCellValue(flightNumbers);
+
+        Cell cell6 = row.createCell(5);
+        cell6.setCellValue(isAMountMatched);
+
+        Cell cell7 = row.createCell(6);
+        cell7.setCellValue(isFlightNumbersMatched);
     }
 
     // Method to save the Excel file with a unique name (based on timestamp)

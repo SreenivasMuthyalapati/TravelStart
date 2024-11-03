@@ -5,283 +5,277 @@ import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import pageObjects.SeatsPage;
 
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 
 public class SeatsPageMethods {
 
-    Method method = new Method();
+    private final Method method = new Method();
+    private static final int DEFAULT_WAIT_TIME = 5;
 
-    public void skipSeats(WebDriver driver, boolean seatsOffered){
+    public void skipSeats(WebDriver driver, boolean seatsOffered) {
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(DEFAULT_WAIT_TIME));
 
-        WebDriverWait wait = new WebDriverWait(driver, 5);
-
-        try{
+        try {
             wait.until(ExpectedConditions.visibilityOfElementLocated(SeatsPage.skipsSeats));
             driver.findElement(SeatsPage.skipsSeats).click();
-
             driver.findElement(SeatsPage.continueInPopUp).click();
-
-        }catch (TimeoutException te){
-
-            System.out.println("Failed to skip seats");
-
-        }catch (NoSuchElementException ne){
-
+        } catch (TimeoutException e) {
+            System.out.println("Failed to skip seats due to timeout.");
+        } catch (NoSuchElementException ignored) {
         }
-
     }
 
-    public boolean verifySeatsDisplayed(WebDriver driver){
-
-        boolean isSeatsDisplayed = false;
-
-        isSeatsDisplayed = method.verifyRedirection(driver, SeatsPage.seatMap, "Seats");
-
-        return isSeatsDisplayed;
+    public boolean verifySeatsDisplayed(WebDriver driver) {
+        return method.verifyRedirection(driver, SeatsPage.seatMap, "Seats");
     }
 
-
-    public int getAvailableSegementsCount(WebDriver driver){
-
-        int segmentsCount = 0;
-
-        try{
-
-            segmentsCount = driver.findElements(SeatsPage.segmentTab).size();
-
+    public int getAvailableSegmentsCount(WebDriver driver) {
+        try {
+            return driver.findElements(SeatsPage.segmentTab).size();
         } catch (Exception e) {
-
             System.out.println("Failed to get available seats segments");
-
+            return 0;
         }
-
-
-        return segmentsCount;
     }
-
 
     public void switchPassenger(WebDriver driver, String paxNumber) throws InterruptedException {
-
-
         try {
-
             driver.findElement(SeatsPage.switchPassenger(paxNumber)).click();
-            Thread.sleep(1000);
-
-        } catch (NoSuchElementException e){
-
-            System.out.println("Switching passenger failed");
-
+            Thread.sleep(500);
+        } catch (NoSuchElementException e) {
+            System.out.println("Switching passenger failed for passenger number: " + paxNumber);
         }
-
     }
 
-    public int getAvaiilablePaxTabs(WebDriver driver){
-
-        int count = 0;
-
-        List<WebElement> paxInDom = new ArrayList<>();
+    public int getAvailablePaxTabs(WebDriver driver) {
+        List<WebElement> paxInDom;
         List<WebElement> paxAvailable = new ArrayList<>();
 
-        try{
-
+        try {
             paxInDom = driver.findElements(SeatsPage.passengerTab);
-
-        } catch (Exception e) {
-
-            System.out.println("Passenger seats count retrival failed");
-
-        }
-
-        for (int i = 0; i < paxInDom.size(); i++){
-            try{
-            if (paxInDom.get(i).isDisplayed()){
-
-                paxAvailable.add(paxInDom.get(i));
-
-            }}catch (Exception e){
-
+            for (WebElement pax : paxInDom) {
+                if (pax.isDisplayed()) {
+                    paxAvailable.add(pax);
+                }
             }
-
+        } catch (Exception e) {
+            System.out.println("Passenger seats count retrieval failed");
         }
-
-        count = paxAvailable.size();
-
-        return count;
+        return paxAvailable.size();
     }
-
 
     public void clearAllSelectedSeatsForPax(WebDriver driver, String paxNumber) throws InterruptedException {
-
-
         try {
-
             driver.findElement(SeatsPage.clearAllSelectedSeatsForPax(paxNumber)).click();
-            Thread.sleep(1000);
-
-        } catch (NoSuchElementException e){
-
-            System.out.println("Clearing selected seats for pax number "+ paxNumber+ " is failed");
-
+            Thread.sleep(500);
+        } catch (NoSuchElementException e) {
+            System.out.println("Clearing selected seats for pax number " + paxNumber + " failed");
         }
-
     }
 
-    public List<WebElement> getAllAvailableSeats(WebDriver driver){
-
-        List<WebElement> availableSeats = new ArrayList<>();
-
-        try{
-
-            availableSeats = driver.findElements(SeatsPage.availableSeats);
-
+    public List<WebElement> getAllAvailableSeats(WebDriver driver) {
+        try {
+            return driver.findElements(SeatsPage.availableSeats);
         } catch (Exception e) {
-
+            System.out.println("Failed to retrieve available seats.");
+            return new ArrayList<>();
         }
-
-        return availableSeats;
     }
 
-    public boolean switchToSegment(WebDriver driver, String segmentNumber) throws InterruptedException {
-
-        int availableSegemtsCount = this.getAvailableSegementsCount(driver);
-
-        boolean segmentSwitched;
-
+    public boolean switchToSegment(WebDriver driver, String segmentNumber) {
+        int segmentIndex = Integer.parseInt(segmentNumber)-1;
         List<WebElement> availableSegments = driver.findElements(SeatsPage.segmentTab);
 
-        int requiredSegmentNumber = Integer.parseInt(segmentNumber);
-
-        if (requiredSegmentNumber<=availableSegemtsCount){
-
-            availableSegments.get(requiredSegmentNumber-1).click();
-            Thread.sleep(200);
-            segmentSwitched = true;
-
-        }else {
-
-            System.out.println("Given segment number "+ segmentNumber +" is not available in the seat map. Seat selection available for "+availableSegemtsCount+"segments only.");
-            segmentSwitched = false;
+        if (segmentIndex < availableSegments.size()) {
+            availableSegments.get(segmentIndex).click();
+            return true;
+        } else {
+            System.out.println("Given segment number " + segmentNumber + " is not available.");
+            return false;
         }
-
-
-        return segmentSwitched;
     }
 
-    // Selects all seats in a segment
-    private void selectAllSeatsInSegment(WebDriver driver, String segmentNumber) throws InterruptedException {
+    private void selectSeatsSegmentWise(WebDriver driver, String segmentNumber, String paxCountToHaveSeatsSelection) throws InterruptedException {
 
-        boolean isSegmentSwitched = this.switchToSegment(driver, segmentNumber);
-        int availablePaxCount = this.getAvailableSegementsCount(driver);
 
-        if (isSegmentSwitched){
-            List<WebElement> availableSeatsInSegment = this.getAllAvailableSeats(driver);
+        int paxCount = 0;
 
-            for (int i=0; i<availablePaxCount; i++){
+        int availablePaxInSeatsMap = this.getAvailablePaxTabs(driver);
 
-                availableSeatsInSegment.get(i).click();
-                Thread.sleep(100);
+        if (paxCountToHaveSeatsSelection.equalsIgnoreCase("All")) {
+
+            paxCount = availablePaxInSeatsMap;
+
+        } else if (!paxCountToHaveSeatsSelection.equalsIgnoreCase("All") && Integer.parseInt(paxCountToHaveSeatsSelection) >= availablePaxInSeatsMap) {
+
+            paxCount = availablePaxInSeatsMap;
+
+        } else if (!paxCountToHaveSeatsSelection.equalsIgnoreCase("All") && Integer.parseInt(paxCountToHaveSeatsSelection) < availablePaxInSeatsMap) {
+
+            paxCount = Integer.parseInt(paxCountToHaveSeatsSelection);
+
+        } else if (paxCountToHaveSeatsSelection.equalsIgnoreCase("0") || paxCountToHaveSeatsSelection.isEmpty() || paxCountToHaveSeatsSelection.equalsIgnoreCase("-")) {
+
+            paxCount = 0;
+        }
+
+        boolean SegmentSwitched = this.switchToSegment(driver, segmentNumber);
+
+        if (SegmentSwitched && paxCount>0){
+        for (int j = 1; j <= paxCount; j++) {
+
+            // Switch to the current passenger
+            driver.findElement(SeatsPage.switchPassenger(String.valueOf(j))).click();
+            Thread.sleep(500); // Adjust wait time if needed
+
+            boolean seatSelected = false;
+            int retries = 2; // Number of retries for stale element
+            while (!seatSelected && retries > 0) {
+                try {
+                    // Fetch available seats after switching passenger
+                    List<WebElement> availableSeats = driver.findElements(SeatsPage.availableSeats);
+
+                    // Check if there are enough available seats
+                    if (availableSeats.size() > 0) {
+
+                        // Select a seat based on the passenger index, using modulo to cycle through seats
+                        int seatIndex = j;
+                        try {
+                            availableSeats.get(seatIndex).click();
+
+                        } catch (ElementClickInterceptedException e) {
+
+                        }
+
+                        seatSelected = true; // Exit loop if click succeeds
+                    } else {
+                        System.out.println("No available seats found for passenger " + j);
+                    }
+                } catch (StaleElementReferenceException e) {
+                    System.out.println("Encountered stale element, retrying...");
+                    retries--; // Retry locating the seat
+                    Thread.sleep(500); // Short wait before retrying
+                }
             }
+        }
+        } else if (paxCount == 0) {
+
 
         }
-
     }
 
-    public void selectSeats(WebDriver driver, boolean selectAllSeats) throws InterruptedException {
 
-        if (selectAllSeats){
 
-            List<WebElement> availableSegments = driver.findElements(SeatsPage.segmentTab);
-            int segmentCount = this.getAvailableSegementsCount(driver);
 
-            for (int i=0; i< segmentCount; i++){
 
-                this.switchToSegment(driver, String.valueOf(i+1));
-                this.selectAllSeatsInSegment(driver, String.valueOf(i+1));
+    public void selectSeats(WebDriver driver, boolean selectSeatsForAllPaxAndAllSegments) throws InterruptedException {
 
+        int segmentsCount = this.getAvailableSegmentsCount(driver);
+        int paxCount = this.getAvailablePaxTabs(driver);
+
+        for (int i = 1; i <= segmentsCount; i++) {
+
+            // Switch to the current segment
+            driver.findElement(SeatsPage.switchSegment(String.valueOf(i))).click();
+            Thread.sleep(500); // Adjust wait time if needed
+
+
+            for (int j = 1; j <= paxCount; j++) {
+
+                // Switch to the current passenger
+                driver.findElement(SeatsPage.switchPassenger(String.valueOf(j))).click();
+                Thread.sleep(500); // Adjust wait time if needed
+
+                boolean seatSelected = false;
+                int retries = 2; // Number of retries for stale element
+                while (!seatSelected && retries > 0) {
+                    try {
+                        // Fetch available seats after switching passenger
+                        List<WebElement> availableSeats = driver.findElements(SeatsPage.availableSeats);
+
+                        // Check if there are enough available seats
+                        if (availableSeats.size() > 0) {
+
+                            // Select a seat based on the passenger index, using modulo to cycle through seats
+                            int seatIndex = j;
+                            try {
+                                availableSeats.get(seatIndex).click();
+
+                            } catch (ElementClickInterceptedException e){
+
+                            }
+
+                            seatSelected = true; // Exit loop if click succeeds
+                        } else {
+                            System.out.println("No available seats found for passenger " + j);
+                        }
+                    } catch (StaleElementReferenceException e) {
+                        System.out.println("Encountered stale element, retrying...");
+                        retries--; // Retry locating the seat
+                        Thread.sleep(500); // Short wait before retrying
+                    }
+                }
+
+                if (!seatSelected) {
+                    System.out.println("Failed to select seat for passenger " + j + " after retries.");
+                }
+
+                Thread.sleep(500); // Adjust wait time if needed
             }
+        }
+    }
+
+    public void selectSeats(WebDriver driver, boolean selectSeatsForAllPaxAndAllSegments, String segment1SelectionCount, String segment2SelectionCount,String segment3SelectionCount,String segment4SelectionCount, String segment5SelectionCount, String segment6SelectionCount) throws InterruptedException {
+
+        int segmentsCount = this.getAvailableSegmentsCount(driver);
+        int paxCount = this.getAvailablePaxTabs(driver);
+
+        String[] seatsPerSegment = {segment1SelectionCount, segment2SelectionCount, segment3SelectionCount, segment4SelectionCount, segment5SelectionCount, segment6SelectionCount};
+
+        for (int i = 0; i < segmentsCount; i++) {
+
+            String seatsCount = seatsPerSegment[i];
+            int segmentNumber = i+1;
+            String strValueOfSegment = String.valueOf(segmentNumber);
+            this.selectSeatsSegmentWise(driver, strValueOfSegment, seatsCount);
 
         }
-
     }
 
 
-
-    public List<String> getSelectedSeatNumbers(WebDriver driver){
-
-        List<WebElement> selectedSeatsElements = new ArrayList<>();
-        List<String> selectedSeatsNumbers = new ArrayList<>();
-
-        try{
-
-            selectedSeatsElements = driver.findElements(SeatsPage.selectedSeatNumbers);
-
-        } catch (NoSuchElementException | ElementNotInteractableException e){
-
-        }
-
-        for (int i = 0; i<selectedSeatsElements.size(); i++){
-
-            try{
-                String seatNumber = selectedSeatsElements.get(i).getText();
-                method.removeSpecialCharacters(seatNumber);
-
-                selectedSeatsNumbers.add(seatNumber);
-            } catch (Exception e) {
-
-            }
-
-        }
-
-        return selectedSeatsNumbers;
-    }
-
-
-    public double getTotalSeatsCost(WebDriver driver){
-
-        double seatsCost = 0;
-        WebElement costElement = null;
-
-        try{
-            costElement = driver.findElement(SeatsPage.totalCostOfSeats);
-
-        }catch (NoSuchElementException e){
-
-        }
+    public List<String> getSelectedSeatNumbers(WebDriver driver) {
+        List<String> seatNumbers = new ArrayList<>();
 
         try {
-
-            String seatsCostString = costElement.getText();
-            seatsCost = method.stringToInteger(seatsCostString);
-
-        } catch (NullPointerException e){
-
+            List<WebElement> selectedSeats = driver.findElements(SeatsPage.selectedSeatNumbers);
+            for (WebElement seat : selectedSeats) {
+                seatNumbers.add(method.removeSpecialCharacters(seat.getText()));
+            }
+        } catch (Exception e) {
+            System.out.println("Failed to retrieve selected seat numbers.");
         }
 
-        return seatsCost;
+        return seatNumbers;
     }
 
-    public void continueToNextStep(WebDriver driver) throws InterruptedException {
-
-        try{
-            driver.findElement(SeatsPage.continueToAddons).click();
-        } catch (Exception e){
-            e.printStackTrace();
+    public int getTotalSeatsCost(WebDriver driver) {
+        try {
+            WebElement costElement = driver.findElement(SeatsPage.totalCostOfSeats);
+            return method.stringToInt(costElement.getText());
+        } catch (Exception e) {
+            System.out.println("Failed to retrieve the total seats cost.");
+            return 0;
         }
-        Thread.sleep(200);
+    }
 
-        try{
+    public void continueToNextStep(WebDriver driver) {
+        try {
+            driver.findElement(SeatsPage.continueToAddons).click();
             driver.findElement(SeatsPage.continueInPopUp).click();
         } catch (Exception e) {
 
-
         }
-
     }
-
-
-
-
-
 }
