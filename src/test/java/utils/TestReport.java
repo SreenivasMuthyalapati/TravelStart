@@ -27,7 +27,7 @@ public class TestReport {
 
         String[] testResultsArray = {testScenarioID, testCaseID, testCaseSummary, testRunStatus, correlationID, screenShotPath};
         testResultInfo.add(testResultsArray);
-        System.out.println("At updateTestResult method - TestReport class, the size of report is :" + testResultInfo.size());
+
     }
 
     // Method to update the report with a batch of test cases
@@ -40,6 +40,7 @@ public class TestReport {
             htmlTestReport.writeTestReport(testDetails[0], testDetails[1], testDetails[2], testDetails[3], testDetails[4]);
             excelTestReport.writeTestReport(testDetails[0], testDetails[1], testDetails[2], testDetails[3], testDetails[4]);
 
+            System.out.println("Test report data" +(testDetails[0]+"  "+ testDetails[1]+"  "+  testDetails[2]+"  "+  testDetails[3]+"  "+  testDetails[4]));
         }
         testReportList.clear();
     }

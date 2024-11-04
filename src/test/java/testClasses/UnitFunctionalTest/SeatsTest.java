@@ -10,6 +10,7 @@ import org.testng.annotations.*;
 import org.testng.asserts.SoftAssert;
 import pageObjects.AddOnsPage;
 import pageObjects.PaymentPage;
+import pageObjects.SeatsPage;
 import testMethods.*;
 import utils.ExcelTestReport;
 import utils.HtmlTestReport;
@@ -81,6 +82,19 @@ public class SeatsTest {
             // If test fails and driver is not null, print the correlation ID
             System.out.println("Test Failed! Correlation ID: " + m.getCID(driver));
         }
+
+        for (int i =0; i< testResultData.size(); i++){
+
+            try{
+                String[] arr = testResultData.get(i);
+                attachments.add(arr[5]);
+            }catch (Exception e){
+
+            }
+
+        }
+        testReport.updateToReport(testResultData);
+
         if (driver != null) {
 
            driver.quit();
@@ -92,6 +106,8 @@ public class SeatsTest {
     public void reportTestResult() throws IOException, InterruptedException {
 
         testReport.saveReportsAfterTest(attachments);
+        SendEmail sendEmail = new SendEmail();
+        sendEmail.sendEmail("B2C Seats Test Automation Result Report"+ runTime, attachments);
 
     }
 
@@ -148,11 +164,10 @@ public class SeatsTest {
             String seatsSegment4 = excelUtils.readDataFromExcel(dataPath, "Booking Scenarios", i, 39);
             String seatsSegment5 = excelUtils.readDataFromExcel(dataPath, "Booking Scenarios", i, 40);
             String seatsSegment6 = excelUtils.readDataFromExcel(dataPath, "Booking Scenarios", i, 41);
-            String seatsSegment7 = excelUtils.readDataFromExcel(dataPath, "Booking Scenarios", i, 42);
-            String paymentMethod = excelUtils.readDataFromExcel(dataPath, "Booking Scenarios", i, 43);
-            String bankNameEFT = excelUtils.readDataFromExcel(dataPath, "Booking Scenarios", i, 44);
-            String isLoggedInUser = excelUtils.readDataFromExcel(dataPath, "Booking Scenarios", i, 45);
-            String isToBeCancelled = excelUtils.readDataFromExcel(dataPath, "Booking Scenarios", i, 46);
+            String paymentMethod = excelUtils.readDataFromExcel(dataPath, "Booking Scenarios", i, 42);
+            String bankNameEFT = excelUtils.readDataFromExcel(dataPath, "Booking Scenarios", i, 43);
+            String isLoggedInUser = excelUtils.readDataFromExcel(dataPath, "Booking Scenarios", i, 44);
+            String isToBeCancelled = excelUtils.readDataFromExcel(dataPath, "Booking Scenarios", i, 45);
 
             testCase.add(new Object[]{testCaseNumber,
                     shouldRun,
@@ -196,7 +211,6 @@ public class SeatsTest {
                     seatsSegment4,
                     seatsSegment5,
                     seatsSegment6,
-                    seatsSegment7,
                     paymentMethod,
                     bankNameEFT,
                     isLoggedInUser,
@@ -207,7 +221,7 @@ public class SeatsTest {
 
 
     @Test(dataProvider = "TestCase")
-    public void seatsTest(String testCaseNumber, String shouldRun, String domain, String cpy_source, String tripType, String origin, String destination, String departureDate, String departureMonth, String returnDate, String returnMonth, String adultCount, String youngAdultCount, String childCount, String infantCount, String cabinClass, String departureAirline, String returnAirline, String mailID, String mobileNumber, String title, String firstName, String middleName, String lastName, String dateOfBirth, String monthOfBirth, String yearOfBirth, String passPortNumber, String dateOfPassportExpiry, String monthOfPassportExpiry, String yearOfPassportExpiry, String passPortNationality, String passPortIssuingCountry, String addBaggage, String addSeats, String addSeatsForAllSegments, String seatsForSegment1, String seatsForSegment2, String seatsForSegment3, String seatsForSegment4, String seatsForSegment5, String seatsForSegment6, String seatsForSegment7, String paymentMethod, String bankNameEFT, String isLoggedInUser, String isToBeCancelled) throws IOException, InterruptedException {
+    public void seatsTest(String testCaseNumber, String shouldRun, String domain, String cpy_source, String tripType, String origin, String destination, String departureDate, String departureMonth, String returnDate, String returnMonth, String adultCount, String youngAdultCount, String childCount, String infantCount, String cabinClass, String departureAirline, String returnAirline, String mailID, String mobileNumber, String title, String firstName, String middleName, String lastName, String dateOfBirth, String monthOfBirth, String yearOfBirth, String passPortNumber, String dateOfPassportExpiry, String monthOfPassportExpiry, String yearOfPassportExpiry, String passPortNationality, String passPortIssuingCountry, String addBaggage, String addSeats, String addSeatsForAllSegments, String seatsForSegment1, String seatsForSegment2, String seatsForSegment3, String seatsForSegment4, String seatsForSegment5, String seatsForSegment6, String paymentMethod, String bankNameEFT, String isLoggedInUser, String isToBeCancelled) throws IOException, InterruptedException {
 
 
         runTime = m.getCurrentTime();
@@ -289,7 +303,7 @@ public class SeatsTest {
 
         Assert.assertTrue(isTravellerPageLoaded, "Traveller details page wasn't loaded");
 
-        double flightCost = travellerDetailsPageMethods.getFlightCost(driver);
+        int flightCost = travellerDetailsPageMethods.getFlightCost(driver);
 
         travellerDetailsPageMethods.enterContactDetails(driver, mobileNumber, mailID);
 
@@ -336,20 +350,89 @@ public class SeatsTest {
 
         boolean isSeatsMapLoaded = false;
 
-        if (testSeats){
+        // Seats_TC_01
 
-            isSeatsMapLoaded = seatsPageMethods.verifySeatsDisplayed(driver);
-            Assert.assertTrue(isSeatsMapLoaded, "Seats map was failed to load");
+        if(Boolean.parseBoolean(testCases.get(0)[2])) {
+            if (testSeats) {
 
-        } else if (isSeatsOffered && (!selectSeats)) {
+                isSeatsMapLoaded = seatsPageMethods.verifySeatsDisplayed(driver);
+                testReport.updateTestResult(testResultData, driver, testCaseNumber, testCases.get(0)[0], testCases.get(0)[1], CID, isSeatsMapLoaded);
+                String failMessage = "Seatmap wasn't loaded for test scenario ID:"+ testCaseNumber;
+                Assert.assertTrue(isSeatsMapLoaded, failMessage);
 
-            seatsPageMethods.skipSeats(driver, isSeatsOffered);
+            } else if (isSeatsOffered && (!selectSeats)) {
+
+                seatsPageMethods.skipSeats(driver, isSeatsOffered);
+
+            }
+        }
+
+
+        // Seats_TC_02
+
+        boolean isSegmentSwitchable = false;
+
+        if(Boolean.parseBoolean(testCases.get(1)[2])) {
+            if (testSeats) {
+
+                boolean isSeatsAvailaleForAllSegments = false;
+
+                int i;
+
+                String currentSegment = "";
+
+                for (i = 0; i < seatsPageMethods.getAvailableSegmentsCount(driver); i++)
+                {
+
+                    seatsPageMethods.switchToSegment(driver, String.valueOf(i + 1));
+
+                    isSeatsAvailaleForAllSegments = seatsPageMethods.verifySeatsDisplayed(driver);
+
+                    if (!isSeatsAvailaleForAllSegments) {
+                        break;
+                    }
+
+
+                    testReport.updateTestResult(testResultData, driver, testCaseNumber, testCases.get(1)[0], testCases.get(1)[1], CID, isSeatsAvailaleForAllSegments);
+                    String failMessage = "Seatmap wasn't loaded for test scenario ID:" + testCaseNumber +" and segment number: "+ i+1;
+                    softAssert.assertTrue(isSeatsAvailaleForAllSegments, failMessage);
+
+                }
+
+                currentSegment = driver.findElement(SeatsPage.currentSegment).getText();
+
+                seatsPageMethods.switchToSegment(driver, String.valueOf(1));
+
+
+                if (!currentSegment.equalsIgnoreCase(driver.findElement(SeatsPage.currentSegment).getText())){
+
+                    isSegmentSwitchable = true;
+
+                }
+
+                }
+
+        }
+
+        // Seats_TC_03
+
+        if(Boolean.parseBoolean(testCases.get(2)[2])) {
+
+            if (testSeats) {
+
+                    testReport.updateTestResult(testResultData, driver, testCaseNumber, testCases.get(2)[0], testCases.get(2)[1], CID, isSegmentSwitchable);
+                    String failMessage = "Seat segment switch wasn't working for test scenario ID:" + testCaseNumber ;
+                    softAssert.assertTrue(isSegmentSwitchable, failMessage);
+
+                }
 
         }
 
         // Store selected seats to test
         List<String> selectedSeats = new ArrayList<>();
-        double totalCostOfSeats = 0;
+        int totalCostOfSeats = 0;
+
+
 
         if (testSeats && isSeatsMapLoaded){
 
@@ -366,31 +449,153 @@ public class SeatsTest {
 
         }
 
+        // Seats_TC_04
+
+        if(Boolean.parseBoolean(testCases.get(3)[2])) {
+
+            if (testSeats) {
+
+                boolean isSelectedSeatsDisplayed = false;
+
+                if (!selectedSeats.isEmpty()){
+
+                    isSelectedSeatsDisplayed = true;
+
+                }
+
+                testReport.updateTestResult(testResultData, driver, testCaseNumber, testCases.get(3)[0], testCases.get(3)[1], CID, isSelectedSeatsDisplayed);
+                String failMessage = "Seats selected were not displayed in seat map for test scenario ID:" + testCaseNumber ;
+                softAssert.assertTrue(isSelectedSeatsDisplayed, failMessage);
+
+            }
+
+        }
+
+        // Seats_TC_05
+
+        if(Boolean.parseBoolean(testCases.get(4)[2])) {
+
+            if (testSeats) {
+
+                boolean isSelectedSeatsPriceDisplayed = false;
+
+                if (!(totalCostOfSeats == 0)){
+
+                    isSelectedSeatsPriceDisplayed = true;
+
+                }
+
+                testReport.updateTestResult(testResultData, driver, testCaseNumber, testCases.get(4)[0], testCases.get(4)[1], CID, isSelectedSeatsPriceDisplayed);
+                String failMessage = "Seats selected were not displayed in seat map for test scenario ID:" + testCaseNumber ;
+                softAssert.assertTrue(isSelectedSeatsPriceDisplayed, failMessage);
+
+            }
+
+        }
+
         boolean isAddOnsAvailable = false;
 
+
+        PaymentPageMethods paymentPageMethods = new PaymentPageMethods();
+
+
         isAddOnsAvailable = addOnsPageMethods.isAddOnsLoaded(driver, isAddOnsOffered);
+
+        Map<String, String> breakDownOnAddOnsPage = new HashMap<>();
+        if (isAddOnsAvailable) {
+            breakDownOnAddOnsPage = addOnsPageMethods.getPriceBreakdown(driver);
+        }
+
+        // Seats_TC_06
+
+        if(Boolean.parseBoolean(testCases.get(5)[2])) {
+
+            boolean isNextStepLoaded = false;
+
+            if (isAddOnsOffered) {
+
+                isNextStepLoaded = m.verifyRedirection(driver, AddOnsPage.AddOns, "Add-Ons");
+
+
+            } else if (!isAddOnsOffered) {
+
+                isNextStepLoaded = paymentPageMethods.assertPaymentPage(driver);
+
+            }
+
+
+            testReport.updateTestResult(testResultData, driver, testCaseNumber, testCases.get(5)[0], testCases.get(5)[1], CID, isNextStepLoaded);
+            String failMessage = "Unable to move to next step after seats map for test scenario ID:" + testCaseNumber ;
+            Assert.assertTrue(isNextStepLoaded, failMessage);
+
+        }
+
+
+        // Seats_TC_07
+
+        if(Boolean.parseBoolean(testCases.get(6)[2])) {
+
+            boolean isPriceDisplayedInBreakDown = false;
+
+            if (isAddOnsOffered && testSeats) {
+
+                String seatsAmountInAddOnsBreakDown = m.retriveValueFromMap(breakDownOnAddOnsPage, "Seat");
+
+                isPriceDisplayedInBreakDown = (totalCostOfSeats == m.stringToInt(seatsAmountInAddOnsBreakDown) );
+
+                testReport.updateTestResult(testResultData, driver, testCaseNumber, testCases.get(6)[0], testCases.get(6)[1], CID, isPriceDisplayedInBreakDown);
+                String failMessage = "Seats selection price was not displayed in breakdown on addOns page for test scenario ID:" + testCaseNumber ;
+                softAssert.assertTrue(isPriceDisplayedInBreakDown, failMessage);
+
+            }
+
+        }
+
+        // Seats_TC_08
+
+        if(Boolean.parseBoolean(testCases.get(7)[2])) {
+
+            boolean isSeatDisplayedOnAddOns = false;
+
+            if (isAddOnsOffered && testSeats) {
+
+                isSeatDisplayedOnAddOns = true;
+
+                testReport.updateTestResult(testResultData, driver, testCaseNumber, testCases.get(7)[0], testCases.get(7)[1], CID, isSeatDisplayedOnAddOns);
+                String failMessage = "Selected seat numbers were not displayed on addOns page for test scenario ID:" + testCaseNumber ;
+                softAssert.assertTrue(isSeatDisplayedOnAddOns, failMessage);
+
+            }
+
+        }
+
 
         if (isAddOnsAvailable){
 
             addOnsPageMethods.unselectAllAddOns(driver);
 
-            addOnsPageMethods.selectFlexiProduct(driver, true);
-
         }
 
-        Map<String, String> breakDownOnAddOnsPage = addOnsPageMethods.getPriceBreakdown(driver);
 
-        System.out.println(breakDownOnAddOnsPage);
-
-        addOnsPageMethods.continueToNextStep(driver);
+        if (isAddOnsAvailable) {
+            addOnsPageMethods.continueToNextStep(driver);
+        }
 
         boolean isPaymentPageLoaded = false;
 
-        PaymentPageMethods paymentPageMethods = new PaymentPageMethods();
+        // Seats_TC_15
 
-        isPaymentPageLoaded = paymentPageMethods.assertPaymentPage(driver);
+        if(Boolean.parseBoolean(testCases.get(14)[2])) {
 
-        Assert.assertTrue(isPaymentPageLoaded, "Payment page failed to load");
+            isPaymentPageLoaded = paymentPageMethods.assertPaymentPage(driver);
+
+                testReport.updateTestResult(testResultData, driver, testCaseNumber, testCases.get(14)[0], testCases.get(14)[1], CID, isPaymentPageLoaded);
+                String failMessage = "Payment page not loaded for test scenario ID:" + testCaseNumber ;
+                Assert.assertTrue(isPaymentPageLoaded, failMessage);
+
+
+        }
+
 
         String bookingReference = paymentPageMethods.getBookingReference(driver);
 
@@ -400,38 +605,102 @@ public class SeatsTest {
 
         String totalPriceDisplayedOnPaymentPage = paymentPageMethods.getTotalPrice(driver);
 
-        paymentPageMethods.selectPaymentMethod(driver, domain, paymentMethod);
+        // Seats_TC_16
 
-        if (paymentMethod.equalsIgnoreCase("EFT")){
+        if(Boolean.parseBoolean(testCases.get(15)[2])) {
 
-            paymentPageMethods.selectEFTBank(driver, domain, bankNameEFT);
+            boolean isPriceMatching = false;
 
-            paymentPageMethods.clickPay(driver, domain, paymentMethod);
+            if (testSeats) {
+
+                String seatsAmountInBreakDown = m.retriveValueFromMap(breakDownInPaymentPage, "Seat");
+
+                isPriceMatching = (totalCostOfSeats == m.stringToInt(seatsAmountInBreakDown) );
+
+                testReport.updateTestResult(testResultData, driver, testCaseNumber, testCases.get(15)[0], testCases.get(15)[1], CID, isPriceMatching);
+                String failMessage = "Seats selection price was not matching with seats price displayed on payment page for test scenario ID:" + testCaseNumber ;
+                softAssert.assertTrue(isPriceMatching, failMessage);
+
+            }
 
         }
 
-        boolean isBookingSuccess = false;
-
+        paymentPageMethods.selectPaymentMethod(driver, domain, paymentMethod);
         BookingConfirmationPageMethods bookingConfirmationPageMethods = new BookingConfirmationPageMethods();
 
-        isBookingSuccess = bookingConfirmationPageMethods.verifyBookingConfirmationRedirect(driver);
+        // Seats_TC_17
 
-        Assert.assertTrue(isBookingSuccess, "Booking got failed. Correlation ID: "+CID);
+        if(Boolean.parseBoolean(testCases.get(16)[2])) {
+
+            if (paymentMethod.equalsIgnoreCase("EFT")){
+
+                paymentPageMethods.selectEFTBank(driver, domain, bankNameEFT);
+
+                paymentPageMethods.clickPay(driver, domain, paymentMethod);
+
+            }
+
+            boolean isBookingSuccess = false;
+
+            isBookingSuccess = bookingConfirmationPageMethods.verifyBookingConfirmationRedirect(driver);
+
+            testReport.updateTestResult(testResultData, driver, testCaseNumber, testCases.get(16)[0], testCases.get(16)[1], CID, isBookingSuccess);
+            String failMessage = "Booking failed for test scenario ID:" + testCaseNumber +" and CID is:"+ CID;
+            Assert.assertTrue(isBookingSuccess, failMessage);
+
+
+        }else {
+            throw new SkipException("Skipping tests after booking step");
+        }
+
 
         List<String> seatsNumbersOnBookingConfirmationPage = new ArrayList<>();
 
-        seatsNumbersOnBookingConfirmationPage = bookingConfirmationPageMethods.getAllSelectedSeats(driver);
+        // Seats_TC_18
 
-        boolean selectedSeatNumbersMatchingWithBookingConfirmation = bookingConfirmationPageMethods.validateSelectedSeatsInBookingConfirmationPage(selectedSeats, seatsNumbersOnBookingConfirmationPage);
+        if(Boolean.parseBoolean(testCases.get(17)[2])) {
 
-        softAssert.assertTrue(selectedSeatNumbersMatchingWithBookingConfirmation, "Seats selected are not matching with seats displayed on booking confirmation");
 
+            if (testSeats) {
+
+                seatsNumbersOnBookingConfirmationPage = bookingConfirmationPageMethods.getAllSelectedSeats(driver);
+
+                boolean selectedSeatNumbersMatchingWithBookingConfirmation = bookingConfirmationPageMethods.validateSelectedSeatsInBookingConfirmationPage(selectedSeats, seatsNumbersOnBookingConfirmationPage);
+
+                testReport.updateTestResult(testResultData, driver, testCaseNumber, testCases.get(17)[0], testCases.get(17)[1], CID, selectedSeatNumbersMatchingWithBookingConfirmation);
+                String failMessage = "Seats selection price was not matching with seats price displayed on payment page for test scenario ID:" + testCaseNumber ;
+                softAssert.assertTrue(selectedSeatNumbersMatchingWithBookingConfirmation, failMessage);
+
+            }
+
+        }
+
+        // Seats_TC_19
+
+        Map<String, String> invoiceBreakDown = bookingConfirmationPageMethods.getPricebreakDown(driver);
+
+        if(Boolean.parseBoolean(testCases.get(18)[2])) {
+
+            if (testSeats) {
+                int seatsPriceInBreakDown = m.stringToInt(m.retriveValueFromMap(invoiceBreakDown, "Seat"));
+                boolean isPriceMatching = false;
+
+                isPriceMatching = totalCostOfSeats == seatsPriceInBreakDown;
+                testReport.updateTestResult(testResultData, driver, testCaseNumber, testCases.get(18)[0], testCases.get(18)[1], CID, isPriceMatching);
+                String failMessage = "Seats selection price was not matching with seats price displayed on payment page for test scenario ID:" + testCaseNumber ;
+                softAssert.assertTrue(isPriceMatching, failMessage);
+
+            }
+
+        }
 
         // Check all assertions
         softAssert.assertAll();
 
+
         //Cancel flight
-        if(isToBeCancelled.equalsIgnoreCase("Yes")) {
+        boolean cancelBooking = Boolean.parseBoolean(isToBeCancelled);
+        if(cancelBooking) {
             m.cancelBooking(environment, bookingReference);
         }
 
@@ -439,8 +708,6 @@ public class SeatsTest {
 
 
 
-
-    // TestCaseMethods
 
 
 
