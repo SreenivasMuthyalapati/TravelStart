@@ -1,0 +1,145 @@
+<!DOCTYPE html><html lang='en'><head><meta charset='UTF-8'><meta name='viewport' content='width=device-width, initial-scale=1.0'><title>Test Execution Report</title><style>body {
+    font-family: Arial, sans-serif;
+    line-height: 1.6;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #f5f5f5;
+}
+.container {
+    background-color: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+.header {
+    text-align: center;
+    margin-bottom: 30px;
+}
+.pass {
+    color: #2e7d32;
+    font-weight: bold;
+}
+.fail {
+    color: #d32f2f;
+    font-weight: bold;
+}
+.scenario {
+    font-weight: bold;
+    cursor: pointer;
+    margin: 10px 0;
+    padding: 10px;
+    background-color: #e3f2fd;
+    border-radius: 4px;
+    transition: background-color 0.2s;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.scenario:hover {
+    background-color: #bbdefb;
+}
+.scenario-status {
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 0.9em;
+}
+.status-pass {
+    background-color: #c8e6c9;
+    color: #2e7d32;
+}
+.status-fail {
+    background-color: #ffcdd2;
+    color: #d32f2f;
+}
+.testcases {
+    display: none;
+    padding: 20px;
+    margin: 10px 0;
+    border-left: 3px solid #2196f3;
+    background-color: #fff;
+}
+.summary {
+    display: flex;
+    justify-content: space-around;
+    margin: 20px 0;
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 4px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+.stat {
+    text-align: center;
+}
+.stat-value {
+    font-size: 24px;
+    font-weight: bold;
+}
+.chart-container {
+    width: 400px;
+    height: 400px;
+    margin: 20px auto;
+    position: relative;
+}
+hr {
+    border: none;
+    border-top: 1px solid #e0e0e0;
+    margin: 10px 0;
+}
+#searchInput {
+    width: 100%;
+    padding: 12px;
+    margin: 10px 0;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    box-sizing: border-box;
+}
+</style><script src='https://cdn.jsdelivr.net/npm/chart.js'></script></head><body><div class='container'><div class='header'><h1>Test Execution Report</h1><p>Generated on: 2024-11-06 16:54:32</p></div><div class='chart-container'><canvas id='testChart'></canvas></div><div class='summary'><div class='stat'><div class='stat-value'>0</div><div>Total Tests</div></div><div class='stat'><div class='stat-value pass'>0</div><div>Passed</div></div><div class='stat'><div class='stat-value fail'>0</div><div>Failed</div></div></div><input type='text' id='searchInput' onkeyup='searchScenarios()' placeholder='Search scenarios...'><div class='scenario' onclick="toggleTestCases('Seats_Test_SC01')"><span>▶ Seats_Test_SC01</span><span class='scenario-status status-fail'>FAIL</span></div><div id='Seats_Test_SC01' class='testcases'><div class='test-case'><p><strong>Test Case ID:</strong> Seats_TC_01<br><strong>Summary:</strong> Verify whether the seat map is loading successfully.<br><strong>Status:</strong> <span class='pass'>pass</span><br><strong>Booking Ref/ID:</strong> a83c47a3-f17c-47cd-8727-8a26953486ae</p></div><hr><div class='test-case'><p><strong>Test Case ID:</strong> Seats_TC_15<br><strong>Summary:</strong> Verify that the payment page was loaded or not<br><strong>Status:</strong> <span class='pass'>pass</span><br><strong>Booking Ref/ID:</strong> a83c47a3-f17c-47cd-8727-8a26953486ae</p></div><hr><div class='test-case'><p><strong>Test Case ID:</strong> Seats_TC_17<br><strong>Summary:</strong> Verify that the user is able to complete a booking with seats selected.<br><strong>Status:</strong> <span class='pass'>pass</span><br><strong>Booking Ref/ID:</strong> a83c47a3-f17c-47cd-8727-8a26953486ae</p></div><hr><div class='test-case'><p><strong>Test Case ID:</strong> Seats_TC_18<br><strong>Summary:</strong> Verify that the selected seat numbers are displayed correctly on the booking confirmation page.<br><strong>Status:</strong> <span class='fail'>fail</span><br><strong>Booking Ref/ID:</strong> a83c47a3-f17c-47cd-8727-8a26953486ae</p></div><hr><div class='test-case'><p><strong>Test Case ID:</strong> Seats_TC_19<br><strong>Summary:</strong> Verify that the selected seat price in the invoice details is correct.<br><strong>Status:</strong> <span class='fail'>fail</span><br><strong>Booking Ref/ID:</strong> a83c47a3-f17c-47cd-8727-8a26953486ae</p></div><hr></div><div class='scenario' onclick="toggleTestCases('Seats_Test_SC02')"><span>▶ Seats_Test_SC02</span><span class='scenario-status status-fail'>FAIL</span></div><div id='Seats_Test_SC02' class='testcases'><div class='test-case'><p><strong>Test Case ID:</strong> Seats_TC_01<br><strong>Summary:</strong> Verify whether the seat map is loading successfully.<br><strong>Status:</strong> <span class='pass'>pass</span><br><strong>Booking Ref/ID:</strong> 24092ba1-bce9-4a3d-832f-1ef58a7d6b40</p></div><hr><div class='test-case'><p><strong>Test Case ID:</strong> Seats_TC_15<br><strong>Summary:</strong> Verify that the payment page was loaded or not<br><strong>Status:</strong> <span class='pass'>pass</span><br><strong>Booking Ref/ID:</strong> 24092ba1-bce9-4a3d-832f-1ef58a7d6b40</p></div><hr><div class='test-case'><p><strong>Test Case ID:</strong> Seats_TC_17<br><strong>Summary:</strong> Verify that the user is able to complete a booking with seats selected.<br><strong>Status:</strong> <span class='pass'>pass</span><br><strong>Booking Ref/ID:</strong> 24092ba1-bce9-4a3d-832f-1ef58a7d6b40</p></div><hr><div class='test-case'><p><strong>Test Case ID:</strong> Seats_TC_18<br><strong>Summary:</strong> Verify that the selected seat numbers are displayed correctly on the booking confirmation page.<br><strong>Status:</strong> <span class='fail'>fail</span><br><strong>Booking Ref/ID:</strong> 24092ba1-bce9-4a3d-832f-1ef58a7d6b40</p></div><hr><div class='test-case'><p><strong>Test Case ID:</strong> Seats_TC_19<br><strong>Summary:</strong> Verify that the selected seat price in the invoice details is correct.<br><strong>Status:</strong> <span class='fail'>fail</span><br><strong>Booking Ref/ID:</strong> 24092ba1-bce9-4a3d-832f-1ef58a7d6b40</p></div><hr></div><script>function toggleTestCases(id) {
+    const element = document.getElementById(id);
+    element.style.display = element.style.display === 'none' ? 'block' : 'none';
+}
+
+function drawChart() {
+    const ctx = document.getElementById('testChart').getContext('2d');
+    new Chart(ctx, {
+        type: 'pie',
+        data: {
+            labels: ['Passed (6)', 'Failed (4)'],
+            datasets: [{
+                data: [6, 4],
+                backgroundColor: ['#4CAF50', '#FF6347'],
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'bottom'
+                }
+            }
+        }
+    });
+}
+
+function searchScenarios() {
+    const input = document.getElementById('searchInput');
+    const filter = input.value.toLowerCase();
+    const scenarios = document.getElementsByClassName('scenario');
+
+    for (let scenario of scenarios) {
+        const text = scenario.textContent || scenario.innerText;
+        if (text.toLowerCase().indexOf(filter) > -1) {
+            scenario.style.display = 'flex';
+        } else {
+            scenario.style.display = 'none';
+        }
+    }
+}
+
+// Call drawChart after the page loads
+window.onload = function() {
+    drawChart();
+};
+</script></div></body></html>

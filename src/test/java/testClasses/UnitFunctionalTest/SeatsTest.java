@@ -448,7 +448,6 @@ public class SeatsTest {
                 selectedSeats = seatsPageMethods.getSelectedSeatNumbers(driver);
                 totalCostOfSeats = seatsPageMethods.getTotalSeatsCost(driver);
 
-
                 seatsPageMethods.continueToNextStep(driver);
 
 
@@ -623,7 +622,7 @@ public class SeatsTest {
                 isPriceMatching = (totalCostOfSeats == m.stringToInt(seatsAmountInBreakDown) );
 
                 testReport.updateTestResult(testResultData, driver, testCaseNumber, testCases.get(15)[0], testCases.get(15)[1], CID, isPriceMatching);
-                String failMessage = "Seats selection price was not matching with seats price displayed on payment page for test scenario ID:" + testCaseNumber ;
+                String failMessage = "Seats selection price was not matching with seats price displayed on payment page for test scenario ID:" + testCaseNumber + "Actual seat selected amount: "+ totalCostOfSeats +" but the seats amount displayed on payment page is: "+ m.stringToInt(seatsAmountInBreakDown) ;
                 softAssert.assertTrue(isPriceMatching, failMessage);
 
             }
@@ -673,7 +672,7 @@ public class SeatsTest {
                 boolean selectedSeatNumbersMatchingWithBookingConfirmation = bookingConfirmationPageMethods.validateSelectedSeatsInBookingConfirmationPage(selectedSeats, seatsNumbersOnBookingConfirmationPage);
 
                 testReport.updateTestResult(testResultData, driver, testCaseNumber, testCases.get(17)[0], testCases.get(17)[1], CID, selectedSeatNumbersMatchingWithBookingConfirmation);
-                String failMessage = "Seats selection price was not matching with seats price displayed on payment page for test scenario ID:" + testCaseNumber ;
+                String failMessage = "Selected seats numbers was not matching with seats displayed on booking confirmation page for test scenario ID:" + testCaseNumber + ". The selected seats were: "+ selectedSeats +", but seats displayed on booking confirmation were: "+ seatsNumbersOnBookingConfirmationPage;
                 softAssert.assertTrue(selectedSeatNumbersMatchingWithBookingConfirmation, failMessage);
 
             }
@@ -701,7 +700,7 @@ public class SeatsTest {
 
         // Check all assertions
         softAssert.assertAll();
-        softAssert = null;
+        softAssert = new SoftAssert();
 
 
         //Cancel flight
@@ -711,12 +710,6 @@ public class SeatsTest {
         }
 
     }
-
-
-
-
-
-
 
 
 }

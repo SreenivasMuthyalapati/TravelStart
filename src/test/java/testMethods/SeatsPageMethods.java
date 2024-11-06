@@ -144,7 +144,7 @@ public class SeatsPageMethods {
                         int seatIndex = j;
                         try {
                             availableSeats.get(seatIndex).click();
-
+                            Thread.sleep(500);
                         } catch (ElementClickInterceptedException e) {
 
                         }
@@ -214,7 +214,7 @@ public class SeatsPageMethods {
                     } catch (StaleElementReferenceException e) {
                         System.out.println("Encountered stale element, retrying...");
                         retries--; // Retry locating the seat
-                        Thread.sleep(500); // Short wait before retrying
+                        Thread.sleep(400); // Short wait before retrying
                     }
                 }
 
