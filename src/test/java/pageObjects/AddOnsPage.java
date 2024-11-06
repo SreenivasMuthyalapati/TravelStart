@@ -26,4 +26,6 @@ public class AddOnsPage {
         return tableElement;
     }
 
+    public static By paymentMethodErrorModel = By.xpath("//div[@id='payment_methods_error']");
+
 }

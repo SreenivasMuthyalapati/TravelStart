@@ -5,6 +5,7 @@ import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.Assert;
 import org.testng.SkipException;
+import pageObjects.AddOnsPage;
 import pageObjects.FlightPage;
 import pageObjects.PaymentPage;
 
@@ -22,13 +23,14 @@ public class PaymentPageMethods {
     static ExcelUtils excelUtils = new ExcelUtils();
 
     // Asserting payment page loading or not returns "BOOLEAN"
-    public boolean assertPaymentPage(WebDriver driver){
+    public boolean assertPaymentPage(WebDriver driver) throws InterruptedException {
 
         By targetElementLocator = PaymentPage.paymentMethodsSection;
+        By errorModel = AddOnsPage.paymentMethodErrorModel;
 
         String targetElementName = "Payment Page";
 
-        boolean isPaymentPageLoaded = m.verifyRedirection(driver, targetElementLocator, targetElementName);
+        boolean isPaymentPageLoaded = m.verifyRedirection(driver, targetElementLocator, errorModel);
 
         return isPaymentPageLoaded;
 
