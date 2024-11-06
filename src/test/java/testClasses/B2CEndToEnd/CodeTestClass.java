@@ -45,6 +45,8 @@ public class CodeTestClass {
         // Print the response to inspect
         System.out.println("Response from API: " + response.toString(2));
 
+        System.out.println("Response from API: " + response.toString(2));
+
 
 
     }
