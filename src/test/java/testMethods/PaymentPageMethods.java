@@ -392,7 +392,7 @@ public class PaymentPageMethods {
                     driver.findElement(pageObjects.B2B.PaymentPage.cardNumber).sendKeys(cardNumber);
 
                 }
-            } catch (NullPointerException _){
+            } catch (NullPointerException e){
 
             }
 
