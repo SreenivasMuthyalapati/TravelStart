@@ -202,7 +202,6 @@ public class SeatsPageMethods {
                             int seatIndex = j;
                             try {
                                 availableSeats.get(seatIndex).click();
-
                             } catch (ElementClickInterceptedException e){
 
                             }
@@ -273,8 +272,9 @@ public class SeatsPageMethods {
     public void continueToNextStep(WebDriver driver) {
         try {
             driver.findElement(SeatsPage.continueToAddons).click();
+            Thread.sleep(500);
             driver.findElement(SeatsPage.continueInPopUp).click();
-        } catch (Exception e) {
+        } catch (Exception e){
 
         }
     }

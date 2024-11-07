@@ -67,7 +67,7 @@ public class SeatsPage {
 
     public static By seatsAlertPopUp = By.xpath("(//h5[contains(text(),'Are you sure?')])[1]");
     public static By chooseSeats_On_Alert_PopUp = By.xpath("(//button[@class='mat-focus-indicator btn fare-btn default_btn mr-2 pl-2 pr-2 mat-button mat-button-base'])[1]");
-    public static By continueInPopUp = By.xpath("(//button[@class='mat-focus-indicator btn proceedBtn primary_btn onHover mat-button mat-button-base'])[1]");
+    public static By continueInPopUp = By.xpath("(//button[@class='mat-focus-indicator btn proceedBtn primary_btn onHover mat-button mat-button-base']//span[@class='mat-button-wrapper']//span[text()='Continue'])[1]");
 
 
 
