@@ -191,6 +191,7 @@
 
 	<build>
 		<plugins>
+			<!-- Existing compiler plugin -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
@@ -206,6 +207,22 @@
 						</path>
 					</annotationProcessorPaths>
 					<fork>true</fork>
+				</configuration>
+			</plugin>
+
+			<!-- Add the Surefire plugin -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<version>3.2.2</version>
+				<configuration>
+					<argLine>
+						--add-opens java.base/java.lang=ALL-UNNAMED
+						--add-opens java.base/java.util=ALL-UNNAMED
+						-Xmx1024m
+					</argLine>
+					<forkCount>1</forkCount>
+					<reuseForks>false</reuseForks>
 				</configuration>
 			</plugin>
 		</plugins>
