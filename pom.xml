@@ -222,30 +222,18 @@
 				<artifactId>maven-surefire-plugin</artifactId>
 				<version>3.2.2</version>
 				<configuration>
+					<suiteXmlFiles>
+						<suiteXmlFile>src/test/java/testRunners/seatsTest.xml</suiteXmlFile>
+					</suiteXmlFiles>
 					<argLine>
 						--add-opens java.base/java.lang=ALL-UNNAMED
 						--add-opens java.base/java.util=ALL-UNNAMED
 						-Xmx2048m
 						-XX:+HeapDumpOnOutOfMemoryError
 					</argLine>
-					<suiteXmlFiles>
-						<suiteXmlFile>src/test/java/testRunners/seatsTest.xml</suiteXmlFile>
-					</suiteXmlFiles>
-					<properties>
-						<property>
-							<name>usedefaultlisteners</name>
-							<value>false</value>
-						</property>
-						<property>
-							<name>listener</name>
-							<value>org.uncommons.reportng.HTMLReporter,org.uncommons.reportng.JUnitXMLReporter</value>
-						</property>
-					</properties>
-					<forkCount>1</forkCount>
-					<reuseForks>false</reuseForks>
-					<trimStackTrace>false</trimStackTrace>
 				</configuration>
 			</plugin>
+
 		</plugins>
 	</build>
 </project>
