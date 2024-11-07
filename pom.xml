@@ -180,6 +180,19 @@
 			<artifactId>sendgrid-java</artifactId>
 			<version>4.9.3</version>
 		</dependency>
+
+		<dependency>
+			<groupId>org.junit.jupiter</groupId>
+			<artifactId>junit-jupiter-api</artifactId>
+			<version>5.10.0</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.junit.jupiter</groupId>
+			<artifactId>junit-jupiter-engine</artifactId>
+			<version>5.10.0</version>
+			<scope>test</scope>
+		</dependency>
 	</dependencies>
 
 	<repositories>
@@ -219,10 +232,14 @@
 					<argLine>
 						--add-opens java.base/java.lang=ALL-UNNAMED
 						--add-opens java.base/java.util=ALL-UNNAMED
-						-Xmx1024m
+						-Xmx2048m
+						-XX:+HeapDumpOnOutOfMemoryError
 					</argLine>
 					<forkCount>1</forkCount>
 					<reuseForks>false</reuseForks>
+					<trimStackTrace>false</trimStackTrace>
+					<useSystemClassLoader>false</useSystemClassLoader>
+					<useManifestOnlyJar>false</useManifestOnlyJar>
 				</configuration>
 			</plugin>
 		</plugins>
