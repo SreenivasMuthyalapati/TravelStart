@@ -20,6 +20,8 @@ public class PaymentPage {
     public static By standardBank = By.xpath("//*[@alt='standard-bank']");
     public static By absa = By.xpath("//*[@alt='absa']");
 
+    public static By paymentPageLoadingFailure = By.xpath("//div[@class='text-center priceApiFailedError ng-star-inserted']");
+
 
     //Card payment elements
     public static By credicCardOrDebitCard = By.xpath("//a[@id='credit-Card']");

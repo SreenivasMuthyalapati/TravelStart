@@ -1454,7 +1454,7 @@ public class Method {
 		for (int i = 2; i < testCasesCount; i++) {
 			String testCaseId = excelUtils.readDataFromExcel(testCasesDocumentPath, testCaseSheetName, i, 0);
 			String testCaseSummary = excelUtils.readDataFromExcel(testCasesDocumentPath, testCaseSheetName, i, 2);
-			String runTest = excelUtils.readDataFromExcel(testCasesDocumentPath, testCaseSheetName, i, 3);
+			String runTest = excelUtils.readDataFromExcel(testCasesDocumentPath, testCaseSheetName, i, 5);
 			String[] testDetails = {testCaseId, testCaseSummary, runTest};
 			testCase.add(testDetails);
 		}

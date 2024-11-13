@@ -24,11 +24,17 @@ public class SeatsPageMethods {
         } catch (TimeoutException e) {
             System.out.println("Failed to skip seats due to timeout.");
         } catch (NoSuchElementException ignored) {
+        } catch (ElementNotInteractableException intr){
+            try {
+                driver.findElement(SeatsPage.continueInPopUp).click();
+            } catch (ElementNotInteractableException e2){
+
+            }
         }
     }
 
-    public boolean verifySeatsDisplayed(WebDriver driver) {
-        return method.verifyRedirection(driver, SeatsPage.seatMap, "Seats");
+    public boolean verifySeatsDisplayed(WebDriver driver) throws InterruptedException {
+        return method.verifyRedirection(driver, SeatsPage.seatMap, By.xpath("//div[@class='seat-map-drawer__error seat_Error_Sec ng-star-inserted']"));
     }
 
     public int getAvailableSegmentsCount(WebDriver driver) {
@@ -143,8 +149,9 @@ public class SeatsPageMethods {
                         // Select a seat based on the passenger index, using modulo to cycle through seats
                         int seatIndex = j;
                         try {
+                            Thread.sleep(200);
                             availableSeats.get(seatIndex).click();
-                            Thread.sleep(500);
+                            Thread.sleep(300);
                         } catch (ElementClickInterceptedException e) {
 
                         }
@@ -201,7 +208,9 @@ public class SeatsPageMethods {
                             // Select a seat based on the passenger index, using modulo to cycle through seats
                             int seatIndex = j;
                             try {
+                                Thread.sleep(300);
                                 availableSeats.get(seatIndex).click();
+                                Thread.sleep(200);
                             } catch (ElementClickInterceptedException e){
 
                             }
@@ -271,9 +280,11 @@ public class SeatsPageMethods {
 
     public void continueToNextStep(WebDriver driver) {
         try {
+            Thread.sleep(2000);
             driver.findElement(SeatsPage.continueToAddons).click();
-            Thread.sleep(500);
+            Thread.sleep(2000);
             driver.findElement(SeatsPage.continueInPopUp).click();
+            Thread.sleep(2000);
         } catch (Exception e){
 
         }

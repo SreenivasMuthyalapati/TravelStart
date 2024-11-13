@@ -86,10 +86,13 @@ public class SRPMethods {
             // Clicks on return airline filter button
             driver.findElement(Filters.returnAirline).click();
 
+
+
             this.selectAirlineFilter(driver, tripType, isBundled, returnAirline);
 
 
-        }}
+        }
+        }
 
 
     }

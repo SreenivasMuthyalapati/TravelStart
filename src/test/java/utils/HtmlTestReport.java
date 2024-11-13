@@ -209,7 +209,9 @@ public class HtmlTestReport {
     }
 
     public synchronized void writeTestReport(String testScenarioID, String testCaseID,
-                                             String testCaseSummary, String testStatus, String bookingRefOrCID) {
+                                             String testCaseSummary, String testStatus,
+                                             String bookingRefOrCID, String testCaseBookingRef,
+                                             String failureMessage) {
         // Initialize scenario data if new
         if (!scenariosMap.containsKey(testScenarioID)) {
             scenariosMap.put(testScenarioID, new StringBuilder());
@@ -237,9 +239,18 @@ public class HtmlTestReport {
         scenarioContent.append("<div class='test-case'>")
                 .append("<p><strong>Test Case ID:</strong> ").append(testCaseID)
                 .append("<br><strong>Summary:</strong> ").append(testCaseSummary)
+                .append("<br><strong>Booking Reference:</strong> ").append(testCaseBookingRef)
                 .append("<br><strong>Status:</strong> <span class='").append(testStatus.toLowerCase()).append("'>")
-                .append(testStatus).append("</span>")
-                .append("</p></div><hr>");
+                .append(testStatus).append("</span>");
+
+        if (!testStatus.equalsIgnoreCase("pass") && failureMessage != null && !failureMessage.isEmpty()) {
+            scenarioContent.append("<div class='failure-message'>")
+                    .append("<strong>Failure Message:</strong><br>")
+                    .append(failureMessage.replace("\n", "<br>"))
+                    .append("</div>");
+        }
+
+        scenarioContent.append("</p></div><hr>");
     }
 
     public synchronized String saveHTMLReport() throws IOException {

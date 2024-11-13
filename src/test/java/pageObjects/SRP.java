@@ -19,6 +19,8 @@ public class SRP {
 //
 //        return null;
 //    }
+    public static By loader = By.xpath("//div[@class='loader']");
+
     public static By bookUnbundled = By.xpath("(//button[@aria-label='Book this flight'])[1]");
     public static By airPortChange = By.xpath("//button[@class='btn ok-btn onHover refreshBtn primary_btn ng-star-inserted']");
     public static By flightPrice = By.xpath("(//div[@class='price_labl'])[1]");

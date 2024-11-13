@@ -11,10 +11,7 @@ import org.testng.ITestResult;
 import org.testng.SkipException;
 import org.testng.annotations.*;
 import pageObjects.*;
-import testMethods.ExcelUtils;
-import testMethods.Method;
-import testMethods.PaymentPageMethods;
-import testMethods.TSMethods;
+import testMethods.*;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -162,7 +159,6 @@ public class BookingFlow {
     }
 
 
-
     @Test(dataProvider = "TestCase")
     public void bookingFlow(String testCaseNumber, String shouldRun, String domain, String cpy_source, String tripType, String origin, String destination, String departureDate, String departureMonth, String returnDate, String returnMonth, String adultCount, String youngAdultCount, String childCount, String infantCount,String isBundled, String departureAirline, String returnAirline, String mailID, String mobileNumber, String title, String firstName, String middleName, String lastName, String dateOfBirth, String monthOfBirth, String yearOfBirth, String passPortNumber, String dateOfPassportExpiry, String monthOfPassportExpiry, String yearOfPassportExpiry, String passPortNationality, String passPortIssuingCountry, String addBaggage, String addFlexi, String whatsApp, String addSeats, String paymentMethod, String bankNameEFT, String isLoggedInUser, String isToBeCancelled) throws IOException, InterruptedException {
 
@@ -229,10 +225,16 @@ public class BookingFlow {
 
         bookingFlowMethods.searchFlight(testCaseNumber, tripType, origin, destination, departureDate, departureMonth, returnDate, returnMonth,  adultCount, youngAdultCount, childCount, infantCount);
 
-        bookingFlowMethods.SelectAirline(testCaseNumber, tripType, isBundled, departureAirline, returnAirline);
+        SRPMethods srpMethods = new SRPMethods();
+        srpMethods.openFilters(driver, Boolean.parseBoolean(isBundled));
+        srpMethods.selectAirlineFilter(driver, tripType, Boolean.parseBoolean(isBundled), departureAirline, returnAirline);
+        srpMethods.applyFilters(driver);
+        Thread.sleep(1000);
         bookingFlowMethods.clickBook(testCaseNumber, tripType, isBundled);
         bookingFlowMethods.enterPaxDetails(isLoggedInUser, testCaseNumber, tripType, adultCount, youngAdultCount, childCount, infantCount, departureAirline, returnAirline, mailID, mobileNumber, title, firstName, middleName, lastName, dateOfBirth, monthOfBirth, yearOfBirth, passPortNumber, dateOfPassportExpiry, monthOfPassportExpiry, yearOfPassportExpiry, passPortNationality, passPortIssuingCountry, addBaggage, whatsApp);
-        bookingFlowMethods.add_seats(addSeats);
+        SeatsPageMethods seatsPageMethods = new SeatsPageMethods();
+
+        seatsPageMethods.skipSeats(driver,true);
         System.out.println(bookingFlowMethods.getPriceBreakdown((FlightPage.fareBreakdownTables)));
         bookingFlowMethods.add_Addons(domain, addFlexi);
         Thread.sleep(2000);

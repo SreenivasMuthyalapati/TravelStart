@@ -12,7 +12,6 @@ import pageObjects.AddOnsPage;
 import pageObjects.PaymentPage;
 import pageObjects.SeatsPage;
 import testMethods.*;
-import utils.ExcelTestReport;
 import utils.HtmlTestReport;
 import utils.TestReport;
 
@@ -41,7 +40,6 @@ public class SeatsTest {
 
     static TestReport testReport = new TestReport();
     static HtmlTestReport htmlTestReport = new HtmlTestReport();
-    static ExcelTestReport excelTestReport = new ExcelTestReport();
 
     static List<String[]> testResultData = new ArrayList<>();
     static List<String> attachments = new ArrayList<>();
@@ -70,7 +68,6 @@ public class SeatsTest {
 
         // Get test cases
         testCases = m.getTestCasesFromTestCasesDocument(dataPaths.seatsTest, "Seats Test Cases");
-        excelTestReport.createExcelReport();
         htmlTestReport.createHTMLReport();
 
 
@@ -87,7 +84,7 @@ public class SeatsTest {
 
             try{
                 String[] arr = testResultData.get(i);
-                attachments.add(arr[5]);
+                attachments.add(arr[7]);
             }catch (Exception e){
 
             }
@@ -356,8 +353,9 @@ public class SeatsTest {
             if (testSeats) {
 
                 isSeatsMapLoaded = seatsPageMethods.verifySeatsDisplayed(driver);
-                testReport.updateTestResult(testResultData, driver, testCaseNumber, testCases.get(0)[0], testCases.get(0)[1], CID, isSeatsMapLoaded);
                 String failMessage = "Seatmap wasn't loaded for test scenario ID:"+ testCaseNumber;
+                testReport.updateTestResult(testResultData, driver, testCaseNumber, testCases.get(0)[0], testCases.get(0)[1], CID, "-", failMessage, isSeatsMapLoaded);
+
                 Assert.assertTrue(isSeatsMapLoaded, failMessage);
 
             } else if (isSeatsOffered && (!selectSeats)) {
@@ -393,8 +391,8 @@ public class SeatsTest {
                     }
 
 
-                    testReport.updateTestResult(testResultData, driver, testCaseNumber, testCases.get(1)[0], testCases.get(1)[1], CID, isSeatsAvailaleForAllSegments);
                     String failMessage = "Seatmap wasn't loaded for test scenario ID:" + testCaseNumber +" and segment number: "+ i+1;
+                    testReport.updateTestResult(testResultData, driver, testCaseNumber, testCases.get(1)[0], testCases.get(1)[1], CID, "-", failMessage, isSeatsAvailaleForAllSegments);
                     softAssert.assertTrue(isSeatsAvailaleForAllSegments, failMessage);
 
                 }
@@ -420,9 +418,9 @@ public class SeatsTest {
 
             if (testSeats) {
 
-                    testReport.updateTestResult(testResultData, driver, testCaseNumber, testCases.get(2)[0], testCases.get(2)[1], CID, isSegmentSwitchable);
-                    String failMessage = "Seat segment switch wasn't working for test scenario ID:" + testCaseNumber ;
-                    softAssert.assertTrue(isSegmentSwitchable, failMessage);
+                String failMessage = "Seat segment switch wasn't working for test scenario ID:" + testCaseNumber ;
+                testReport.updateTestResult(testResultData, driver, testCaseNumber, testCases.get(2)[0], testCases.get(2)[1], CID, "-", failMessage, isSegmentSwitchable);
+                softAssert.assertTrue(isSegmentSwitchable, failMessage);
 
                 }
 
@@ -435,7 +433,8 @@ public class SeatsTest {
 
 
         if (testSeats && isSeatsMapLoaded){
-            
+
+            Thread.sleep(1000);
             boolean selectSeatsForAllSegmentsandAllPax = Boolean.parseBoolean(addSeatsForAllSegments);
             if (selectSeatsForAllSegmentsandAllPax) {
                 seatsPageMethods.selectSeats(driver, selectSeatsForAllSegmentsandAllPax);
@@ -467,8 +466,8 @@ public class SeatsTest {
 
                 }
 
-                testReport.updateTestResult(testResultData, driver, testCaseNumber, testCases.get(3)[0], testCases.get(3)[1], CID, isSelectedSeatsDisplayed);
                 String failMessage = "Seats selected were not displayed in seat map for test scenario ID:" + testCaseNumber ;
+                testReport.updateTestResult(testResultData, driver, testCaseNumber, testCases.get(3)[0], testCases.get(3)[1], CID, "-", failMessage, isSelectedSeatsDisplayed);
                 softAssert.assertTrue(isSelectedSeatsDisplayed, failMessage);
 
             }
@@ -489,8 +488,8 @@ public class SeatsTest {
 
                 }
 
-                testReport.updateTestResult(testResultData, driver, testCaseNumber, testCases.get(4)[0], testCases.get(4)[1], CID, isSelectedSeatsPriceDisplayed);
                 String failMessage = "Seats cost was not displayed in seat map for test scenario ID:" + testCaseNumber ;
+                testReport.updateTestResult(testResultData, driver, testCaseNumber, testCases.get(4)[0], testCases.get(4)[1], CID, "", failMessage, isSelectedSeatsPriceDisplayed);
                 softAssert.assertTrue(isSelectedSeatsPriceDisplayed, failMessage);
 
             }
@@ -528,8 +527,8 @@ public class SeatsTest {
             }
 
 
-            testReport.updateTestResult(testResultData, driver, testCaseNumber, testCases.get(5)[0], testCases.get(5)[1], CID, isNextStepLoaded);
             String failMessage = "Unable to move to next step after seats map for test scenario ID:" + testCaseNumber ;
+            testReport.updateTestResult(testResultData, driver, testCaseNumber, testCases.get(5)[0], testCases.get(5)[1], CID,"-", failMessage, isNextStepLoaded);
             Assert.assertTrue(isNextStepLoaded, failMessage);
 
         }
@@ -547,8 +546,8 @@ public class SeatsTest {
 
                 isPriceDisplayedInBreakDown = (totalCostOfSeats == m.stringToInt(seatsAmountInAddOnsBreakDown) );
 
-                testReport.updateTestResult(testResultData, driver, testCaseNumber, testCases.get(6)[0], testCases.get(6)[1], CID, isPriceDisplayedInBreakDown);
                 String failMessage = "Seats selection price was not displayed in breakdown on addOns page for test scenario ID:" + testCaseNumber ;
+                testReport.updateTestResult(testResultData, driver, testCaseNumber, testCases.get(6)[0], testCases.get(6)[1], CID,"-",failMessage, isPriceDisplayedInBreakDown);
                 softAssert.assertTrue(isPriceDisplayedInBreakDown, failMessage);
 
             }
@@ -565,8 +564,8 @@ public class SeatsTest {
 
                 isSeatDisplayedOnAddOns = true;
 
-                testReport.updateTestResult(testResultData, driver, testCaseNumber, testCases.get(7)[0], testCases.get(7)[1], CID, isSeatDisplayedOnAddOns);
                 String failMessage = "Selected seat numbers were not displayed on addOns page for test scenario ID:" + testCaseNumber ;
+                testReport.updateTestResult(testResultData, driver, testCaseNumber, testCases.get(7)[0], testCases.get(7)[1], CID,"-",failMessage, isSeatDisplayedOnAddOns);
                 softAssert.assertTrue(isSeatDisplayedOnAddOns, failMessage);
 
             }
@@ -593,8 +592,8 @@ public class SeatsTest {
 
             isPaymentPageLoaded = paymentPageMethods.assertPaymentPage(driver);
 
-                testReport.updateTestResult(testResultData, driver, testCaseNumber, testCases.get(14)[0], testCases.get(14)[1], CID, isPaymentPageLoaded);
-                String failMessage = "Payment page not loaded for test scenario ID:" + testCaseNumber ;
+            String failMessage = "Payment page not loaded for test scenario ID:" + testCaseNumber ;
+            testReport.updateTestResult(testResultData, driver, testCaseNumber, testCases.get(14)[0], testCases.get(14)[1], CID,"-",failMessage, isPaymentPageLoaded);
                 Assert.assertTrue(isPaymentPageLoaded, failMessage);
 
 
@@ -621,8 +620,8 @@ public class SeatsTest {
 
                 isPriceMatching = (totalCostOfSeats == m.stringToInt(seatsAmountInBreakDown) );
 
-                testReport.updateTestResult(testResultData, driver, testCaseNumber, testCases.get(15)[0], testCases.get(15)[1], CID, isPriceMatching);
                 String failMessage = "Seats selection price was not matching with seats price displayed on payment page for test scenario ID:" + testCaseNumber + "Actual seat selected amount: "+ totalCostOfSeats +" but the seats amount displayed on payment page is: "+ m.stringToInt(seatsAmountInBreakDown) ;
+                testReport.updateTestResult(testResultData, driver, testCaseNumber, testCases.get(15)[0], testCases.get(15)[1], CID,bookingReference,failMessage, isPriceMatching);
                 softAssert.assertTrue(isPriceMatching, failMessage);
 
             }
@@ -648,8 +647,8 @@ public class SeatsTest {
 
             isBookingSuccess = bookingConfirmationPageMethods.verifyBookingConfirmationRedirect(driver);
 
-            testReport.updateTestResult(testResultData, driver, testCaseNumber, testCases.get(16)[0], testCases.get(16)[1], CID, isBookingSuccess);
             String failMessage = "Booking failed for test scenario ID:" + testCaseNumber +" and CID is:"+ CID;
+            testReport.updateTestResult(testResultData, driver, testCaseNumber, testCases.get(16)[0], testCases.get(16)[1], CID,bookingReference,failMessage,  isBookingSuccess);
             Assert.assertTrue(isBookingSuccess, failMessage);
 
 
@@ -671,8 +670,8 @@ public class SeatsTest {
 
                 boolean selectedSeatNumbersMatchingWithBookingConfirmation = bookingConfirmationPageMethods.validateSelectedSeatsInBookingConfirmationPage(selectedSeats, seatsNumbersOnBookingConfirmationPage);
 
-                testReport.updateTestResult(testResultData, driver, testCaseNumber, testCases.get(17)[0], testCases.get(17)[1], CID, selectedSeatNumbersMatchingWithBookingConfirmation);
                 String failMessage = "Selected seats numbers was not matching with seats displayed on booking confirmation page for test scenario ID:" + testCaseNumber + ". The selected seats were: "+ selectedSeats +", but seats displayed on booking confirmation were: "+ seatsNumbersOnBookingConfirmationPage;
+                testReport.updateTestResult(testResultData, driver, testCaseNumber, testCases.get(17)[0], testCases.get(17)[1], CID,bookingReference,failMessage,  selectedSeatNumbersMatchingWithBookingConfirmation);
                 softAssert.assertTrue(selectedSeatNumbersMatchingWithBookingConfirmation, failMessage);
 
             }
@@ -690,8 +689,8 @@ public class SeatsTest {
                 boolean isPriceMatching = false;
 
                 isPriceMatching = totalCostOfSeats == seatsPriceInBreakDown;
-                testReport.updateTestResult(testResultData, driver, testCaseNumber, testCases.get(18)[0], testCases.get(18)[1], CID, isPriceMatching);
                 String failMessage = "Seats selection price was not matching with seats price displayed on confirmation page for test scenario ID:" + testCaseNumber +". Cost of seats: "+totalCostOfSeats+" but price displayed on booking confirmarion was: "+ seatsPriceInBreakDown;
+                testReport.updateTestResult(testResultData, driver, testCaseNumber, testCases.get(18)[0], testCases.get(18)[1], CID, bookingReference,failMessage, isPriceMatching);
                 softAssert.assertTrue(isPriceMatching, failMessage);
 
             }

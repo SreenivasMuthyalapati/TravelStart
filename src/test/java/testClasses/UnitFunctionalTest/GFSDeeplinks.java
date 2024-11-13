@@ -1,20 +1,15 @@
 package testClasses.UnitFunctionalTest;
 
 import configs.dataPaths;
-import netscape.javascript.JSObject;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.chrome.ChromeDriver;
 import org.testng.Assert;
 import org.testng.ITestResult;
 import org.testng.SkipException;
 import org.testng.annotations.*;
 import org.testng.asserts.SoftAssert;
 import testMethods.*;
-import utils.ExcelTestReport;
-import utils.HtmlTestReport;
 import utils.TestReport;
 
 import java.io.IOException;
