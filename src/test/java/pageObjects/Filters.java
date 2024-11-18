@@ -1,6 +1,7 @@
 package pageObjects;
 
 import org.openqa.selenium.By;
+import org.openqa.selenium.ElementNotInteractableException;
 import org.openqa.selenium.WebDriver;
 import testMethods.Method;
 
@@ -27,6 +28,18 @@ public class Filters {
 
         String xpath = String.format("(//input[@value='%s']/parent::div[@class='mat-checkbox-inner-container mat-checkbox-inner-container-no-side-margin'])[2]", value);
         By airlineSelect = By.xpath(xpath);
+
+        return airlineSelect;
+    }
+
+    public static By airlineFilter(String value, boolean isElementNotInteractable) {
+
+        By airlineSelect = null;
+        
+        if (isElementNotInteractable) {
+            String xpath = String.format("(//input[@value='%s']/parent::div[@class='mat-checkbox-inner-container mat-checkbox-inner-container-no-side-margin'])[1]", value);
+            airlineSelect = By.xpath(xpath);
+        }
 
         return airlineSelect;
     }

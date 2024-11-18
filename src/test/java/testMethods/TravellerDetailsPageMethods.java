@@ -237,7 +237,7 @@ public class TravellerDetailsPageMethods {
             passPortInfo = driver.findElement(FlightPage.ppInfo);
             passPortInfo = driver.findElement(FlightPage.ppInfo);
         } catch (NoSuchElementException ne) {
-            System.out.println("PassPort details not required for this flight");
+
         }
         try {
             if (passPortInfo.isDisplayed()) {

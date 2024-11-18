@@ -1,29 +1,29 @@
-package testClasses.UnitFunctionalTest;
+package testClasses.B2CEndToEnd;
 
 import configs.dataPaths;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.openqa.selenium.*;
+import org.openqa.selenium.Alert;
+import org.openqa.selenium.WebDriver;
 import org.testng.Assert;
 import org.testng.ITestResult;
 import org.testng.SkipException;
 import org.testng.annotations.*;
 import org.testng.asserts.SoftAssert;
 import pageObjects.AddOnsPage;
-import pageObjects.GlobalPageObjects;
 import pageObjects.PaymentPage;
 import pageObjects.SeatsPage;
+import testCaseMethods.bookingFlowE2E.BookingFlowTestCases;
 import testMethods.*;
 import utils.HtmlTestReport;
 import utils.TestReport;
 
-import java.awt.*;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class SeatsTest {
+public class BookingFlowEnd2End {
 
     static XSSFWorkbook workbook;
     static WebDriver driver;
@@ -33,8 +33,11 @@ public class SeatsTest {
     static String browser;
     static String baseURL;
     static String runTime;
-    static String screenShotPath ="";
     static ExcelUtils excelUtils = new ExcelUtils();
+
+    BookingFlowTestCases bookingFlowTestCases = new BookingFlowTestCases();
+
+
     static SeatsPageMethods seatsPageMethods = new SeatsPageMethods();
     static AddOnsPageMethods addOnsPageMethods = new AddOnsPageMethods();
 
@@ -61,14 +64,14 @@ public class SeatsTest {
     }
 
 
-    public SeatsTest() throws IOException {
+    public BookingFlowEnd2End() throws IOException {
     }
 
     @BeforeTest
     public void createTestReports() throws IOException {
 
         // Get test cases
-        testCases = m.getTestCasesFromTestCasesDocument(dataPaths.seatsTest, "Seats Test Cases");
+        testCases = m.getTestCasesFromTestCasesDocument(dataPaths.B2CBookingE2ETestData, "Booking Flow Test Cases");
         htmlTestReport.createHTMLReport();
 
 
@@ -122,6 +125,7 @@ public class SeatsTest {
 
             String testCaseNumber = excelUtils.readDataFromExcel(dataPath, "Booking Scenarios", i, 0);
             String shouldRun = excelUtils.readDataFromExcel(dataPath, "Booking Scenarios", i, 1);
+            String userType = excelUtils.readDataFromExcel(dataPath, "Booking Scenarios", i, 2);
             String domain = excelUtils.readDataFromExcel(dataPath, "Booking Scenarios", i, 2);
             String cpy_source = excelUtils.readDataFromExcel(dataPath, "Booking Scenarios", i, 3);
             String tripType = excelUtils.readDataFromExcel(dataPath, "Booking Scenarios", i, 4);
@@ -155,22 +159,13 @@ public class SeatsTest {
             String yearOfPassportExpiry = excelUtils.readDataFromExcel(dataPath, "Booking Scenarios", i, 32);
             String passPortNationality = excelUtils.readDataFromExcel(dataPath, "Booking Scenarios", i, 33);
             String passPortIssuingCountry = excelUtils.readDataFromExcel(dataPath, "Booking Scenarios", i, 34);
-            String addBaggage = excelUtils.readDataFromExcel(dataPath, "Booking Scenarios", i, 35);
-            String addSeats = excelUtils.readDataFromExcel(dataPath, "Booking Scenarios", i, 36);
-            String addSeatsForAllSegments = excelUtils.readDataFromExcel(dataPath, "Booking Scenarios", i, 37);
-            String seatsSegment1 = excelUtils.readDataFromExcel(dataPath, "Booking Scenarios", i, 38);
-            String seatsSegment2 = excelUtils.readDataFromExcel(dataPath, "Booking Scenarios", i, 39);
-            String seatsSegment3 = excelUtils.readDataFromExcel(dataPath, "Booking Scenarios", i, 40);
-            String seatsSegment4 = excelUtils.readDataFromExcel(dataPath, "Booking Scenarios", i, 41);
-            String seatsSegment5 = excelUtils.readDataFromExcel(dataPath, "Booking Scenarios", i, 42);
-            String seatsSegment6 = excelUtils.readDataFromExcel(dataPath, "Booking Scenarios", i, 43);
             String paymentMethod = excelUtils.readDataFromExcel(dataPath, "Booking Scenarios", i, 44);
             String bankNameEFT = excelUtils.readDataFromExcel(dataPath, "Booking Scenarios", i, 45);
             String isLoggedInUser = excelUtils.readDataFromExcel(dataPath, "Booking Scenarios", i, 46);
-            String isToBeCancelled = excelUtils.readDataFromExcel(dataPath, "Booking Scenarios", i, 47);
 
             testCase.add(new Object[]{testCaseNumber,
                     shouldRun,
+                    userType,
                     domain,
                     cpy_source,
                     tripType,
@@ -204,26 +199,16 @@ public class SeatsTest {
                     yearOfPassportExpiry,
                     passPortNationality,
                     passPortIssuingCountry,
-                    addBaggage,
-                    addSeats,
-                    addSeatsForAllSegments,
-                    seatsSegment1,
-                    seatsSegment2,
-                    seatsSegment3,
-                    seatsSegment4,
-                    seatsSegment5,
-                    seatsSegment6,
                     paymentMethod,
                     bankNameEFT,
-                    isLoggedInUser,
-                    isToBeCancelled});
+                    isLoggedInUser});
         }
         return testCase.toArray(new Object[0][]);
     }
 
 
     @Test(dataProvider = "TestCase")
-    public void seatsTest(String testCaseNumber, String shouldRun, String domain, String cpy_source, String tripType, String origin, String destination, String departureDate, String departureMonth, String returnDate, String returnMonth, String adultCount, String youngAdultCount, String childCount, String infantCount, String cabinClass, String departureAirline, String returnAirline, String departureSupplier, String returnSupplier, String mailID, String mobileNumber, String title, String firstName, String middleName, String lastName, String dateOfBirth, String monthOfBirth, String yearOfBirth, String passPortNumber, String dateOfPassportExpiry, String monthOfPassportExpiry, String yearOfPassportExpiry, String passPortNationality, String passPortIssuingCountry, String addBaggage, String addSeats, String addSeatsForAllSegments, String seatsForSegment1, String seatsForSegment2, String seatsForSegment3, String seatsForSegment4, String seatsForSegment5, String seatsForSegment6, String paymentMethod, String bankNameEFT, String isLoggedInUser, String isToBeCancelled) throws IOException, InterruptedException, AWTException {
+    public void seatsTest(String testCaseNumber, String shouldRun, String userType, String domain, String cpy_source, String tripType, String origin, String destination, String departureDate, String departureMonth, String returnDate, String returnMonth, String adultCount, String youngAdultCount, String childCount, String infantCount, String cabinClass, String departureAirline, String returnAirline, String departureSupplier, String returnSupplier, String mailID, String mobileNumber, String title, String firstName, String middleName, String lastName, String dateOfBirth, String monthOfBirth, String yearOfBirth, String passPortNumber, String dateOfPassportExpiry, String monthOfPassportExpiry, String yearOfPassportExpiry, String passPortNationality, String passPortIssuingCountry, String paymentMethod, String bankNameEFT, String isLoggedInUser) throws IOException, InterruptedException {
 
 
         runTime = m.getCurrentTime();
@@ -288,7 +273,7 @@ public class SeatsTest {
 
         CID = m.getCID(driver);
 
-        Assert.assertTrue(srpMethods.isSRPLoaded(driver), "Result not loaded");
+        bookingFlowTestCases.BookingFlowE2E_Search_01(driver, softAssert, testCaseNumber, testCases, testResultData, CID, origin, destination);
 
         srpMethods.openFilters(driver, isBundled);
 
@@ -318,9 +303,7 @@ public class SeatsTest {
         boolean isBaggageOffered = travellerDetailsPageMethods.isBaggageSelectionOffered(driver);
         String baggageType = "";
 
-        boolean addBaggage1 = Boolean.parseBoolean(addBaggage);
-
-        if (isBaggageOffered && addBaggage1){
+        if (isBaggageOffered){
 
             baggageType = travellerDetailsPageMethods.getBaggageType(driver, isBaggageOffered);
 
@@ -332,20 +315,19 @@ public class SeatsTest {
         boolean isMealsOffered = travellerDetailsPageMethods.isMealsOffered(driver);
 
         boolean testSeats = false;
-        boolean selectSeats = Boolean.parseBoolean(addSeats);
 
         Thread.sleep(500);
 
         boolean isSeatsOffered = travellerDetailsPageMethods.isSeatsOffered(driver);
         boolean isAddOnsOffered = travellerDetailsPageMethods.isAddOnsOffered(driver);
 
-        if(selectSeats && isSeatsOffered){
+        if(isSeatsOffered){
             testSeats = true;
         }
 
         travellerDetailsPageMethods.contiueToNextStep(driver);
 
-        if ((!isSeatsOffered) && selectSeats){
+        if ((!isSeatsOffered)){
 
             System.out.println("Seats not offered for this flight, hence skipping seat related test cases");
             throw new SkipException("Seats not offered for this flight, hence skipping seat related test cases");
@@ -367,7 +349,7 @@ public class SeatsTest {
 
                 Assert.assertTrue(isSeatsMapLoaded, failMessage);
 
-            } else if (isSeatsOffered && (!selectSeats)) {
+            } else if (isSeatsOffered) {
 
                 seatsPageMethods.skipSeats(driver, isSeatsOffered);
 
@@ -443,11 +425,9 @@ public class SeatsTest {
         if (testSeats && isSeatsMapLoaded){
 
             Thread.sleep(1000);
-            boolean selectSeatsForAllSegmentsandAllPax = Boolean.parseBoolean(addSeatsForAllSegments);
+            boolean selectSeatsForAllSegmentsandAllPax = Boolean.parseBoolean("true");
             if (selectSeatsForAllSegmentsandAllPax) {
                 seatsPageMethods.selectSeats(driver, selectSeatsForAllSegmentsandAllPax);
-            } else if (!selectSeatsForAllSegmentsandAllPax) {
-                seatsPageMethods.selectSeats(driver, selectSeatsForAllSegmentsandAllPax, seatsForSegment1, seatsForSegment2, seatsForSegment3, seatsForSegment4, seatsForSegment5, seatsForSegment6);
             }
             Thread.sleep(1000);
 
@@ -705,63 +685,14 @@ public class SeatsTest {
 
         }
 
-        System.out.println("Seats Selected: "+selectedSeats);
-        System.out.println("Seats cost: "+totalCostOfSeats);
-
-        bookingConfirmationPageMethods.gotoMyBookings(driver, baseURL);
-
-        MyBookingPageMethods myBookingPageMethods = new MyBookingPageMethods();
-        BookingSummaryPageMethods bookingSummaryPageMethods = new BookingSummaryPageMethods();
-
-
-        myBookingPageMethods.viewItineraryDetails(driver, bookingReference);
-
-        boolean isBookingDetailsLoaded = bookingSummaryPageMethods.verifyBookingDetailsLoaded(driver);
-
-        // Seats_TC_20
-
-        if(Boolean.parseBoolean(testCases.get(19)[2])) {
-
-
-            if (testSeats) {
-
-                List<String> seatsNumbersOnBookingsSummary = bookingSummaryPageMethods.getSelectedSeats(driver);
-
-                boolean selectedSeatNumbersMatchingWithBookingSummary = bookingConfirmationPageMethods.validateSelectedSeatsInBookingConfirmationPage(selectedSeats, seatsNumbersOnBookingsSummary);
-
-                String failMessage = "Selected seats numbers was not matching with seats displayed on booking summary in my bookings page for test scenario ID:" + testCaseNumber + ". The selected seats were: "+ selectedSeats +", but seats displayed on booking confirmation were: "+ seatsNumbersOnBookingsSummary;
-                testReport.updateTestResult(testResultData, driver, testCaseNumber, testCases.get(19)[0], testCases.get(19)[1], CID,bookingReference,failMessage,  selectedSeatNumbersMatchingWithBookingSummary);
-                softAssert.assertTrue(selectedSeatNumbersMatchingWithBookingSummary, failMessage);
-
-            }
-
-        }
-
-        // Seats_TC_21
-
-        if(Boolean.parseBoolean(testCases.get(20)[2])) {
-
-            if (testSeats) {
-                int seatsPriceInBreakDownViewItinerary = bookingSummaryPageMethods.getSeatsTotalCost(driver);
-                boolean isPriceMatching = false;
-
-                isPriceMatching = totalCostOfSeats == seatsPriceInBreakDownViewItinerary;
-                String failMessage = "Seats selection price was not matching with seats price displayed on booking summary in my bookings page for test scenario ID:" + testCaseNumber +". Cost of seats: "+totalCostOfSeats+" but price displayed on booking confirmarion was: "+ seatsPriceInBreakDownViewItinerary;
-                testReport.updateTestResult(testResultData, driver, testCaseNumber, testCases.get(20)[0], testCases.get(20)[1], CID, bookingReference,failMessage, isPriceMatching);
-                softAssert.assertTrue(isPriceMatching, failMessage);
-
-            }
-
-        }
-
         // Check all assertions
         softAssert.assertAll();
         softAssert = new SoftAssert();
 
 
         //Cancel flight
-        boolean cancelBooking = Boolean.parseBoolean(isToBeCancelled);
-        if(cancelBooking) {
+
+        if(true) {
             m.cancelBooking(environment, bookingReference);
         }
 

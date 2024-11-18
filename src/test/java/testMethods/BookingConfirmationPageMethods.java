@@ -2,11 +2,11 @@ package testMethods;
 
 import org.apache.poi.hssf.record.PageBreakRecord;
 import org.openqa.selenium.*;
-import pageObjects.BookingConfirmationPage;
-import pageObjects.FlightPage;
-import pageObjects.PaymentPage;
-import pageObjects.SeatsPage;
+import org.testng.Assert;
+import org.testng.SkipException;
+import pageObjects.*;
 
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -332,6 +332,32 @@ public class BookingConfirmationPageMethods {
         }
 
         return mealsPrice;
+    }
+
+
+    public void gotoMyBookings(WebDriver driver, String URL) throws AWTException, InterruptedException {
+
+        m.openNewTab(driver);
+        driver.navigate().to(URL);
+
+        LoginMethods loginMethods = new LoginMethods();
+
+        boolean loginSuccess = loginMethods.loginWithPassword(driver, "sreenivasulu@travelstart.com", "Test@123");
+
+        if (!loginSuccess){
+            throw new SkipException("Login was not success. Skipping further tests");
+        }
+
+        driver.findElement(GlobalPageObjects.manageBookings).click();
+
+        boolean isBookingAvailable = m.verifyRedirection(driver, MyBookings.bookingsDataTable, "Bookings List");
+
+        if (!isBookingAvailable){
+
+            Assert.assertTrue(isBookingAvailable, "Bookings were not loaded in My Bookings");
+
+        }
+
     }
 
 }

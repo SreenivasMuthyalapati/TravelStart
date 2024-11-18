@@ -4,7 +4,7 @@ public interface dataPaths {
 
 
         public static String dataBasePath = System.getProperty("user.dir");
-
+        public static String configPropertiesPath = dataBasePath+"\\src\\test\\resources\\configFiles\\config.properties";
 
         //Data Paths
         public static String URLs = dataBasePath+"\\TestData\\URLs.xls";

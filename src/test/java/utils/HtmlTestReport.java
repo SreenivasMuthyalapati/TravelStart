@@ -98,6 +98,13 @@ public class HtmlTestReport {
                 border-radius: 4px;
                 border-left: 3px solid #2196f3;
             }
+            .failure-message {
+                 background-color: #fff3f3;
+                 padding: 10px;
+                 margin-top: 10px;
+                 border-left: 3px solid #d32f2f;
+                 font-family: monospace;
+             }
             .summary {
                 display: grid;
                 grid-template-columns: repeat(4, 1fr);

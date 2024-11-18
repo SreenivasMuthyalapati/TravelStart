@@ -29,9 +29,10 @@ public class MetaLinks {
     // Extracting environment from test data sheet
     static {
         try {
-            environment = excelUtils.readDataFromExcel(dataPath, "URL's", 1, 1);
-            browser = excelUtils.readDataFromExcel(dataPath, "URL's", 0, 1);
-        } catch (IOException e) {
+            environment = Method.getEnvironment();
+            browser = Method.getBrowser();
+        } catch (Exception e) {
+            System.out.println("Failed to get URL or Browser data");
             throw new RuntimeException(e);
         }
     }

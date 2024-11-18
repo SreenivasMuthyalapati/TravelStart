@@ -2,6 +2,7 @@ package testMethods;
 
 import configs.dataPaths;
 import io.github.bonigarcia.wdm.WebDriverManager;
+import io.github.bonigarcia.wdm.managers.OperaDriverManager;
 import io.github.cdimascio.dotenv.Dotenv;
 import io.restassured.http.ContentType;
 import io.restassured.response.Response;
@@ -15,6 +16,7 @@ import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.edge.EdgeDriver;
 import org.openqa.selenium.firefox.FirefoxDriver;
+import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.logging.LogEntries;
 import org.openqa.selenium.logging.LogEntry;
 import org.openqa.selenium.logging.LogType;
@@ -27,6 +29,8 @@ import pageObjects.CloudFlare;
 import pageObjects.FlightPage;
 import pageObjects.HomePage;
 
+import java.awt.*;
+import java.awt.event.KeyEvent;
 import java.io.IOException;
 import java.io.*;
 import java.time.*;
@@ -37,6 +41,7 @@ import java.util.*;
 //import jxl.read.biff.BiffException;
 
 import java.io.File;
+import java.util.List;
 
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.HttpEntity;
@@ -108,6 +113,24 @@ public class Method {
 
 	}
 
+	public static String getBrowser() throws Exception {
+
+		String browser = "";
+
+		browser = Method.ReadPropertyFile(configs.dataPaths.configPropertiesPath, "browser");
+
+        return browser;
+    }
+
+	public static String getEnvironment() throws Exception {
+
+		String environment = "";
+
+		environment = Method.ReadPropertyFile(configs.dataPaths.configPropertiesPath, "environment");
+
+		return environment;
+	}
+
 	public void takeScreenshot(WebDriver driver) {
 		// Generate a random file name
 		String fileName = generateRandomFileName() + ".png";
@@ -143,6 +166,46 @@ public class Method {
 		String stringValue = String.valueOf(intValue);
 
 		return stringValue;
+	}
+
+	// Retrieves breakdown from table and returns in "MAP"
+	public Map<String, String> getBreakDownAsMapFromTable(WebDriver driver, By tablesElement){
+
+		List<WebElement> tables = driver.findElements(tablesElement);
+
+		int priceBreakdownCategoriesCount = tables.size();
+
+		Map<String, String> dataMap = new HashMap<>();
+
+		for (int i =0; i < priceBreakdownCategoriesCount; i++){
+			// Find all rows within the table
+
+			WebElement table = driver.findElement(FlightPage.priceTable(String.valueOf(i+1)));
+
+			List<WebElement> rows = table.findElements(By.tagName("tr"));
+
+			// Iterate through each row
+			for (WebElement row : rows) {
+				// Find th and td elements within the row
+
+				List<WebElement> cells = row.findElements(By.tagName("th"));
+				cells.addAll(row.findElements(By.tagName("td")));
+
+				// Extract text from th and td elements
+				if (cells.size() == 3) {
+					// Assuming each row has exactly one th and one td
+					String key = cells.get(1).getText().trim();
+					String value = cells.get(2).getText().trim();
+
+					// Store in the map (if both key and value are not empty)
+					if (!key.isEmpty() && !value.isEmpty()) {
+						dataMap.put(key, value);
+					}
+				}
+			}
+		}
+
+		return dataMap;
 	}
 
 	public String getCID(WebDriver driver){
@@ -875,7 +938,7 @@ public class Method {
 
 
 
-	public WebDriver launchBrowser( WebDriver driver, String browser){
+	public WebDriver launchBrowser(WebDriver driver, String browser) {
 
 		if (browser.equalsIgnoreCase("Chrome")) {
 			WebDriverManager.chromedriver().setup();
@@ -884,11 +947,15 @@ public class Method {
 			WebDriverManager.firefoxdriver().setup();
 			driver = new FirefoxDriver();
 		} else if (browser.equalsIgnoreCase("Edge")) {
+			WebDriverManager.edgedriver().setup();
 			driver = new EdgeDriver();
+		} else {
+			throw new IllegalArgumentException("Unsupported browser: " + browser);
 		}
 
 		return driver;
 	}
+
 
 
 	public boolean isBundled(String domain, String tripType, String origin, String destination){
@@ -1435,6 +1502,21 @@ public class Method {
 			}
 		}
 		return null; // return null or a default value if no match is found
+	}
+
+	public void openNewTab(WebDriver driver) throws AWTException {
+
+		// Using Robot class
+		Robot robot = new Robot();
+		robot.keyPress(KeyEvent.VK_CONTROL);
+		robot.keyPress(KeyEvent.VK_T);
+		robot.keyRelease(KeyEvent.VK_T);
+		robot.keyRelease(KeyEvent.VK_CONTROL);
+
+		// OR using Actions class
+		Actions actions = new Actions(driver);
+		actions.keyDown(Keys.CONTROL).sendKeys("t").keyUp(Keys.CONTROL).perform();
+
 	}
 
 	public String getTimeStamp(){

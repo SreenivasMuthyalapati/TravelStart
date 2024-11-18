@@ -1,9 +1,16 @@
 package testMethods;
 
 import org.openqa.selenium.*;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.SkipException;
 import pageObjects.Filters;
+import pageObjects.HomePage;
 import pageObjects.SRP;
+
+import java.time.Duration;
+import java.util.ArrayList;
+import java.util.List;
 
 public class SRPMethods {
 
@@ -49,11 +56,16 @@ public class SRPMethods {
 
     public void selectAirlineFilter(WebDriver driver, String tripType, boolean isBundled, String departAirline){
 
-
             try {
                 WebElement airlineCheckBox = driver.findElement(Filters.airlineFilter(departAirline));
 
-                airlineCheckBox.click();
+                try {
+                    airlineCheckBox.click();
+                } catch (ElementNotInteractableException e){
+
+                    airlineCheckBox = driver.findElement(Filters.airlineFilter(departAirline, true));
+                    airlineCheckBox.click();
+                }
 
             } catch (NoSuchElementException e){
 
@@ -64,6 +76,8 @@ public class SRPMethods {
             }
 
     }
+
+
 
 
     public void selectAirlineFilter(WebDriver driver, String tripType, boolean isBundled, String departAirline, String returnAirline){
@@ -103,20 +117,24 @@ public class SRPMethods {
         try {
             driver.findElement(Filters.apply).click();
         }catch (ElementNotInteractableException e){
-            driver.findElement(By.xpath("(//span[@class='close_icn'])[2]")).click();
+            try {
+                driver.findElement(By.xpath("(//span[@class='close_icn'])[2]")).click();
+            } catch (ElementNotInteractableException e1){
+
+            }
         }
 
     }
 
-    public void selectUnbundledFlights(WebDriver driver, boolean isBundled){
+    public void selectUnbundledFlights(WebDriver driver, boolean isBundled) throws InterruptedException {
+
+        List<By> flights = SRP.pickFirstFlight(isBundled);
 
         if (!isBundled){
 
-            // Selects outbound flight in result
-            driver.findElement(SRP.outboundFlightUnbundled).click();
-
-            // Selects inbound flight in result
-            driver.findElement(SRP.inboundFlightUnbundled).click();
+            driver.findElement(flights.get(0)).click();
+            Thread.sleep(200);
+            driver.findElement(flights.get(1)).click();
 
         } else if (isBundled) {
 
@@ -124,26 +142,35 @@ public class SRPMethods {
 
     }
 
-    public void selectUnbundledFlights(WebDriver driver, boolean isBundled, String supplierCode){
+    public void selectUnbundledFlights(WebDriver driver, boolean isBundled, String outBoundSupplierCode, String inboundSupplierCode) throws InterruptedException {
+
+        List<String> flightNumbers = SRP.getRequiredItnryNumberBySupplier(driver, outBoundSupplierCode, inboundSupplierCode);
+
+        String outboundFlightNumber = flightNumbers.get(0);
+        String inboundFlightNumber = flightNumbers.get(1);
+
+        List<By> flights = SRP.pickUnbundledFlight(outboundFlightNumber, inboundFlightNumber);
 
         if (!isBundled){
 
-            // Selects outbound flight in result
-            driver.findElement(SRP.outboundFlightUnbundled).click();
-
-            // Selects inbound flight in result
-            driver.findElement(SRP.inboundFlightUnbundled).click();
+            driver.findElement(flights.get(0)).click();
+            Thread.sleep(200);
+            driver.findElement(flights.get(1)).click();
 
         } else if (isBundled) {
 
         }
 
     }
+
 
     public void proceedToTravellerPage(WebDriver driver, boolean isBundled) throws InterruptedException {
 
+        List<By> bookLocator = SRP.pickFirstFlight(isBundled);
+
         if (!isBundled) {
 
+            this.selectUnbundledFlights(driver, isBundled);
             driver.findElement(SRP.bookUnbundled).click();
 
             Thread.sleep(500);
@@ -159,7 +186,7 @@ public class SRPMethods {
 
         } else if (isBundled) {
             Thread.sleep(500);
-            driver.findElement(SRP.book).click();
+            driver.findElement(bookLocator.get(0)).click();
             Thread.sleep(500);
 
             try {
@@ -179,24 +206,23 @@ public class SRPMethods {
 
     public void proceedToTravellerPage(WebDriver driver, boolean isBundled, String supplierCode) throws InterruptedException {
 
-        if (!isBundled) {
 
-            driver.findElement(SRP.bookUnbundled).click();
+        String itineraryNumber = SRP.getRequiredItnryNumberBySupplier(driver, supplierCode);
+        By bookLocator = null;
 
+        if (!itineraryNumber.isEmpty()) {
+
+            bookLocator = SRP.pickBundledFlight(itineraryNumber);
+
+        }
+
+       if (isBundled) {
             Thread.sleep(500);
-
             try {
-
-                // Clicks on proceed on airport change pop up
-                driver.findElement(SRP.airPortChange).click();
-
-            }catch (NoSuchElementException ne){
+                driver.findElement(bookLocator).click();
+            } catch (NullPointerException e){
 
             }
-
-        } else if (isBundled) {
-            Thread.sleep(500);
-            driver.findElement(SRP.book).click();
             Thread.sleep(500);
 
             try {
@@ -205,6 +231,7 @@ public class SRPMethods {
                 driver.findElement(SRP.airPortChange).click();
 
             }catch (NoSuchElementException ne){
+
 
             }
         }
@@ -213,6 +240,43 @@ public class SRPMethods {
         Thread.sleep(1000);
 
     }
+
+    public void proceedToTravellerPage(WebDriver driver, boolean isBundled, String outboundSupplier, String inboundSupplier) throws InterruptedException {
+
+        if (outboundSupplier.isEmpty() || outboundSupplier == null || outboundSupplier.equalsIgnoreCase("-")){
+
+            proceedToTravellerPage(driver, isBundled);
+
+        } else {
+
+            if (!isBundled) {
+
+                this.selectUnbundledFlights(driver, isBundled, outboundSupplier, inboundSupplier);
+                driver.findElement(SRP.bookUnbundled).click();
+                Thread.sleep(500);
+
+                try {
+
+                    // Clicks on proceed on airport change pop up
+                    driver.findElement(SRP.airPortChange).click();
+
+                } catch (NoSuchElementException ne) {
+
+                }
+
+            } else if (isBundled) {
+
+                this.proceedToTravellerPage(driver, isBundled, outboundSupplier);
+
+            }
+        }
+
+        // Waits for 1 second for DOM to get refreshed
+        Thread.sleep(1000);
+
+    }
+
+
 
     public int getTotalSegmentCount(WebDriver driver, String tripType, boolean isBundled){
 
@@ -338,5 +402,89 @@ public class SRPMethods {
         return isCurrencyValid;
     }
 
+    public boolean isSearchRoutesMatched(WebDriver driver, String origin, String destination){
+
+        String from = driver.findElement(HomePage.departureCity).getAttribute("value");
+        String to = driver.findElement(HomePage.arrivalCity).getAttribute("value");
+
+        boolean isSearchRouteMatching = false;
+
+        if (from.contains(origin) && to.contains(destination)){
+
+            isSearchRouteMatching = true;
+
+        }
+
+        return isSearchRouteMatching;
+    }
+
+
+    public boolean verifyCountdownTimerStarted(WebDriver driver) {
+        // Initialize wait with 10 seconds timeout
+        WebDriverWait wait = null;
+        wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+
+        // Wait for the countdown element to be visible
+        WebElement countdownElement = wait.until(
+                ExpectedConditions.visibilityOfElementLocated(
+                        SRP.sessionCountdown
+                )
+        );
+
+        // Get initial time
+        String initialTime = countdownElement.getText();
+
+        // Wait for 2 seconds
+        try {
+            Thread.sleep(2000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        // Get updated time
+        String updatedTime = countdownElement.getText();
+
+        // Convert times to seconds for comparison
+        int initialSeconds = convertTimeToSeconds(initialTime);
+        int updatedSeconds = convertTimeToSeconds(updatedTime);
+
+        // Verify countdown is actually decreasing
+        boolean sessionTtimerRunning = updatedSeconds < initialSeconds;
+        return sessionTtimerRunning;
+    }
+
+    private int convertTimeToSeconds(String time) {
+        String[] parts = time.split(":");
+        int minutes = Integer.parseInt(parts[0]);
+        int seconds = Integer.parseInt(parts[1]);
+        return minutes * 60 + seconds;
+    }
+
+    public boolean verifyCountdownFormat(WebDriver driver) {
+        WebDriverWait wait = null;
+        WebElement countdownElement = wait.until(
+                ExpectedConditions.visibilityOfElementLocated(
+                        SRP.sessionCountdown
+                )
+        );
+
+        String timePattern = "\\d{2}:\\d{2}";
+        boolean countDownForamtMatched = (countdownElement.getText().matches(timePattern));
+        return countDownForamtMatched;
+    }
+
+    public boolean verifyCountdownPresence() {
+        // Verify the countdown container is present
+        WebDriverWait wait = null;
+        WebElement countdownContainer = wait.until(
+                ExpectedConditions.visibilityOfElementLocated(
+                        SRP.sessionCountdown
+                )
+        );
+
+        boolean countDownAppeared = (countdownContainer.isDisplayed());
+
+        return countDownAppeared;
+    }
 
 }
