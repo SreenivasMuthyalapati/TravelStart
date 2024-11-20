@@ -133,7 +133,11 @@ public class SeatsPageMethods {
         for (int j = 1; j <= paxCount; j++) {
 
             // Switch to the current passenger
-            driver.findElement(SeatsPage.switchPassenger(String.valueOf(j))).click();
+            try {
+                driver.findElement(SeatsPage.switchPassenger(String.valueOf(j))).click();
+            } catch (StaleElementReferenceException e){
+
+            }
             Thread.sleep(400); // Adjust wait time if needed
 
             boolean seatSelected = false;
