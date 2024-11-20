@@ -4,6 +4,8 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 
+import java.util.List;
+
 public class HomePage {
 
     private WebDriver driver;
@@ -19,6 +21,27 @@ public class HomePage {
     public static By departureDate = By.xpath("//input[@id='dept_date0']");
     public static By returnDate = By.xpath("//input[@id='arr_date0']");
     public static By search = By.xpath("//button[@aria-label='Search Flights']");
+
+    public static By searchSuggestion(WebDriver driver, String IATACode){
+
+        List<WebElement> suggestionsDisplayed = driver.findElements(By.xpath("(//*[@class='mat-option-text'])//span[@class='city_search_code']"));
+        String elementPosision = "";
+        for (int i=0; i< suggestionsDisplayed.size(); i++){
+
+            String suggestionText = suggestionsDisplayed.get(i).getText();
+
+            if (suggestionText.equalsIgnoreCase(IATACode)){
+
+                elementPosision = String.valueOf(i+1);
+                break;
+            }
+
+        }
+
+        By suggestion = By.xpath("(//*[@class='mat-option-text'])["+elementPosision+"]//span[@class='city_search_code']");
+
+        return suggestion;
+    }
     public static By option = By.xpath("//*[@class='mat-option-text']");
     public static By nextMonth = By.xpath("//*[@title='Next month']");
     public static By calender = By.xpath("//*[@class='dropdown-menu show ng-star-inserted']");

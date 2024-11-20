@@ -663,7 +663,7 @@ public class Method {
 
 			dropdownElement.click();
 
-			Thread.sleep(1000);
+			Thread.sleep(100);
 
 
 		}catch (NoSuchElementException e){
@@ -1516,6 +1516,15 @@ public class Method {
 		// OR using Actions class
 		Actions actions = new Actions(driver);
 		actions.keyDown(Keys.CONTROL).sendKeys("t").keyUp(Keys.CONTROL).perform();
+
+		// Switch to latest/new window
+		String currentHandle = driver.getWindowHandle();
+		for (String handle : driver.getWindowHandles()) {
+			if (!handle.equals(currentHandle)) {
+				driver.switchTo().window(handle);
+				break;
+			}
+		}
 
 	}
 

@@ -48,7 +48,7 @@ public class HomePageMethods {
         Thread.sleep(1700);
 
         // Selecting city from suggestion
-        driver.findElement(HomePage.option).click();
+        driver.findElement(HomePage.searchSuggestion(driver, origin)).click();
 
     }
 
@@ -64,7 +64,7 @@ public class HomePageMethods {
         Thread.sleep(1700);
 
         // Selecting city from suggestion
-        driver.findElement(HomePage.option).click();
+        driver.findElement(HomePage.searchSuggestion(driver, destination)).click();
 
     }
 
@@ -128,7 +128,7 @@ public class HomePageMethods {
 
         if (numberOfMonthsDifference > 0){
             for (int a = 0; a < numberOfMonthsDifference; a++) {
-                Thread.sleep(200);
+                Thread.sleep(100);
 
                 driver.findElement(HomePage.nextMonth).click();
             }} else if (numberOfMonthsDifference < 0) {
@@ -147,7 +147,7 @@ public class HomePageMethods {
             numberOfMonthsDifference = (monthMap.get(departureMonth.toUpperCase())) + numberOfMonthsDifference;
 
             for (int a = 0; a < numberOfMonthsDifference; a++) {
-                Thread.sleep(200);
+                Thread.sleep(100);
 
                 driver.findElement(HomePage.nextMonth).click();
 
@@ -178,7 +178,7 @@ public class HomePageMethods {
 
         if (numberOfMonthsDifference > 0){
             for (int a = 0; a < numberOfMonthsDifference; a++) {
-                Thread.sleep(200);
+                Thread.sleep(100);
 
                 driver.findElement(HomePage.nextMonth).click();
             }} else if (numberOfMonthsDifference < 0) {
@@ -186,7 +186,7 @@ public class HomePageMethods {
             numberOfMonthsDifference = (monthMap.get(returnMonth.toUpperCase())) + numberOfMonthsDifference;
 
             for (int a = 0; a < numberOfMonthsDifference; a++) {
-                Thread.sleep(200);
+                Thread.sleep(100);
 
                 driver.findElement(HomePage.nextMonth).click();
 

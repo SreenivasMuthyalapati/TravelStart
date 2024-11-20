@@ -1,0 +1,371 @@
+<!DOCTYPE html><html lang='en'><head><meta charset='UTF-8'><meta name='viewport' content='width=device-width, initial-scale=1.0'><title>Test Execution Report</title><style>
+* {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+        }
+
+        :root {
+            --primary-color: #2196F3;
+            --success-color: #4CAF50;
+            --danger-color: #F44336;
+            --neutral-color: #607D8B;
+        }
+
+        body {
+            background: linear-gradient(135deg, #f6f9fc 0%, #edf2f7 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .report-container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 400px;
+            padding: 24px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .report-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary-color), var(--success-color));
+        }
+
+        .header {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 24px;
+            position: relative;
+        }
+
+        .logo {
+            margin-bottom: 16px;
+            position: relative;
+            padding: 10px;
+        }
+
+        .logo::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 120%;
+            height: 120%;
+            background: linear-gradient(135deg, rgba(33, 150, 243, 0.1), rgba(76, 175, 80, 0.1));
+            border-radius: 50%;
+            z-index: 0;
+        }
+
+        .logo img {
+            height: 35px;
+            position: relative;
+            z-index: 1;
+            transition: transform 0.3s ease;
+        }
+
+        .logo:hover img {
+            transform: scale(1.05);
+        }
+
+        .title {
+            font-size: 26px;
+            font-weight: 700;
+            color: #1a202c;
+            text-align: center;
+            margin-bottom: 8px;
+            background: linear-gradient(90deg, #2196F3, #4CAF50);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .timestamp {
+            color: #718096;
+            font-size: 14px;
+            text-align: center;
+            padding: 6px 12px;
+            background: #f7fafc;
+            border-radius: 20px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .stat-card {
+            background: #f8fafc;
+            border-radius: 16px;
+            padding: 20px;
+            text-align: center;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(226, 232, 240, 0.8);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.2));
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+        }
+
+        .stat-card:hover::before {
+            opacity: 1;
+        }
+
+        .stat-value {
+            font-size: 32px;
+            font-weight: 800;
+            margin-bottom: 8px;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .scenarios .stat-value { color: var(--primary-color); }
+        .tests .stat-value { color: var(--neutral-color); }
+        .passed .stat-value { color: var(--success-color); }
+        .failed .stat-value { color: var(--danger-color); }
+
+        .stat-label {
+            font-size: 14px;
+            color: #718096;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .search-container {
+            margin-bottom: 24px;
+            position: relative;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 14px 20px;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            font-size: 15px;
+            transition: all 0.3s ease;
+            background: #f8fafc;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(33, 150, 243, 0.1);
+            background: white;
+        }
+
+        .scenarios-list {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .scenario-item {
+            background: #f8fafc;
+            border-radius: 12px;
+            padding: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 1px solid #e2e8f0;
+        }
+
+        .scenario-item:hover {
+            background: white;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .scenario-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .scenario-name {
+            font-weight: 600;
+            color: #2d3748;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .scenario-name::before {
+            content: '▸';
+            color: var(--primary-color);
+            transition: transform 0.3s ease;
+        }
+
+        .scenario-item:hover .scenario-name::before {
+            transform: rotate(90deg);
+        }
+
+        .scenario-stats {
+            display: flex;
+            gap: 16px;
+            font-size: 14px;
+            color: #718096;
+        }
+
+        .fail-badge {
+            background: linear-gradient(135deg, #ff6b6b, #ff8787);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            box-shadow: 0 2px 4px rgba(255, 107, 107, 0.2);
+        }
+
+        /* Desktop Styles */
+        @media (min-width: 768px) {
+            .report-container {
+                max-width: 1200px;
+                padding: 32px 40px;
+            }
+
+            .header {
+                flex-direction: row;
+                justify-content: space-between;
+                margin-bottom: 40px;
+            }
+
+            .logo {
+                margin-bottom: 0;
+            }
+
+            .logo img {
+                height: 40px;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(4, 1fr);
+                margin-bottom: 40px;
+                gap: 24px;
+            }
+
+            .stat-card {
+                padding: 24px;
+            }
+
+            .stat-value {
+                font-size: 38px;
+            }
+
+            .search-input {
+                padding: 16px 24px;
+            }
+
+            .scenarios-list {
+                gap: 20px;
+            }
+
+            .scenario-item {
+                padding: 24px;
+            }
+
+            .scenario-stats {
+                font-size: 15px;
+            }
+        }
+
+        /* Animations */
+        @keyframes slideInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        .stat-card {
+            animation: slideInUp 0.5s ease-out forwards;
+        }
+
+        .scenario-item {
+            animation: slideInUp 0.5s ease-out forwards;
+        }
+
+        .fail-badge {
+            animation: pulse 2s infinite;
+        }
+
+</style><script src='https://cdn.jsdelivr.net/npm/chart.js'></script></head><body><div class='report-container'><div class='header'><div class='logo'><img src='https://cdn1.travelstart.com/assets/images/travelstart-new-brand-logo.svg' alt='TravelStart Logo'></div><h1 class='title'>Test Execution Report</h1><div class='timestamp'><p>Generated on: 2024-11-19 18:23:52</p></div></div><div class='chart-container'><canvas id='testChart'></canvas></div><div class='stats-grid'><div class='stat-card scenarios'><div class='stat-value'>0</div><div class='stat-label'>Total Scenarios</div></div><div class='stat-card tests'><div class='stat-value'>0</div><div class='stat-label'>Total Tests</div></div><div class='stat-card passed'><div class='stat-value'>0</div><div class='stat-label'>Passed</div></div><div class='stat-card failed'><div class='stat-value'>0</div><div class='stat-label'>Failed</div></div></div><div class='search-container'<input type='text' id='searchInput' class='search-input' onkeyup='searchScenarios()' placeholder='Search scenarios...'></div><script>document.querySelector('.summary .stat-value:nth-child(1)').textContent = '4';document.querySelector('.summary .stat-value:nth-child(2)').textContent = '48';document.querySelector('.summary .stat-value.pass').textContent = '40';document.querySelector('.summary .stat-value.fail').textContent = '8';</script><div class='scenarios-list'><div class='scenario-item'><div class='scenario-name'<span onclick="toggleTestCases('SeatsTest-12')">▶ SeatsTest-12</span><span class='scenario-stats'>Total: 13 | Passed: 10 | Failed: 3</span></div><span class='scenario-status status-fail'>FAIL</span></div><div id='SeatsTest-12' class='testcases'><div class='booking-ref'><strong>Booking Ref/ID:</strong> 28fe703a-4027-4461-9d01-dc11388fb99c</div><div class='test-case'><p><strong>Test Case ID:</strong> Seats_TC_01<br><strong>Summary:</strong> Verify whether the seat map is loading successfully.<br><strong>Booking Reference:</strong> -<br><strong>Status:</strong> <span class='pass'>pass</span></p></div><hr><div class='test-case'><p><strong>Test Case ID:</strong> Seats_TC_04<br><strong>Summary:</strong> Verify that the selected seat is displayed under the respective traveler’s name.<br><strong>Booking Reference:</strong> -<br><strong>Status:</strong> <span class='pass'>pass</span></p></div><hr><div class='test-case'><p><strong>Test Case ID:</strong> Seats_TC_05<br><strong>Summary:</strong> Verify that the seat price is added to the total in the seat map after seat selection.<br><strong>Booking Reference:</strong> <br><strong>Status:</strong> <span class='pass'>pass</span></p></div><hr><div class='test-case'><p><strong>Test Case ID:</strong> Seats_TC_06<br><strong>Summary:</strong> Verify that the user can proceed beyond the seat selection screen, both with and without selecting a seat.<br><strong>Booking Reference:</strong> -<br><strong>Status:</strong> <span class='pass'>pass</span></p></div><hr><div class='test-case'><p><strong>Test Case ID:</strong> Seats_TC_07<br><strong>Summary:</strong> Verify that the selected seat price is added to the breakdown in the next step after seat selection.<br><strong>Booking Reference:</strong> -<br><strong>Status:</strong> <span class='pass'>pass</span></p></div><hr><div class='test-case'><p><strong>Test Case ID:</strong> Seats_TC_08<br><strong>Summary:</strong> Verify that the selected seat information is displayed in the collapsed seat card on the add-ons page.<br><strong>Booking Reference:</strong> -<br><strong>Status:</strong> <span class='pass'>pass</span></p></div><hr><div class='test-case'><p><strong>Test Case ID:</strong> Seats_TC_15<br><strong>Summary:</strong> Verify that the payment page was loaded or not<br><strong>Booking Reference:</strong> -<br><strong>Status:</strong> <span class='pass'>pass</span></p></div><hr><div class='test-case'><p><strong>Test Case ID:</strong> Seats_TC_16<br><strong>Summary:</strong> Verify that the selected seat price is correctly displayed in the payment page breakdown.<br><strong>Booking Reference:</strong> ZA00110925<br><strong>Status:</strong> <span class='pass'>pass</span></p></div><hr><div class='test-case'><p><strong>Test Case ID:</strong> Seats_TC_17<br><strong>Summary:</strong> Verify that the user is able to complete a booking with seats selected.<br><strong>Booking Reference:</strong> ZA00110925<br><strong>Status:</strong> <span class='pass'>pass</span></p></div><hr><div class='test-case'><p><strong>Test Case ID:</strong> Seats_TC_18<br><strong>Summary:</strong> Verify that the selected seat numbers are displayed correctly on the booking confirmation page.<br><strong>Booking Reference:</strong> ZA00110925<br><strong>Status:</strong> <span class='fail'>fail</span><div class='failure-message'><strong>Failure Message:</strong><br>Selected seats numbers was not matching with seats displayed on booking confirmation page for test scenario ID:SeatsTest-12. The selected seats were: [16C, 8C], but seats displayed on booking confirmation were: [8C, 16C, 10C]</div></p></div><hr><div class='test-case'><p><strong>Test Case ID:</strong> Seats_TC_19<br><strong>Summary:</strong> Verify that the selected seat price in the invoice details is correct.<br><strong>Booking Reference:</strong> ZA00110925<br><strong>Status:</strong> <span class='pass'>pass</span></p></div><hr><div class='test-case'><p><strong>Test Case ID:</strong> Seats_TC_20<br><strong>Summary:</strong> Verify seats numbers in My Bookings summary<br><strong>Booking Reference:</strong> ZA00110925<br><strong>Status:</strong> <span class='fail'>fail</span><div class='failure-message'><strong>Failure Message:</strong><br>Selected seats numbers was not matching with seats displayed on booking summary in my bookings page for test scenario ID:SeatsTest-12. The selected seats were: [16C, 8C], but seats displayed on booking confirmation were: [8C, 16C, 10C]</div></p></div><hr><div class='test-case'><p><strong>Test Case ID:</strong> Seats_TC_21<br><strong>Summary:</strong> Verify seats selection price in invoice lines in My Bookings summary<br><strong>Booking Reference:</strong> ZA00110925<br><strong>Status:</strong> <span class='fail'>fail</span><div class='failure-message'><strong>Failure Message:</strong><br>Seats selection price was not matching with seats price displayed on booking summary in my bookings page for test scenario ID:SeatsTest-12. Cost of seats: 2643 but price displayed on booking confirmarion was: 3791</div></p></div><hr></div><div class='scenarios-list'><div class='scenario-item'><div class='scenario-name'<span onclick="toggleTestCases('SeatsTest-11')">▶ SeatsTest-11</span><span class='scenario-stats'>Total: 9 | Passed: 6 | Failed: 3</span></div><span class='scenario-status status-fail'>FAIL</span></div><div id='SeatsTest-11' class='testcases'><div class='booking-ref'><strong>Booking Ref/ID:</strong> 4a1012dc-e920-4cfd-aa18-b1e975eecf6b</div><div class='test-case'><p><strong>Test Case ID:</strong> Seats_TC_01<br><strong>Summary:</strong> Verify whether the seat map is loading successfully.<br><strong>Booking Reference:</strong> -<br><strong>Status:</strong> <span class='pass'>pass</span></p></div><hr><div class='test-case'><p><strong>Test Case ID:</strong> Seats_TC_04<br><strong>Summary:</strong> Verify that the selected seat is displayed under the respective traveler’s name.<br><strong>Booking Reference:</strong> -<br><strong>Status:</strong> <span class='pass'>pass</span></p></div><hr><div class='test-case'><p><strong>Test Case ID:</strong> Seats_TC_05<br><strong>Summary:</strong> Verify that the seat price is added to the total in the seat map after seat selection.<br><strong>Booking Reference:</strong> <br><strong>Status:</strong> <span class='pass'>pass</span></p></div><hr><div class='test-case'><p><strong>Test Case ID:</strong> Seats_TC_06<br><strong>Summary:</strong> Verify that the user can proceed beyond the seat selection screen, both with and without selecting a seat.<br><strong>Booking Reference:</strong> -<br><strong>Status:</strong> <span class='pass'>pass</span></p></div><hr><div class='test-case'><p><strong>Test Case ID:</strong> Seats_TC_07<br><strong>Summary:</strong> Verify that the selected seat price is added to the breakdown in the next step after seat selection.<br><strong>Booking Reference:</strong> -<br><strong>Status:</strong> <span class='fail'>fail</span><div class='failure-message'><strong>Failure Message:</strong><br>Seats selection price was not displayed in breakdown on addOns page for test scenario ID:SeatsTest-11</div></p></div><hr><div class='test-case'><p><strong>Test Case ID:</strong> Seats_TC_08<br><strong>Summary:</strong> Verify that the selected seat information is displayed in the collapsed seat card on the add-ons page.<br><strong>Booking Reference:</strong> -<br><strong>Status:</strong> <span class='pass'>pass</span></p></div><hr><div class='test-case'><p><strong>Test Case ID:</strong> Seats_TC_15<br><strong>Summary:</strong> Verify that the payment page was loaded or not<br><strong>Booking Reference:</strong> -<br><strong>Status:</strong> <span class='pass'>pass</span></p></div><hr><div class='test-case'><p><strong>Test Case ID:</strong> Seats_TC_16<br><strong>Summary:</strong> Verify that the selected seat price is correctly displayed in the payment page breakdown.<br><strong>Booking Reference:</strong> ZA00110924<br><strong>Status:</strong> <span class='fail'>fail</span><div class='failure-message'><strong>Failure Message:</strong><br>Seats selection price was not matching with seats price displayed on payment page for test scenario ID:SeatsTest-11Actual seat selected amount: 3484 but the seats amount displayed on payment page is: 4106</div></p></div><hr><div class='test-case'><p><strong>Test Case ID:</strong> Seats_TC_17<br><strong>Summary:</strong> Verify that the user is able to complete a booking with seats selected.<br><strong>Booking Reference:</strong> ZA00110924<br><strong>Status:</strong> <span class='fail'>fail</span><div class='failure-message'><strong>Failure Message:</strong><br>Booking failed for test scenario ID:SeatsTest-11 and CID is:4a1012dc-e920-4cfd-aa18-b1e975eecf6b</div></p></div><hr></div><div class='scenarios-list'><div class='scenario-item'><div class='scenario-name'<span onclick="toggleTestCases('SeatsTest-7')">▶ SeatsTest-7</span><span class='scenario-stats'>Total: 13 | Passed: 12 | Failed: 1</span></div><span class='scenario-status status-fail'>FAIL</span></div><div id='SeatsTest-7' class='testcases'><div class='booking-ref'><strong>Booking Ref/ID:</strong> fdfa9ec0-b760-42c6-a1c7-35f9fc61536f</div><div class='test-case'><p><strong>Test Case ID:</strong> Seats_TC_01<br><strong>Summary:</strong> Verify whether the seat map is loading successfully.<br><strong>Booking Reference:</strong> -<br><strong>Status:</strong> <span class='pass'>pass</span></p></div><hr><div class='test-case'><p><strong>Test Case ID:</strong> Seats_TC_04<br><strong>Summary:</strong> Verify that the selected seat is displayed under the respective traveler’s name.<br><strong>Booking Reference:</strong> -<br><strong>Status:</strong> <span class='pass'>pass</span></p></div><hr><div class='test-case'><p><strong>Test Case ID:</strong> Seats_TC_05<br><strong>Summary:</strong> Verify that the seat price is added to the total in the seat map after seat selection.<br><strong>Booking Reference:</strong> <br><strong>Status:</strong> <span class='pass'>pass</span></p></div><hr><div class='test-case'><p><strong>Test Case ID:</strong> Seats_TC_06<br><strong>Summary:</strong> Verify that the user can proceed beyond the seat selection screen, both with and without selecting a seat.<br><strong>Booking Reference:</strong> -<br><strong>Status:</strong> <span class='pass'>pass</span></p></div><hr><div class='test-case'><p><strong>Test Case ID:</strong> Seats_TC_07<br><strong>Summary:</strong> Verify that the selected seat price is added to the breakdown in the next step after seat selection.<br><strong>Booking Reference:</strong> -<br><strong>Status:</strong> <span class='pass'>pass</span></p></div><hr><div class='test-case'><p><strong>Test Case ID:</strong> Seats_TC_08<br><strong>Summary:</strong> Verify that the selected seat information is displayed in the collapsed seat card on the add-ons page.<br><strong>Booking Reference:</strong> -<br><strong>Status:</strong> <span class='pass'>pass</span></p></div><hr><div class='test-case'><p><strong>Test Case ID:</strong> Seats_TC_15<br><strong>Summary:</strong> Verify that the payment page was loaded or not<br><strong>Booking Reference:</strong> -<br><strong>Status:</strong> <span class='pass'>pass</span></p></div><hr><div class='test-case'><p><strong>Test Case ID:</strong> Seats_TC_16<br><strong>Summary:</strong> Verify that the selected seat price is correctly displayed in the payment page breakdown.<br><strong>Booking Reference:</strong> ZA00110922<br><strong>Status:</strong> <span class='pass'>pass</span></p></div><hr><div class='test-case'><p><strong>Test Case ID:</strong> Seats_TC_17<br><strong>Summary:</strong> Verify that the user is able to complete a booking with seats selected.<br><strong>Booking Reference:</strong> ZA00110922<br><strong>Status:</strong> <span class='pass'>pass</span></p></div><hr><div class='test-case'><p><strong>Test Case ID:</strong> Seats_TC_18<br><strong>Summary:</strong> Verify that the selected seat numbers are displayed correctly on the booking confirmation page.<br><strong>Booking Reference:</strong> ZA00110922<br><strong>Status:</strong> <span class='pass'>pass</span></p></div><hr><div class='test-case'><p><strong>Test Case ID:</strong> Seats_TC_19<br><strong>Summary:</strong> Verify that the selected seat price in the invoice details is correct.<br><strong>Booking Reference:</strong> ZA00110922<br><strong>Status:</strong> <span class='pass'>pass</span></p></div><hr><div class='test-case'><p><strong>Test Case ID:</strong> Seats_TC_20<br><strong>Summary:</strong> Verify seats numbers in My Bookings summary<br><strong>Booking Reference:</strong> ZA00110922<br><strong>Status:</strong> <span class='pass'>pass</span></p></div><hr><div class='test-case'><p><strong>Test Case ID:</strong> Seats_TC_21<br><strong>Summary:</strong> Verify seats selection price in invoice lines in My Bookings summary<br><strong>Booking Reference:</strong> ZA00110922<br><strong>Status:</strong> <span class='fail'>fail</span><div class='failure-message'><strong>Failure Message:</strong><br>Seats selection price was not matching with seats price displayed on booking summary in my bookings page for test scenario ID:SeatsTest-7. Cost of seats: 2643 but price displayed on booking confirmarion was: 1495</div></p></div><hr></div><div class='scenarios-list'><div class='scenario-item'><div class='scenario-name'<span onclick="toggleTestCases('SeatsTest-8')">▶ SeatsTest-8</span><span class='scenario-stats'>Total: 13 | Passed: 12 | Failed: 1</span></div><span class='scenario-status status-fail'>FAIL</span></div><div id='SeatsTest-8' class='testcases'><div class='booking-ref'><strong>Booking Ref/ID:</strong> ee478078-bed6-4ead-ad9c-9afb5fffae16</div><div class='test-case'><p><strong>Test Case ID:</strong> Seats_TC_01<br><strong>Summary:</strong> Verify whether the seat map is loading successfully.<br><strong>Booking Reference:</strong> -<br><strong>Status:</strong> <span class='pass'>pass</span></p></div><hr><div class='test-case'><p><strong>Test Case ID:</strong> Seats_TC_04<br><strong>Summary:</strong> Verify that the selected seat is displayed under the respective traveler’s name.<br><strong>Booking Reference:</strong> -<br><strong>Status:</strong> <span class='pass'>pass</span></p></div><hr><div class='test-case'><p><strong>Test Case ID:</strong> Seats_TC_05<br><strong>Summary:</strong> Verify that the seat price is added to the total in the seat map after seat selection.<br><strong>Booking Reference:</strong> <br><strong>Status:</strong> <span class='pass'>pass</span></p></div><hr><div class='test-case'><p><strong>Test Case ID:</strong> Seats_TC_06<br><strong>Summary:</strong> Verify that the user can proceed beyond the seat selection screen, both with and without selecting a seat.<br><strong>Booking Reference:</strong> -<br><strong>Status:</strong> <span class='pass'>pass</span></p></div><hr><div class='test-case'><p><strong>Test Case ID:</strong> Seats_TC_07<br><strong>Summary:</strong> Verify that the selected seat price is added to the breakdown in the next step after seat selection.<br><strong>Booking Reference:</strong> -<br><strong>Status:</strong> <span class='pass'>pass</span></p></div><hr><div class='test-case'><p><strong>Test Case ID:</strong> Seats_TC_08<br><strong>Summary:</strong> Verify that the selected seat information is displayed in the collapsed seat card on the add-ons page.<br><strong>Booking Reference:</strong> -<br><strong>Status:</strong> <span class='pass'>pass</span></p></div><hr><div class='test-case'><p><strong>Test Case ID:</strong> Seats_TC_15<br><strong>Summary:</strong> Verify that the payment page was loaded or not<br><strong>Booking Reference:</strong> -<br><strong>Status:</strong> <span class='pass'>pass</span></p></div><hr><div class='test-case'><p><strong>Test Case ID:</strong> Seats_TC_16<br><strong>Summary:</strong> Verify that the selected seat price is correctly displayed in the payment page breakdown.<br><strong>Booking Reference:</strong> ZA00110923<br><strong>Status:</strong> <span class='pass'>pass</span></p></div><hr><div class='test-case'><p><strong>Test Case ID:</strong> Seats_TC_17<br><strong>Summary:</strong> Verify that the user is able to complete a booking with seats selected.<br><strong>Booking Reference:</strong> ZA00110923<br><strong>Status:</strong> <span class='pass'>pass</span></p></div><hr><div class='test-case'><p><strong>Test Case ID:</strong> Seats_TC_18<br><strong>Summary:</strong> Verify that the selected seat numbers are displayed correctly on the booking confirmation page.<br><strong>Booking Reference:</strong> ZA00110923<br><strong>Status:</strong> <span class='pass'>pass</span></p></div><hr><div class='test-case'><p><strong>Test Case ID:</strong> Seats_TC_19<br><strong>Summary:</strong> Verify that the selected seat price in the invoice details is correct.<br><strong>Booking Reference:</strong> ZA00110923<br><strong>Status:</strong> <span class='pass'>pass</span></p></div><hr><div class='test-case'><p><strong>Test Case ID:</strong> Seats_TC_20<br><strong>Summary:</strong> Verify seats numbers in My Bookings summary<br><strong>Booking Reference:</strong> ZA00110923<br><strong>Status:</strong> <span class='pass'>pass</span></p></div><hr><div class='test-case'><p><strong>Test Case ID:</strong> Seats_TC_21<br><strong>Summary:</strong> Verify seats selection price in invoice lines in My Bookings summary<br><strong>Booking Reference:</strong> ZA00110923<br><strong>Status:</strong> <span class='fail'>fail</span><div class='failure-message'><strong>Failure Message:</strong><br>Seats selection price was not matching with seats price displayed on booking summary in my bookings page for test scenario ID:SeatsTest-8. Cost of seats: 2643 but price displayed on booking confirmarion was: 3791</div></p></div><hr></div><script>function toggleTestCases(id) {
+    const element = document.getElementById(id);
+    element.style.display = element.style.display === 'none' ? 'block' : 'none';
+}
+
+function drawChart() {
+    const ctx = document.getElementById('testChart').getContext('2d');
+    new Chart(ctx, {
+        type: 'pie',
+        data: {
+            labels: ['Passed (40)', 'Failed (8)'],
+            datasets: [{
+                data: [40, 8],
+                backgroundColor: ['#4CAF50', '#FF6347'],
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'bottom'
+                }
+            }
+        }
+    });
+}
+
+function searchScenarios() {
+    const input = document.getElementById('searchInput').value.toLowerCase();
+    const scenarios = document.getElementsByClassName('scenario');
+    Array.from(scenarios).forEach(scenario => {
+        scenario.style.display = scenario.textContent.toLowerCase().includes(input) ? 'flex' : 'none';
+    });
+}
+
+window.onload = drawChart;
+</script></div></body></html>

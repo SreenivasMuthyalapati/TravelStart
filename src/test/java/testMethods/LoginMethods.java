@@ -24,6 +24,7 @@ public class LoginMethods {
 
         WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(20));
 
+        wait.until(ExpectedConditions.visibilityOfElementLocated(GlobalPageObjects.myAccountIconNonLoggedIn));
         driver.findElement(GlobalPageObjects.myAccountIconNonLoggedIn).click();
         wait.until(ExpectedConditions.visibilityOfElementLocated(LoginPage.loginOrSignUpForm));
 

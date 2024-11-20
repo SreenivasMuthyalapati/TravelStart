@@ -28,7 +28,7 @@ public class BookingFlowEnd2End {
     static XSSFWorkbook workbook;
     static WebDriver driver;
     static Method m = new Method();
-    static String dataPath = dataPaths.seatsTest;
+    static String dataPath = dataPaths.b2CBookingE2ETestData;
     static String environment;
     static String browser;
     static String baseURL;
@@ -71,7 +71,7 @@ public class BookingFlowEnd2End {
     public void createTestReports() throws IOException {
 
         // Get test cases
-        testCases = m.getTestCasesFromTestCasesDocument(dataPaths.B2CBookingE2ETestData, "Booking Flow Test Cases");
+        testCases = m.getTestCasesFromTestCasesDocument(dataPaths.b2CBookingE2ETestData, "Booking Flow Test Cases");
         htmlTestReport.createHTMLReport();
 
 

@@ -9,7 +9,7 @@ public interface dataPaths {
         //Data Paths
         public static String URLs = dataBasePath+"\\TestData\\URLs.xls";
         public static String dataPath = dataBasePath+"\\TestData\\DataBook.xls";
-        public static String B2CBookingE2ETestData = dataBasePath+"\\TestData\\B2CBookingFlowEndToEnd.xls";
+        public static String b2CBookingE2ETestData = dataBasePath+"\\TestData\\B2CBookingFlowEndToEnd.xls";
         public static String contactUsDataPath = dataBasePath+"\\TestData\\ContactUsData.xls";
         public static String screenshotFolder = dataBasePath+"\\TestScreenShots";
         public static String excelOutputPath = dataBasePath+"\\TestResult\\BookingOutput.xlsx";

@@ -1,11 +1,16 @@
 package testClasses.B2CEndToEnd;
 
 import org.json.JSONObject;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.chrome.ChromeDriver;
+import pageObjects.BookingSummaryPage;
 import testMethods.*;
 import utils.TestReport;
 
+import java.awt.*;
 import java.io.IOException;
 import java.util.*;
+import java.util.List;
 
 import static org.testng.Assert.assertNotNull;
 
@@ -13,39 +18,42 @@ public class CodeTestClass {
 
     static Method m = new Method();
     static SendEmail sendEmail = new SendEmail();
-    static DeeplinksMethods deeplinksMethods = new DeeplinksMethods();
+    static WebDriver driver;
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws IOException, InterruptedException, AWTException {
 
-        // Create an instance of the class to test
-        WapiMethods wapiMethods = new WapiMethods();
 
-        // Define test parameters
-        String environment = "preprod";
-        String tripType = "oneway";
-        String cabinClass = "Economy";
-        String originIATACode = "CPT";
-        String destinationIATACode = "DXB";
-        String departureDate = "2025-01-17";
-        String returnDate = "2025-01-31"; // This will be ignored since tripType is "oneway"
-        String adultCount = "1";
-        String youngAdultCount = "0";
-        String childCount = "0";
-        String infantCount = "0";
+        driver = m.launchBrowser(driver, "chrome");
+        driver.manage().window().maximize();
 
-        // Call the method
-        JSONObject response = wapiMethods.hitSearchEndPoint(
-                environment, tripType, cabinClass, originIATACode, destinationIATACode,
-                departureDate, returnDate, adultCount, youngAdultCount, childCount, infantCount
-        );
+        String url = m.getBaseURL("preprod", "ZA", "-");
+        System.out.println(url);
 
-        // Assert that a response is received
-        assertNotNull(response, "The API response should not be null.");
+        BookingConfirmationPageMethods bookingConfirmationPageMethods = new BookingConfirmationPageMethods();
 
-        // Print the response to inspect
-        System.out.println("Response from API: " + response.toString(2));
+        bookingConfirmationPageMethods.gotoMyBookings(driver, url);
 
-        System.out.println("Response from API: " + response.toString(2));
+        MyBookingPageMethods myBookingPageMethods = new MyBookingPageMethods();
+        BookingSummaryPageMethods bookingSummaryPageMethods = new BookingSummaryPageMethods();
+
+
+        myBookingPageMethods.viewItineraryDetails(driver, "ZA00110928");
+
+        boolean isBookingDetailsLoaded = bookingSummaryPageMethods.verifyBookingDetailsLoaded(driver);
+
+        List<String> seatsNumbersOnBookingsSummary = bookingSummaryPageMethods.getSelectedSeats(driver);
+
+        System.out.println(seatsNumbersOnBookingsSummary);
+
+
+        int seatsPriceInBreakDownViewItinerary = bookingSummaryPageMethods.getSeatsTotalCost(driver);
+
+        System.out.println(bookingSummaryPageMethods.getBreakDownAsMap(driver, BookingSummaryPage.invoiceLineTable));
+        System.out.println(seatsPriceInBreakDownViewItinerary);
+
+
+
+
 
 
 

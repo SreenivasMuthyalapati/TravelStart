@@ -49,7 +49,7 @@ public class SeatsPageMethods {
     public void switchPassenger(WebDriver driver, String paxNumber) throws InterruptedException {
         try {
             driver.findElement(SeatsPage.switchPassenger(paxNumber)).click();
-            Thread.sleep(500);
+            Thread.sleep(400);
         } catch (NoSuchElementException e) {
             System.out.println("Switching passenger failed for passenger number: " + paxNumber);
         }
@@ -75,7 +75,7 @@ public class SeatsPageMethods {
     public void clearAllSelectedSeatsForPax(WebDriver driver, String paxNumber) throws InterruptedException {
         try {
             driver.findElement(SeatsPage.clearAllSelectedSeatsForPax(paxNumber)).click();
-            Thread.sleep(500);
+            Thread.sleep(400);
         } catch (NoSuchElementException e) {
             System.out.println("Clearing selected seats for pax number " + paxNumber + " failed");
         }
@@ -134,7 +134,7 @@ public class SeatsPageMethods {
 
             // Switch to the current passenger
             driver.findElement(SeatsPage.switchPassenger(String.valueOf(j))).click();
-            Thread.sleep(500); // Adjust wait time if needed
+            Thread.sleep(400); // Adjust wait time if needed
 
             boolean seatSelected = false;
             int retries = 2; // Number of retries for stale element
@@ -149,9 +149,9 @@ public class SeatsPageMethods {
                         // Select a seat based on the passenger index, using modulo to cycle through seats
                         int seatIndex = j;
                         try {
-                            Thread.sleep(200);
+                            Thread.sleep(100);
                             availableSeats.get(seatIndex).click();
-                            Thread.sleep(300);
+                            Thread.sleep(100);
                         } catch (ElementClickInterceptedException e) {
 
                         }
@@ -163,7 +163,7 @@ public class SeatsPageMethods {
                 } catch (StaleElementReferenceException e) {
                     System.out.println("Encountered stale element, retrying...");
                     retries--; // Retry locating the seat
-                    Thread.sleep(500); // Short wait before retrying
+                    Thread.sleep(400); // Short wait before retrying
                 }
             }
         }
@@ -186,14 +186,14 @@ public class SeatsPageMethods {
 
             // Switch to the current segment
             driver.findElement(SeatsPage.switchSegment(String.valueOf(i))).click();
-            Thread.sleep(500); // Adjust wait time if needed
+            Thread.sleep(400); // Adjust wait time if needed
 
 
             for (int j = 1; j <= paxCount; j++) {
 
                 // Switch to the current passenger
                 driver.findElement(SeatsPage.switchPassenger(String.valueOf(j))).click();
-                Thread.sleep(500); // Adjust wait time if needed
+                Thread.sleep(400); // Adjust wait time if needed
 
                 boolean seatSelected = false;
                 int retries = 2; // Number of retries for stale element
@@ -208,9 +208,9 @@ public class SeatsPageMethods {
                             // Select a seat based on the passenger index, using modulo to cycle through seats
                             int seatIndex = j;
                             try {
-                                Thread.sleep(300);
+                                Thread.sleep(100);
                                 availableSeats.get(seatIndex).click();
-                                Thread.sleep(200);
+                                Thread.sleep(100);
                             } catch (ElementClickInterceptedException e){
 
                             }
@@ -230,7 +230,7 @@ public class SeatsPageMethods {
                     System.out.println("Failed to select seat for passenger " + j + " after retries.");
                 }
 
-                Thread.sleep(500); // Adjust wait time if needed
+                Thread.sleep(400); // Adjust wait time if needed
             }
         }
     }
@@ -279,12 +279,14 @@ public class SeatsPageMethods {
     }
 
     public void continueToNextStep(WebDriver driver) {
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(2));
+
         try {
-            Thread.sleep(2000);
+            Thread.sleep(1000);
             driver.findElement(SeatsPage.continueToAddons).click();
-            Thread.sleep(2000);
+            wait.until(ExpectedConditions.visibilityOfElementLocated(SeatsPage.continueInPopUp));
             driver.findElement(SeatsPage.continueInPopUp).click();
-            Thread.sleep(2000);
+            Thread.sleep(100);
         } catch (Exception e){
 
         }

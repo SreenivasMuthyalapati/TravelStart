@@ -51,10 +51,11 @@ public class BookingSummaryPageMethods {
                         // If key already exists, sum the values
                         if (dataMap.containsKey(key)) {
                             String existingValue = dataMap.get(key);
+                            String newValue = value;
 
                             // Remove 'R' and any commas from both values
                             double existingAmount = method.stringToInt(existingValue);
-                            double newAmount = method.stringToInt(existingValue);
+                            double newAmount = method.stringToInt(newValue);
 
                             // Sum the amounts
                             double totalAmount = existingAmount + newAmount;
@@ -75,7 +76,7 @@ public class BookingSummaryPageMethods {
     public int getSeatsServiceChargeFromInvoice(WebDriver driver){
 
         Map<String, String> invoiceLinesMap = this.getBreakDownAsMap(driver, BookingSummaryPage.invoiceLineTable);
-        int seatsServiceCharge = method.stringToInt(this.retriveValueFromMap(invoiceLinesMap, "Service charges"));
+        int seatsServiceCharge = method.stringToInt(this.retriveValueFromMap(invoiceLinesMap, "Seats service charge"));
 
         return seatsServiceCharge;
     }

@@ -342,7 +342,7 @@ public class BookingConfirmationPageMethods {
 
         LoginMethods loginMethods = new LoginMethods();
 
-        boolean loginSuccess = loginMethods.loginWithPassword(driver, "sreenivasulu@travelstart.com", "Test@123");
+        boolean loginSuccess = loginMethods.loginWithPassword(driver, "sreenivasulu01@travelstart.com", "Test@123");
 
         if (!loginSuccess){
             throw new SkipException("Login was not success. Skipping further tests");

@@ -226,6 +226,8 @@ public class SeatsTest {
     public void seatsTest(String testCaseNumber, String shouldRun, String domain, String cpy_source, String tripType, String origin, String destination, String departureDate, String departureMonth, String returnDate, String returnMonth, String adultCount, String youngAdultCount, String childCount, String infantCount, String cabinClass, String departureAirline, String returnAirline, String departureSupplier, String returnSupplier, String mailID, String mobileNumber, String title, String firstName, String middleName, String lastName, String dateOfBirth, String monthOfBirth, String yearOfBirth, String passPortNumber, String dateOfPassportExpiry, String monthOfPassportExpiry, String yearOfPassportExpiry, String passPortNationality, String passPortIssuingCountry, String addBaggage, String addSeats, String addSeatsForAllSegments, String seatsForSegment1, String seatsForSegment2, String seatsForSegment3, String seatsForSegment4, String seatsForSegment5, String seatsForSegment6, String paymentMethod, String bankNameEFT, String isLoggedInUser, String isToBeCancelled) throws IOException, InterruptedException, AWTException {
 
 
+        testCaseNumber = testCaseNumber+"_"+domain+"_"+departureSupplier+"_"+departureAirline+"_"+tripType+"_"+origin+"_"+departureSupplier+"_"+cabinClass+"_"+adultCount+"A"+youngAdultCount+"YA"+childCount+"C"+infantCount+"I";
+
         runTime = m.getCurrentTime();
 
         if (!shouldRun.equalsIgnoreCase("TRUE")) {
@@ -251,6 +253,8 @@ public class SeatsTest {
         baseURL = m.getBaseURL(environment, domain, cpy_source);
 
 
+
+
         String CID = "";
 
         // Launch URL
@@ -259,7 +263,6 @@ public class SeatsTest {
 
         driver.get(baseURL);
         Thread.sleep(300);
-
 
         //accept all cookies
         driver.manage().deleteAllCookies();
@@ -270,7 +273,7 @@ public class SeatsTest {
 
         }
 
-        Thread.sleep(2000);
+        Thread.sleep(1000);
 
 
         HomePageMethods homePageMethods = new HomePageMethods();
@@ -325,7 +328,7 @@ public class SeatsTest {
             baggageType = travellerDetailsPageMethods.getBaggageType(driver, isBaggageOffered);
 
             travellerDetailsPageMethods.addBaggage(driver, baggageType, adultCount, youngAdultCount, childCount);
-            Thread.sleep(5000);
+            Thread.sleep(200);
 
         }
 
@@ -334,7 +337,7 @@ public class SeatsTest {
         boolean testSeats = false;
         boolean selectSeats = Boolean.parseBoolean(addSeats);
 
-        Thread.sleep(500);
+        Thread.sleep(200);
 
         boolean isSeatsOffered = travellerDetailsPageMethods.isSeatsOffered(driver);
         boolean isAddOnsOffered = travellerDetailsPageMethods.isAddOnsOffered(driver);
@@ -352,7 +355,7 @@ public class SeatsTest {
 
         }
 
-        Thread.sleep(1000);
+        Thread.sleep(200);
 
         boolean isSeatsMapLoaded = false;
 
@@ -442,14 +445,14 @@ public class SeatsTest {
 
         if (testSeats && isSeatsMapLoaded){
 
-            Thread.sleep(1000);
+            Thread.sleep(200);
             boolean selectSeatsForAllSegmentsandAllPax = Boolean.parseBoolean(addSeatsForAllSegments);
             if (selectSeatsForAllSegmentsandAllPax) {
                 seatsPageMethods.selectSeats(driver, selectSeatsForAllSegmentsandAllPax);
             } else if (!selectSeatsForAllSegmentsandAllPax) {
                 seatsPageMethods.selectSeats(driver, selectSeatsForAllSegmentsandAllPax, seatsForSegment1, seatsForSegment2, seatsForSegment3, seatsForSegment4, seatsForSegment5, seatsForSegment6);
             }
-            Thread.sleep(1000);
+            Thread.sleep(200);
 
                 // Get all selected seats
                 selectedSeats = seatsPageMethods.getSelectedSeatNumbers(driver);
@@ -729,7 +732,7 @@ public class SeatsTest {
 
                 boolean selectedSeatNumbersMatchingWithBookingSummary = bookingConfirmationPageMethods.validateSelectedSeatsInBookingConfirmationPage(selectedSeats, seatsNumbersOnBookingsSummary);
 
-                String failMessage = "Selected seats numbers was not matching with seats displayed on booking summary in my bookings page for test scenario ID:" + testCaseNumber + ". The selected seats were: "+ selectedSeats +", but seats displayed on booking confirmation were: "+ seatsNumbersOnBookingsSummary;
+                String failMessage = "Selected seats numbers was not matching with seats displayed on booking summary in my bookings page for test scenario ID:" + testCaseNumber + ". The selected seats were: "+ selectedSeats +", but seats displayed on view itinerary were: "+ seatsNumbersOnBookingsSummary;
                 testReport.updateTestResult(testResultData, driver, testCaseNumber, testCases.get(19)[0], testCases.get(19)[1], CID,bookingReference,failMessage,  selectedSeatNumbersMatchingWithBookingSummary);
                 softAssert.assertTrue(selectedSeatNumbersMatchingWithBookingSummary, failMessage);
 
@@ -745,8 +748,8 @@ public class SeatsTest {
                 int seatsPriceInBreakDownViewItinerary = bookingSummaryPageMethods.getSeatsTotalCost(driver);
                 boolean isPriceMatching = false;
 
-                isPriceMatching = totalCostOfSeats == seatsPriceInBreakDownViewItinerary;
-                String failMessage = "Seats selection price was not matching with seats price displayed on booking summary in my bookings page for test scenario ID:" + testCaseNumber +". Cost of seats: "+totalCostOfSeats+" but price displayed on booking confirmarion was: "+ seatsPriceInBreakDownViewItinerary;
+                isPriceMatching = (totalCostOfSeats == seatsPriceInBreakDownViewItinerary);
+                String failMessage = "Seats selection price was not matching with seats price displayed on booking summary in my bookings page for test scenario ID:" + testCaseNumber +". Cost of seats: "+totalCostOfSeats+" but price displayed in View Itinerary was: "+ seatsPriceInBreakDownViewItinerary;
                 testReport.updateTestResult(testResultData, driver, testCaseNumber, testCases.get(20)[0], testCases.get(20)[1], CID, bookingReference,failMessage, isPriceMatching);
                 softAssert.assertTrue(isPriceMatching, failMessage);
 
@@ -756,7 +759,6 @@ public class SeatsTest {
 
         // Check all assertions
         softAssert.assertAll();
-        softAssert = new SoftAssert();
 
 
         //Cancel flight
